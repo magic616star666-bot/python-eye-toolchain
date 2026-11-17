@@ -4,35 +4,39 @@
   "catalog_name": "Pythan Eye IDE — Android Toolchain",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "Catalog metadata only: binaries are not uploaded; no entry is ready to install. Do not enable downloads without actual verified archives and sha256.",
+  "notes": "4 catalog entries have actual GitHub Release downloads, but Android device installation and APK build remain unverified. 4 entries still unpublished. Catalog schema compatibility with the app has not yet been checked.",
   "tools": [
     {
       "id": "openjdk-17",
       "name": "OpenJDK 17",
-      "version": "17",
+      "version": "17 (Android ARM64, 2022 upstream build)",
       "size_mb_estimate": 180,
       "requires": [],
       "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
       "platform": "android-arm64",
-      "published": false,
-      "status": "not_published",
-      "url": "",
-      "sha256": ""
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-arm64.tar.xz",
+      "sha256": "1bfde21d5b5d6ed4632c4c36245f2a61532b8c641531c5f468148024223a2b63",
+      "source_url": "https://github.com/itsaky/openjdk-17-android/releases/download/01-01-2022/jdk17-arm64.tar.xz",
+      "verified_upstream_digest": false
     },
     {
       "id": "gradle",
       "name": "Gradle",
-      "version": "9.6.1 (provisional)",
+      "version": "8.14.3",
       "size_mb_estimate": 140,
       "requires": [
         "openjdk-17"
       ],
       "description": "Gradle distribution; pin final version after AGP and Chaquopy compatibility testing",
       "platform": "java-cross-platform",
-      "published": false,
-      "status": "not_published",
-      "url": "",
-      "sha256": ""
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/gradle-8.14.3-bin.zip",
+      "sha256": "bd71102213493060956ec229d946beee57158dbd89d0e62b91bca0fa2c5f3531",
+      "source_url": "https://services.gradle.org/distributions/gradle-8.14.3-bin.zip",
+      "verified_upstream_digest": true
     },
     {
       "id": "android-sdk-36",
@@ -50,30 +54,34 @@
     {
       "id": "aapt2-zipalign",
       "name": "AAPT2 + Zipalign",
-      "version": "unselected",
+      "version": "34.0.4 (Android ARM64)",
       "size_mb_estimate": 8,
       "requires": [],
       "description": "Must use tested Android ARM64 executables, not Linux x86_64 builds",
       "platform": "android-arm64",
-      "published": false,
-      "status": "not_published",
-      "url": "",
-      "sha256": ""
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/build-tools-34.0.4-aarch64.tar.xz",
+      "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
+      "source_url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/v34.0.4/build-tools-34.0.4-aarch64.tar.xz",
+      "verified_upstream_digest": false
     },
     {
       "id": "d8-apksigner",
       "name": "D8 + APK Signer",
-      "version": "unselected",
+      "version": "34.0.4 (Android ARM64)",
       "size_mb_estimate": 25,
       "requires": [
         "openjdk-17"
       ],
       "description": "Dex compilation and APK signing; pair with Android Build Tools",
       "platform": "java-cross-platform",
-      "published": false,
-      "status": "not_published",
-      "url": "",
-      "sha256": ""
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/build-tools-34.0.4-aarch64.tar.xz",
+      "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
+      "source_url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/v34.0.4/build-tools-34.0.4-aarch64.tar.xz",
+      "verified_upstream_digest": false
     },
     {
       "id": "kotlin-compiler",
