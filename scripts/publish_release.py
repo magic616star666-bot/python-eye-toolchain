@@ -22,7 +22,7 @@ def inputs():
         raise ValueError("Invalid tool id")
     if not re.fullmatch(r"[A-Za-z0-9._+-]{1,60}", version):
         raise ValueError("Invalid version")
-    if not re.fullmatch(r"[A-Za-z0-9._-]{3,180}\\.(zip|jar|tgz|tar\\.gz)", name):
+    if not re.fullmatch(r"[A-Za-z0-9._-]{3,180}\.(zip|jar|tgz|tar\.gz)", name):
         raise ValueError("Asset must be a simple .zip, .jar, .tgz or .tar.gz name")
     if urlsplit(source).scheme != "https" or not urlsplit(source).hostname:
         raise ValueError("Only public HTTPS downloads are accepted")
