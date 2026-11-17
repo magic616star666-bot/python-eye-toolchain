@@ -1,0 +1,20 @@
+name: Publish Android ARM64 Build Tools 35
+on:
+  push:
+    paths:
+      - .github/workflows/publish-android35.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish-35:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/publish_android35.py
