@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "purpose": "Official install routes for tools which should NOT be mirrored as arbitrary ZIPs",
+  "target_architecture": "arm64-v8a",
+  "build_version_recommendation": {
+    "jdk": 17,
+    "gradle": "8.14.3",
+    "android_gradle_plugin": "8.11.0",
+    "kotlin": "2.1.20",
+    "chaquopy": "17.2.0",
+    "compile_sdk": 36,
+    "min_sdk": 24
+  },
+  "android-sdk-36": {
+    "installation_method": "sdkmanager",
+    "package": "platforms;android-36",
+    "source": "Google Android SDK Manager",
+    "needs_user_license_acceptance": true,
+    "ready_in_python_eye_ide": false
+  },
+  "android-gradle-plugin": {
+    "installation_method": "gradle_plugin",
+    "plugin_id": "com.android.application",
+    "version": "8.11.0",
+    "repository": "google()",
+    "ready_in_python_eye_ide": false
+  },
+  "chaquopy-build": {
+    "installation_method": "gradle_plugin",
+    "plugin_id": "com.chaquo.python",
+    "version": "17.2.0",
+    "repositories": [
+      "mavenCentral()",
+      "google()",
+      "gradlePluginPortal()"
+    ],
+    "ready_in_python_eye_ide": false
+  },
+  "warning": "The Kotlin app's installer/catalog parser has not yet been supplied. Do not mark these three as installed or ready based on this file alone."
+}
