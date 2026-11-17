@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-toolchain",
+  "catalog_name": "Pythan Eye IDE — Android Toolchain",
+  "architecture": "arm64-v8a",
+  "updated": "2026-11-18",
+  "notes": "Catalog metadata only: binaries are not uploaded; no entry is ready to install. Do not enable downloads without actual verified archives and sha256.",
+  "tools": [
+    {
+      "id": "openjdk-17",
+      "name": "OpenJDK 17",
+      "version": "17",
+      "size_mb_estimate": 180,
+      "requires": [],
+      "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
+      "platform": "android-arm64",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "gradle",
+      "name": "Gradle",
+      "version": "9.6.1 (provisional)",
+      "size_mb_estimate": 140,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Gradle distribution; pin final version after AGP and Chaquopy compatibility testing",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "android-sdk-36",
+      "name": "Android SDK Platform 36",
+      "version": "36",
+      "size_mb_estimate": 45,
+      "requires": [],
+      "description": "Android platform APIs including android.jar; not the full Android SDK",
+      "platform": "platform-independent",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "aapt2-zipalign",
+      "name": "AAPT2 + Zipalign",
+      "version": "unselected",
+      "size_mb_estimate": 8,
+      "requires": [],
+      "description": "Must use tested Android ARM64 executables, not Linux x86_64 builds",
+      "platform": "android-arm64",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "d8-apksigner",
+      "name": "D8 + APK Signer",
+      "version": "unselected",
+      "size_mb_estimate": 25,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Dex compilation and APK signing; pair with Android Build Tools",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "kotlin-compiler",
+      "name": "Kotlin Compiler",
+      "version": "2.3.21 (provisional)",
+      "size_mb_estimate": 80,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Kotlin compilation; final version to match the tested Android Gradle Plugin",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "android-gradle-plugin",
+      "name": "Android Gradle Plugin",
+      "version": "unselected",
+      "size_mb_estimate": null,
+      "requires": [
+        "gradle",
+        "android-sdk-36",
+        "aapt2-zipalign",
+        "d8-apksigner"
+      ],
+      "description": "Android app build plugin, sourced through Maven dependency resolution",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    },
+    {
+      "id": "chaquopy-build",
+      "name": "Chaquopy Build Plugin",
+      "version": "unselected",
+      "size_mb_estimate": 60,
+      "requires": [
+        "openjdk-17",
+        "gradle",
+        "android-gradle-plugin"
+      ],
+      "description": "Packages Python into Android APK; requires compatible AGP and Python version",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "not_published",
+      "url": "",
+      "sha256": ""
+    }
+  ]
+}
