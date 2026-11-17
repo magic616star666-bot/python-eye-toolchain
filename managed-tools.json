@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "about": "Official SDK/Gradle managed installers. Install actions are declared but NOT integrated into the Python Eye app yet.",
+  "platform": "android-arm64",
+  "tested_on_user_phone": false,
+  "requires": [
+    {
+      "id": "openjdk-17",
+      "version": "17"
+    },
+    {
+      "id": "gradle",
+      "version": "8.14.3"
+    },
+    {
+      "id": "aapt2-zipalign",
+      "note": "AGP 8.11 requires Android Build Tools >=35.0.0. The older 34.0.4 archive is not enough for this profile."
+    }
+  ],
+  "tools": [
+    {
+      "id": "android-sdk-36",
+      "name": "Android SDK Platform 36",
+      "version": "36",
+      "method": "android_sdk_manager",
+      "package": "platforms;android-36",
+      "direct_official_source": "https://dl.google.com/android/repository/platform-36_r02.zip",
+      "sdk_root_child": "platforms/android-36",
+      "required_file": "android.jar",
+      "license_action": "Prompt user to view and accept Google's Android SDK terms before installation.",
+      "requires_build_tools": "build-tools;35.0.0",
+      "ready_on_android_phone": false
+    },
+    {
+      "id": "android-gradle-plugin",
+      "name": "Android Gradle Plugin",
+      "version": "8.11.0",
+      "method": "gradle_plugin_resolution",
+      "plugin_id": "com.android.application",
+      "repositories": [
+        "google()",
+        "mavenCentral()",
+        "gradlePluginPortal()"
+      ],
+      "gradle_minimum": "8.13",
+      "jvm_minimum": 17,
+      "ready_on_android_phone": false
+    },
+    {
+      "id": "chaquopy-build",
+      "name": "Chaquopy Python Gradle Plugin",
+      "version": "17.2.0",
+      "method": "gradle_plugin_resolution",
+      "plugin_id": "com.chaquo.python",
+      "repositories": [
+        "mavenCentral()",
+        "google()",
+        "gradlePluginPortal()"
+      ],
+      "android_gradle_plugin_range": "7.3 - 9.5",
+      "python_version": "3.10",
+      "minimum_android_api": 24,
+      "ready_on_android_phone": false
+    }
+  ],
+  "verification_project": "apk-smoke-test",
+  "notes": "A plugin is a Gradle/Maven dependency with transitive dependencies, not one ZIP. The host Gradle must resolve it. CI success does not verify Android ARM64 host execution."
+}
