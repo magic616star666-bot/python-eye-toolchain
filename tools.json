@@ -4,7 +4,7 @@
   "catalog_name": "Pythan Eye IDE — Android Toolchain",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "4 catalog entries have actual GitHub Release downloads, but Android device installation and APK build remain unverified. 4 entries still unpublished. Catalog schema compatibility with the app has not yet been checked.",
+  "notes": "5 entries have real GitHub Release assets, installation not device-tested. SDK36, AGP and Chaquopy still require official package installation.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -86,17 +86,19 @@
     {
       "id": "kotlin-compiler",
       "name": "Kotlin Compiler",
-      "version": "2.3.21 (provisional)",
+      "version": "2.1.20",
       "size_mb_estimate": 80,
       "requires": [
         "openjdk-17"
       ],
       "description": "Kotlin compilation; final version to match the tested Android Gradle Plugin",
       "platform": "java-cross-platform",
-      "published": false,
-      "status": "not_published",
-      "url": "",
-      "sha256": ""
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/kotlin-compiler-2.1.20.zip",
+      "sha256": "a118197b0de55ffab2bc8d5cd03a5e39033cfb53383d6931bc761dec0784891a",
+      "source_url": "https://github.com/JetBrains/kotlin/releases/download/v2.1.20/kotlin-compiler-2.1.20.zip",
+      "verified_upstream_digest": true
     },
     {
       "id": "android-gradle-plugin",
