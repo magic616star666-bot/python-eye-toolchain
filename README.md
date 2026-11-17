@@ -40,3 +40,13 @@ The IDE's Kotlin catalog parser has **not** been supplied or verified. This is a
 ```sh
 python scripts/validate_catalog.py
 ```
+
+## Upload a verified binary without terminal commands
+
+When a legal-to-redistribute, Android-tested ZIP/JAR is available, go to **Actions → Publish Verified Tool Asset → Run workflow** and fill in:
+- `tool_id` (from `tools.json`), `version`, **direct public HTTPS** source URL, SHA-256 checksum, and filename.
+- Confirm **tested_on_android_arm64 = yes** only after the archive has really been tested on a physical Android ARM64 device.
+
+The workflow downloads the asset, checks SHA-256, adds it to the `toolchain-v1` GitHub Release, and updates `tools.json` with a real Release download URL. A mismatch causes publication to stop. This pipeline has been added but has **not yet published any binary assets**.
+
+**Important:** This repo does not currently host the Android build tools. The IDE's Kotlin parser and installer logic still need to be checked against this catalog before the in-app **Load catalog** flow can be declared working.
