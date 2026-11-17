@@ -50,3 +50,20 @@ When a legal-to-redistribute, Android-tested ZIP/JAR is available, go to **Actio
 The workflow downloads the asset, checks SHA-256, adds it to the `toolchain-v1` GitHub Release, and updates `tools.json` with a real Release download URL. A mismatch causes publication to stop. This pipeline has been added but has **not yet published any binary assets**.
 
 **Important:** This repo does not currently host the Android build tools. The IDE's Kotlin parser and installer logic still need to be checked against this catalog before the in-app **Load catalog** flow can be declared working.
+
+
+## ✅ Real Python APK build proof (2026-11-18)
+
+The following **real build passed on GitHub Actions Linux CI**:
+
+- Official Android SDK Platform 36 was installed from Google.
+- Android Gradle Plugin 8.11.0 and Chaquopy Gradle Plugin 17.2.0 were downloaded/resolved by Gradle 8.14.3.
+- Python 3.10 code was packaged into an ARM64-only Android debug APK (`app-debug.apk`).
+- Verified APK size: **17,459,980 bytes**; SHA-256: `df7a59cdea7193f70415c5381eafbc3fba302e1f0c8045764f71d5dfa956bfc4`.
+
+[Download APK from Releases](https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/python-eye-apk-smoke-test/app-debug.apk) · [Successful Actions run](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752)
+
+⚠️ This validates a cloud-runner APK compilation, **not** running Gradle on an Android ARM64 handset. SDK36, AGP and Chaquopy are **managed installers** (official SDK Manager and Maven/Gradle dependency resolution), not three self-contained Release ZIPs. Their app-side on-device installers are not implemented without the Python Eye IDE Kotlin project. See `managed-tools.json` and `MANAGED_TOOL_INSTALL.md`.
+
+⚠️ **Build Tools version gap:** AGP 8.11 requires Build Tools 35.0.0 or newer. The existing mirror of Android ARM64 34.0.4 tools alone is insufficient; ARM64 replacements / override for the newer host tools must be validated on the phone.
+
