@@ -1,0 +1,60 @@
+name: Build Real Python APK
+on:
+  push:
+    paths:
+      - 'apk-smoke-test/**'
+      - '.github/workflows/build-python-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  python-to-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Python 3.10 for Chaquopy
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Android SDK command line tools
+        uses: android-actions/setup-android@v3
+      - name: Install official SDK Platform 36 and Build Tools 35
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install 'platforms;android-36' 'build-tools;35.0.0'
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+      - name: Prepare Gradle 8.14.3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Build real Python APK
+        working-directory: apk-smoke-test
+        run: gradle --no-daemon --stacktrace :app:assembleDebug
+      - name: Confirm APK exists
+        run: |
+          test -s apk-smoke-test/app/build/outputs/apk/debug/app-debug.apk
+          sha256sum apk-smoke-test/app/build/outputs/apk/debug/app-debug.apk
+      - name: Save APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-eye-real-chaquopy-apk
+          path: apk-smoke-test/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+      - name: Publish demo APK in project releases
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view python-eye-apk-smoke-test >/dev/null 2>&1; then
+            gh release create python-eye-apk-smoke-test --title "Python Eye Python-to-APK Smoke Test" --notes "Debug-only sample APK: Python 3.10 code executed via Chaquopy 17.2, AGP 8.11, compileSdk 36. GitHub Linux CI build only; NOT an on-device IDE build verification."
+          fi
+          gh release upload python-eye-apk-smoke-test apk-smoke-test/app/build/outputs/apk/debug/app-debug.apk --clobber
