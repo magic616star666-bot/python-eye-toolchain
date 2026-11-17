@@ -1,0 +1,106 @@
+{
+  "purpose": "Package contents inventory, not proof that installed ARM64 Android build works",
+  "tests": {
+    "35": {
+      "archive": "35",
+      "sha256": "db1cea2c4454d5f9c5a802646b2d1cf560b4ee7badbe23e51ab8e1881bb50fc2",
+      "files_count": 17,
+      "matches": {
+        "aapt2": [
+          "build-tools/aapt2"
+        ],
+        "zipalign": [
+          "build-tools/zipalign"
+        ],
+        "d8": [],
+        "d8.jar": [],
+        "apksigner": [],
+        "apksigner.jar": [],
+        "source.properties": [],
+        "dx": [],
+        "lib64": []
+      },
+      "executable_architecture": {
+        "build-tools/aapt2": "ELF-aarch64",
+        "build-tools/zipalign": "ELF-aarch64"
+      },
+      "example_paths": [
+        "build-tools/aapt",
+        "build-tools/aapt2",
+        "build-tools/aidl",
+        "build-tools/dexdump",
+        "build-tools/split-select",
+        "build-tools/zipalign",
+        "others/veridex",
+        "platform-tools/adb",
+        "platform-tools/e2fsdroid",
+        "platform-tools/etc1tool",
+        "platform-tools/fastboot",
+        "platform-tools/hprof-conv",
+        "platform-tools/make_f2fs",
+        "platform-tools/make_f2fs_casefold",
+        "platform-tools/mke2fs",
+        "platform-tools/sload_f2fs",
+        "platform-tools/sqlite3"
+      ]
+    },
+    "34": {
+      "archive": "34",
+      "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
+      "files_count": 170,
+      "matches": {
+        "aapt2": [
+          "build-tools/34.0.4/aapt2"
+        ],
+        "zipalign": [
+          "build-tools/34.0.4/zipalign"
+        ],
+        "d8": [
+          "build-tools/34.0.4/d8"
+        ],
+        "d8.jar": [
+          "build-tools/34.0.4/lib/d8.jar"
+        ],
+        "apksigner": [
+          "build-tools/34.0.4/apksigner"
+        ],
+        "apksigner.jar": [
+          "build-tools/34.0.4/lib/apksigner.jar"
+        ],
+        "source.properties": [
+          "build-tools/34.0.4/source.properties"
+        ],
+        "dx": [],
+        "lib64": []
+      },
+      "executable_architecture": {
+        "build-tools/34.0.4/aapt2": "ELF-aarch64",
+        "build-tools/34.0.4/apksigner": "script",
+        "build-tools/34.0.4/d8": "script",
+        "build-tools/34.0.4/zipalign": "ELF-aarch64"
+      },
+      "example_paths": [
+        "build-tools/34.0.4/NOTICE.txt",
+        "build-tools/34.0.4/aapt",
+        "build-tools/34.0.4/aapt2",
+        "build-tools/34.0.4/aarch64-linux-android-ld",
+        "build-tools/34.0.4/aidl",
+        "build-tools/34.0.4/apksigner",
+        "build-tools/34.0.4/arm-linux-androideabi-ld",
+        "build-tools/34.0.4/bcc_compat",
+        "build-tools/34.0.4/core-lambda-stubs.jar",
+        "build-tools/34.0.4/d8",
+        "build-tools/34.0.4/dexdump",
+        "build-tools/34.0.4/i686-linux-android-ld",
+        "build-tools/34.0.4/lib/apksigner.jar",
+        "build-tools/34.0.4/lib/d8.jar",
+        "build-tools/34.0.4/lib64/libLLVM_android.so",
+        "build-tools/34.0.4/lib64/libbcc.so",
+        "build-tools/34.0.4/lib64/libbcinfo.so",
+        "build-tools/34.0.4/lib64/libc++.so"
+      ]
+    }
+  },
+  "catalog_duplicates_risk": "Two separate catalog entries reference different Android Build Tools generation; avoid intermixing 34 and 35 host binaries.",
+  "android_app_catalog_reader_source_available": false
+}
