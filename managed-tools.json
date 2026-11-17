@@ -29,7 +29,8 @@
       "required_file": "android.jar",
       "license_action": "Prompt user to view and accept Google's Android SDK terms before installation.",
       "requires_build_tools": "build-tools;35.0.0",
-      "ready_on_android_phone": false
+      "ready_on_android_phone": false,
+      "resolved_in_github_ci": true
     },
     {
       "id": "android-gradle-plugin",
@@ -44,7 +45,8 @@
       ],
       "gradle_minimum": "8.13",
       "jvm_minimum": 17,
-      "ready_on_android_phone": false
+      "ready_on_android_phone": false,
+      "resolved_in_github_ci": true
     },
     {
       "id": "chaquopy-build",
@@ -60,9 +62,20 @@
       "android_gradle_plugin_range": "7.3 - 9.5",
       "python_version": "3.10",
       "minimum_android_api": 24,
-      "ready_on_android_phone": false
+      "ready_on_android_phone": false,
+      "resolved_in_github_ci": true
     }
   ],
   "verification_project": "apk-smoke-test",
-  "notes": "A plugin is a Gradle/Maven dependency with transitive dependencies, not one ZIP. The host Gradle must resolve it. CI success does not verify Android ARM64 host execution."
+  "notes": "A plugin is a Gradle/Maven dependency with transitive dependencies, not one ZIP. The host Gradle must resolve it. CI success does not verify Android ARM64 host execution.",
+  "github_ci_smoke_test": {
+    "verified": true,
+    "scope": "GitHub Actions ubuntu-latest (x86_64 Linux host)",
+    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752",
+    "real_apk_url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/python-eye-apk-smoke-test/app-debug.apk",
+    "apk_sha256": "df7a59cdea7193f70415c5381eafbc3fba302e1f0c8045764f71d5dfa956bfc4",
+    "apk_size_bytes": 17459980,
+    "result": "PASS — Android SDK Platform 36 installed, AGP 8.11 + Chaquopy 17.2 resolved, Python 3.10 ARM64 debug APK built.",
+    "not_covered": "Python Eye IDE app on ARM64 Android device is still unverified."
+  }
 }
