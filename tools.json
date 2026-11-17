@@ -54,16 +54,16 @@
     {
       "id": "aapt2-zipalign",
       "name": "AAPT2 + Zipalign",
-      "version": "34.0.4 (Android ARM64)",
+      "version": "35.0.2 (upstream Android ARM64 static tools)",
       "size_mb_estimate": 8,
       "requires": [],
       "description": "Must use tested Android ARM64 executables, not Linux x86_64 builds",
       "platform": "android-arm64",
       "published": true,
       "status": "published_unverified_on_device",
-      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/build-tools-34.0.4-aarch64.tar.xz",
-      "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
-      "source_url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/v34.0.4/build-tools-34.0.4-aarch64.tar.xz",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/android-sdk-tools-static-aarch64.zip",
+      "sha256": "db1cea2c4454d5f9c5a802646b2d1cf560b4ee7badbe23e51ab8e1881bb50fc2",
+      "source_url": "https://github.com/lzhiyong/android-sdk-tools/releases/download/35.0.2/android-sdk-tools-static-aarch64.zip",
       "verified_upstream_digest": false
     },
     {
