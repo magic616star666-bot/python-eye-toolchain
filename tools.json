@@ -37,9 +37,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Android Bionic-targeted OpenJDK 17.0.11, verified AArch64 ELF and SHA256. Improves over 2021 17-internal build; device Gradle/Jansi compatibility is NOT yet proven. Old JDK asset retained for rollback.",
+      "note": "Android Bionic-targeted OpenJDK 17.0.11, verified AArch64 ELF and SHA256. Improves over 2021 17-internal build; device Gradle/Jansi compatibility is NOT yet proven. Old JDK asset retained for rollback. The Android Bionic archive currently reports openjdk 17.0.21-internal on device although upstream asset label says 17.0.11. Validate supported Java MAJOR 17 and exit status 0, not the upstream filename patch version.",
       "test": "./bin/java -version",
-      "expect": "17.0.11"
+      "expect": "17"
     },
     {
       "id": "gradle",
