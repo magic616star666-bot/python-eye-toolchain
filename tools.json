@@ -1,10 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 1,
   "catalog_id": "python-eye-toolchain",
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "5 real GitHub Release download entries (ARM64 tools or JVM ZIPs), 3 official managed installation entries. GitHub Linux runner Python APK build succeeded. This catalog is NOT proof of on-device installation or APK build. 34.x D8/APKSigner is supplementary, not 35.x Build Tools.",
+  "notes": "5 real GitHub Release download entries (ARM64 tools or JVM ZIPs), 3 official managed installation entries. GitHub Linux runner Python APK build succeeded. This catalog is NOT proof of on-device installation or APK build. 34.x D8/APKSigner is supplementary, not 35.x Build Tools. Existing root schema_version stays 1 for compatibility with unknown app parser; extra fields are optional metadata.",
   "tools": [
     {
       "id": "openjdk-17",
