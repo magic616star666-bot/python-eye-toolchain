@@ -31,10 +31,9 @@ jobs:
         uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools'
-      - name: Install official SDK Platform 36 and Build Tools 35
+      - name: Real SDK Manager install: Platform 36 + Build Tools 35 via managed installer
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager --install 'platforms;android-36' 'build-tools;35.0.0'
+          python3 installer/managed_installer.py sdk --sdk-root "$ANDROID_HOME" --accept-sdk-license
           test -f "$ANDROID_HOME/platforms/android-36/android.jar"
       - name: Prepare Gradle 8.14.3
         uses: gradle/actions/setup-gradle@v4
