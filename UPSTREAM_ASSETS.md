@@ -1,18 +1,17 @@
-# Actual upstream binary package sources
+# Upstream sources and verification
 
-These are **prebuilt binaries from their respective upstreams**, mirrored for Python Eye IDE's optional tool downloader. They are not original Python Eye builds and have **not been tested inside Python Eye IDE**.
+The listed archives already exist as real assets in [GitHub Releases: toolchain-v1](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/toolchain-v1).
 
-| File | Source | Verification |
+| File | Original upstream | Verification |
 | --- | --- | --- |
-| gradle-8.14.3-bin.zip | https://services.gradle.org/distributions/gradle-8.14.3-bin.zip | Official Gradle 8.14.3 SHA-256 pinned |
-| jdk17-arm64.tar.xz | https://github.com/itsaky/openjdk-17-android/releases/tag/01-01-2022 | SHA-256 computed after download; upstream digest unavailable |
-| build-tools-34.0.4-aarch64.tar.xz | https://github.com/AndroidIDEOfficial/androidide-tools/releases/tag/v34.0.4 | SHA-256 computed after download; upstream digest unavailable |
-| aapt2-arm64-v8a | https://github.com/AndroidIDE-Dev/platform-tools/releases/tag/v35.0.2 | Upstream GitHub Release SHA-256 pinned |
+| `jdk17-arm64.tar.xz` | https://github.com/itsaky/openjdk-17-android/releases/tag/01-01-2022 | Recorded archive SHA-256; no official upstream digest |
+| `gradle-8.14.3-bin.zip` | https://services.gradle.org/distributions/gradle-8.14.3-bin.zip | Official published Gradle SHA-256 |
+| `android-sdk-tools-static-aarch64.zip` | https://github.com/lzhiyong/android-sdk-tools/releases/tag/35.0.2 | Recorded archive SHA-256; contains ARM64 AAPT2 and Zipalign (audited) |
+| `build-tools-34.0.4-aarch64.tar.xz` | https://github.com/AndroidIDEOfficial/androidide-tools/releases/tag/v34.0.4 | Recorded SHA-256; contains D8/APKSigner scripts and JARs, not a complete 35.x Build Tools |
+| `kotlin-compiler-2.1.20.zip` | https://github.com/JetBrains/kotlin/releases/tag/v2.1.20 | Official JetBrains SHA-256 |
 
-The GitHub Release also includes `SOURCE_SHA256SUMS.txt` and `PROVENANCE.json`.
+The Release additionally includes a standalone `aapt2-arm64-v8a` and initial publication provenance files. The catalogue does not duplicate it as another AAPT2 tool. Verify all five **live Release digests** against `tools.json` with `python scripts/verify_release_assets.py`.
 
-**License/redistribution:** Gradle uses Apache 2.0; OpenJDK 17 generally uses GPLv2 with Classpath Exception; Android Build Tools may include components under differing licenses. Preserve upstream legal notices; review the licenses of individual tools before distribution in a commercial product. These assets do not grant permission to distribute third-party intellectual property beyond its license.
+Neither package presence nor ELF AArch64 metadata proves a working Android IDE build. Users' Java/Gradle/SDK paths, library dependencies, Android Bionic execution and AAPT2 substitution still need device testing.
 
-**Compatibility warning:** A binary built for Linux ARM64 (glibc) is NOT necessarily usable on Android ARM64 (Bionic). These packages were chosen for Android ARM64 origin (except Gradle, which is Java). Python Eye IDE has a separate installer and has not yet validated these paths, library dependencies or Gradle invocation.
-
-The remaining catalog items Android SDK Platform 36, Kotlin, AGP and Chaquopy are still absent from this Release; SDK/AGP/Kotlin/Chaquopy must be version-matched and obtained via suitable upstream repositories/installers. 
+**Licenses:** Respect each upstream tool's respective license and preserve notices. The Google SDK Platform must be acquired and licensed through Google's SDK Manager; do not mirror proprietary SDK files unless redistribution is expressly permitted. No signing keys or secret credentials belong in this public repository.
