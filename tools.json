@@ -72,8 +72,8 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration.",
-      "test": "./bin/gradle --version",
+      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "test": "\"$JAVA_HOME/bin/java\" -Dorg.gradle.native=false -Dorg.gradle.vfs.watch=false -Dorg.gradle.daemon=false -cp ./lib/gradle-launcher-8.14.3.jar org.gradle.launcher.GradleMain --version",
       "expect": "Gradle 8.14.3"
     },
     {
@@ -186,8 +186,8 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35.",
-      "test": "./d8 --version",
+      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "test": "\"$JAVA_HOME/bin/java\" -cp ./lib/d8.jar com.android.tools.r8.D8 --version",
       "expect": ""
     },
     {
@@ -222,8 +222,8 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds.",
-      "test": "./bin/kotlinc -version",
+      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "test": "\"$JAVA_HOME/bin/java\" -Dkotlin.home=\"$PWD\" -cp \"./lib/*\" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -version",
       "expect": "2.1.20"
     },
     {
