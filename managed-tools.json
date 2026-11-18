@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "about": "Official SDK/Gradle managed installers. Install actions are declared but NOT integrated into the Python Eye app yet.",
+  "about": "Official SDK/Gradle managed installers with a runnable Python CLI tested in GitHub CI. Does not install inside user's app without integration.",
   "platform": "android-arm64",
   "tested_on_user_phone": false,
   "requires": [
@@ -31,7 +31,9 @@
       "license_action": "Prompt user to view and accept Google's Android SDK terms before installation.",
       "requires_build_tools": "build-tools;35.0.0",
       "ready_on_android_phone": false,
-      "resolved_in_github_ci": true
+      "resolved_in_github_ci": true,
+      "installer_script": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+      "integration_status": "installer_script_available_not_wired_to_ide"
     },
     {
       "id": "android-gradle-plugin",
@@ -47,7 +49,9 @@
       "gradle_minimum": "8.13",
       "jvm_minimum": 17,
       "ready_on_android_phone": false,
-      "resolved_in_github_ci": true
+      "resolved_in_github_ci": true,
+      "installer_script": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+      "integration_status": "installer_script_available_not_wired_to_ide"
     },
     {
       "id": "chaquopy-build",
@@ -64,7 +68,9 @@
       "python_version": "3.10",
       "minimum_android_api": 24,
       "ready_on_android_phone": false,
-      "resolved_in_github_ci": true
+      "resolved_in_github_ci": true,
+      "installer_script": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+      "integration_status": "installer_script_available_not_wired_to_ide"
     }
   ],
   "verification_project": "apk-smoke-test",
@@ -79,5 +85,17 @@
     "result": "PASS — Android SDK Platform 36 installed, AGP 8.11 + Chaquopy 17.2 resolved, Python 3.10 ARM64 debug APK built.",
     "not_covered": "Python Eye IDE app on ARM64 Android device is still unverified.",
     "notes": "The CI build uses official Google Build Tools 35.0.0 on x86_64 Linux; standalone ARM64 SDK Tools 35.0.2 are published but not phone-tested."
+  },
+  "installer": {
+    "entrypoint": "installer/managed_installer.py",
+    "raw_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+    "actions": {
+      "status": "status --sdk-root <IDE_SDK_ROOT>",
+      "sdk": "sdk --sdk-root <IDE_SDK_ROOT> --accept-sdk-license (only after explicit consent)",
+      "plugins": "plugins --sdk-root <IDE_SDK_ROOT>",
+      "all": "all --sdk-root <IDE_SDK_ROOT> --accept-sdk-license (only after explicit consent)"
+    },
+    "readiness_rule": "Require actual Android SDK android.jar, Build Tools 35.0.0 metadata and successful local Gradle 8.14.3 build with AGP 8.11.0 + Chaquopy 17.2.0; never infer from downloaded file alone.",
+    "android_app_integration": "pending Kotlin extension-manager source"
   }
 }
