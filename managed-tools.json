@@ -97,5 +97,18 @@
     },
     "readiness_rule": "Require actual Android SDK android.jar, Build Tools 35.0.0 metadata and successful local Gradle 8.14.3 build with AGP 8.11.0 + Chaquopy 17.2.0; never infer from downloaded file alone.",
     "android_app_integration": "pending Kotlin extension-manager source"
+  },
+  "github_ci_managed_installer_test": {
+    "date": "2026-11-18",
+    "status": "pass",
+    "build_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44236880906",
+    "covers": [
+      "sdkmanager installs Android Platform 36 and Build Tools 35.0.0",
+      "Gradle pinned 8.14.3",
+      "AGP 8.11.0 and Chaquopy 17.2.0 resolve",
+      "Python 3.10 ARM64 APK builds",
+      "status returns three ready flags only after successful CI build"
+    ],
+    "scope": "Linux GitHub Actions CI only, not Python Eye IDE on an Android device"
   }
 }
