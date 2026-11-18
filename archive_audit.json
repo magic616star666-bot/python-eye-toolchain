@@ -1,106 +1,98 @@
 {
-  "purpose": "Package contents inventory, not proof that installed ARM64 Android build works",
+  "audit_version": 2,
+  "purpose": "Verified all five downloaded archives. This audit does NOT execute tools or test mobile APK build.",
+  "catalog_architecture": "arm64-v8a",
   "tests": {
-    "35": {
-      "archive": "35",
+    "openjdk-17": {
+      "asset": "jdk17-arm64.tar.xz",
+      "sha256": "1bfde21d5b5d6ed4632c4c36245f2a61532b8c641531c5f468148024223a2b63",
+      "size_bytes": 157457188,
+      "total_archive_files": 351,
+      "required_path_matches": {
+        "bin/java": [
+          "./bin/java"
+        ],
+        "bin/javac": [
+          "./bin/javac"
+        ]
+      },
+      "elf_architectures": {
+        "./bin/java": "aarch64",
+        "./bin/javac": "aarch64"
+      },
+      "assessment": "SHA256, archive readability, required paths checked; not run on phone"
+    },
+    "gradle": {
+      "asset": "gradle-8.14.3-bin.zip",
+      "sha256": "bd71102213493060956ec229d946beee57158dbd89d0e62b91bca0fa2c5f3531",
+      "size_bytes": 137393837,
+      "total_archive_files": 317,
+      "required_path_matches": {
+        "bin/gradle": [
+          "gradle-8.14.3/bin/gradle"
+        ]
+      },
+      "elf_architectures": {},
+      "assessment": "SHA256, archive readability, required paths checked; not run on phone"
+    },
+    "aapt2-zipalign": {
+      "asset": "android-sdk-tools-static-aarch64.zip",
       "sha256": "db1cea2c4454d5f9c5a802646b2d1cf560b4ee7badbe23e51ab8e1881bb50fc2",
-      "files_count": 17,
-      "matches": {
+      "size_bytes": 14401170,
+      "total_archive_files": 17,
+      "required_path_matches": {
         "aapt2": [
           "build-tools/aapt2"
         ],
         "zipalign": [
           "build-tools/zipalign"
-        ],
-        "d8": [],
-        "d8.jar": [],
-        "apksigner": [],
-        "apksigner.jar": [],
-        "source.properties": [],
-        "dx": [],
-        "lib64": []
+        ]
       },
-      "executable_architecture": {
-        "build-tools/aapt2": "ELF-aarch64",
-        "build-tools/zipalign": "ELF-aarch64"
+      "elf_architectures": {
+        "build-tools/aapt2": "aarch64",
+        "build-tools/zipalign": "aarch64",
+        "platform-tools/adb": "aarch64"
       },
-      "example_paths": [
-        "build-tools/aapt",
-        "build-tools/aapt2",
-        "build-tools/aidl",
-        "build-tools/dexdump",
-        "build-tools/split-select",
-        "build-tools/zipalign",
-        "others/veridex",
-        "platform-tools/adb",
-        "platform-tools/e2fsdroid",
-        "platform-tools/etc1tool",
-        "platform-tools/fastboot",
-        "platform-tools/hprof-conv",
-        "platform-tools/make_f2fs",
-        "platform-tools/make_f2fs_casefold",
-        "platform-tools/mke2fs",
-        "platform-tools/sload_f2fs",
-        "platform-tools/sqlite3"
-      ]
+      "assessment": "SHA256, archive readability, required paths checked; not run on phone"
     },
-    "34": {
-      "archive": "34",
+    "d8-apksigner": {
+      "asset": "build-tools-34.0.4-aarch64.tar.xz",
       "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
-      "files_count": 170,
-      "matches": {
-        "aapt2": [
-          "build-tools/34.0.4/aapt2"
-        ],
-        "zipalign": [
-          "build-tools/34.0.4/zipalign"
-        ],
+      "size_bytes": 41666832,
+      "total_archive_files": 170,
+      "required_path_matches": {
         "d8": [
           "build-tools/34.0.4/d8"
         ],
-        "d8.jar": [
+        "lib/d8.jar": [
           "build-tools/34.0.4/lib/d8.jar"
         ],
         "apksigner": [
           "build-tools/34.0.4/apksigner"
         ],
-        "apksigner.jar": [
+        "lib/apksigner.jar": [
           "build-tools/34.0.4/lib/apksigner.jar"
-        ],
-        "source.properties": [
-          "build-tools/34.0.4/source.properties"
-        ],
-        "dx": [],
-        "lib64": []
+        ]
       },
-      "executable_architecture": {
-        "build-tools/34.0.4/aapt2": "ELF-aarch64",
-        "build-tools/34.0.4/apksigner": "script",
-        "build-tools/34.0.4/d8": "script",
-        "build-tools/34.0.4/zipalign": "ELF-aarch64"
+      "elf_architectures": {
+        "build-tools/34.0.4/zipalign": "aarch64",
+        "build-tools/34.0.4/aapt2": "aarch64"
       },
-      "example_paths": [
-        "build-tools/34.0.4/NOTICE.txt",
-        "build-tools/34.0.4/aapt",
-        "build-tools/34.0.4/aapt2",
-        "build-tools/34.0.4/aarch64-linux-android-ld",
-        "build-tools/34.0.4/aidl",
-        "build-tools/34.0.4/apksigner",
-        "build-tools/34.0.4/arm-linux-androideabi-ld",
-        "build-tools/34.0.4/bcc_compat",
-        "build-tools/34.0.4/core-lambda-stubs.jar",
-        "build-tools/34.0.4/d8",
-        "build-tools/34.0.4/dexdump",
-        "build-tools/34.0.4/i686-linux-android-ld",
-        "build-tools/34.0.4/lib/apksigner.jar",
-        "build-tools/34.0.4/lib/d8.jar",
-        "build-tools/34.0.4/lib64/libLLVM_android.so",
-        "build-tools/34.0.4/lib64/libbcc.so",
-        "build-tools/34.0.4/lib64/libbcinfo.so",
-        "build-tools/34.0.4/lib64/libc++.so"
-      ]
+      "assessment": "SHA256, archive readability, required paths checked; not run on phone"
+    },
+    "kotlin-compiler": {
+      "asset": "kotlin-compiler-2.1.20.zip",
+      "sha256": "a118197b0de55ffab2bc8d5cd03a5e39033cfb53383d6931bc761dec0784891a",
+      "size_bytes": 86919262,
+      "total_archive_files": 123,
+      "required_path_matches": {
+        "bin/kotlinc": [
+          "kotlinc/bin/kotlinc"
+        ]
+      },
+      "elf_architectures": {},
+      "assessment": "SHA256, archive readability, required paths checked; not run on phone"
     }
   },
-  "catalog_duplicates_risk": "Two separate catalog entries reference different Android Build Tools generation; avoid intermixing 34 and 35 host binaries.",
-  "android_app_catalog_reader_source_available": false
+  "phone_build_verified": false
 }
