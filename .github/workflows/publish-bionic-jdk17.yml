@@ -1,0 +1,21 @@
+name: Verify Optional Android Bionic JDK 17
+on:
+  push:
+    paths:
+      - .github/workflows/publish-bionic-jdk17.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify-bionic-jdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download optional JDK17, verify SHA256 and Android ELF, upload to Release
+        run: python scripts/publish_bionic_jdk17.py
