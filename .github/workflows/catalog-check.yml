@@ -6,6 +6,7 @@ on:
       - managed-tools.json
       - official_install_routes.json
       - scripts/validate_catalog.py
+      - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
       - .github/workflows/catalog-check.yml
   pull_request:
@@ -14,6 +15,7 @@ on:
       - managed-tools.json
       - official_install_routes.json
       - scripts/validate_catalog.py
+      - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
       - .github/workflows/catalog-check.yml
   workflow_dispatch:
@@ -32,6 +34,8 @@ jobs:
           python-version: '3.11'
       - name: Validate eight tool IDs, all dependencies and managed install policies
         run: python scripts/validate_catalog.py
+      - name: Check rejection of fake downloads, duplicate IDs, unsupported versions
+        run: python scripts/test_catalog_validator.py
       - name: Verify uploaded Release sizes and SHA-256 digests
         env:
           GITHUB_TOKEN: ${{ github.token }}
