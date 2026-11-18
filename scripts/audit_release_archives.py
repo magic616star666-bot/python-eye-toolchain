@@ -15,7 +15,7 @@ import zipfile
 
 MAX_BYTES=230*1024*1024
 CATALOG=Path("tools.json")
-ARCHIVES={"zip":".zip","tar.xz":".tar.xz"}
+ARCHIVES={"zip":".zip","tar.xz":".tar.xz","tar.gz":".tar.gz"}
 
 def download(url,target):
     h=hashlib.sha256()
@@ -37,14 +37,14 @@ def archive_files(path,fmt):
         with zipfile.ZipFile(path) as z:
             if bad:=z.testzip(): raise ValueError(f"Bad ZIP entry: {bad}")
             return [name for name in z.namelist() if not name.endswith("/")]
-    with tarfile.open(path,"r:xz") as t:
+    with tarfile.open(path, "r:gz" if fmt=="tar.gz" else "r:xz") as t:
         return [m.name for m in t if m.isfile()]
 
 def small_entry(path,fmt,name):
     if fmt=="zip":
         with zipfile.ZipFile(path) as z:
             with z.open(name) as f:return f.read(64)
-    with tarfile.open(path,"r:xz") as t:
+    with tarfile.open(path, "r:gz" if fmt=="tar.gz" else "r:xz") as t:
         m=t.getmember(name)
         with t.extractfile(m) as f:return f.read(64)
 
