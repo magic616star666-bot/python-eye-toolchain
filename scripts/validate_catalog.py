@@ -107,6 +107,27 @@ def check(path: Path):
     if (profile["gradle"], profile["android_gradle_plugin"], profile["kotlin"],
         profile["chaquopy"], profile["compile_sdk"]) != ("8.14.3", "8.11.0", "2.1.20", "17.2.0", 36):
         raise ValueError("Unsupported build-profile drift")
+    # Keep duplicate metadata files consistent with the public catalog.
+    managed = json.loads(Path("managed-tools.json").read_text("utf-8"))
+    routes = json.loads(Path("official_install_routes.json").read_text("utf-8"))
+    managed_index = {t["id"]: t for t in managed["tools"]}
+    if set(managed_index) != MANAGED:
+        raise ValueError("managed-tools.json must contain exactly 3 managed IDs")
+    for key in MANAGED:
+        if managed_index[key]["version"] != by_id[key]["version"]:
+            raise ValueError(f"Managed version mismatch: {key}")
+        if managed_index[key].get("ready_on_android_phone") is not False:
+            raise ValueError(f"{key}: false mobile Ready flag")
+        if key != "android-sdk-36" and routes[key]["version"] != by_id[key]["version"]:
+            raise ValueError(f"Official installation version mismatch: {key}")
+    version_keys = {
+        "gradle": "gradle", "kotlin": "kotlin",
+        "android_gradle_plugin": "android_gradle_plugin",
+        "chaquopy": "chaquopy", "compile_sdk": "compile_sdk",
+    }
+    for key, expected_key in version_keys.items():
+        if routes["build_version_recommendation"][key] != profile[expected_key]:
+            raise ValueError(f"Build profile mismatch: {key}")
     print("PASS: 8 unique tool IDs; 5 real release archives, 3 managed installs;")
     print("      SHA-256 metadata, stable schema, ARM64 profile, dependencies all consistent.")
     print("      NOTE: Device installation and APK building inside Python Eye IDE NOT verified.")
