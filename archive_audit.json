@@ -4,21 +4,21 @@
   "catalog_architecture": "arm64-v8a",
   "tests": {
     "openjdk-17": {
-      "asset": "jdk17-arm64.tar.xz",
-      "sha256": "1bfde21d5b5d6ed4632c4c36245f2a61532b8c641531c5f468148024223a2b63",
-      "size_bytes": 157457188,
-      "total_archive_files": 351,
+      "asset": "jdk17-android-bionic-17.0.11.tar.gz",
+      "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
+      "size_bytes": 228548390,
+      "total_archive_files": 319,
       "required_path_matches": {
         "bin/java": [
-          "./bin/java"
+          "jdk/bin/java"
         ],
         "bin/javac": [
-          "./bin/javac"
+          "jdk/bin/javac"
         ]
       },
       "elf_architectures": {
-        "./bin/java": "aarch64",
-        "./bin/javac": "aarch64"
+        "jdk/bin/java": "aarch64",
+        "jdk/bin/javac": "aarch64"
       },
       "assessment": "SHA256, archive readability, required paths checked; not run on phone"
     },
