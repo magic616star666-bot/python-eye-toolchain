@@ -40,6 +40,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
+      - name: Pin actual Gradle 8.14.3 executable; do not use runner's unrelated global Gradle
+        shell: bash
+        run: |
+          GRADLE_BIN_PATH="$(find "$RUNNER_TEMP" -type f -path '*/gradle-8.14.3/bin/gradle' -print -quit)"
+          test -n "$GRADLE_BIN_PATH"
+          echo "GRADLE_BIN=$GRADLE_BIN_PATH" >> "$GITHUB_ENV"
+          "$GRADLE_BIN_PATH" --version | grep 'Gradle 8.14.3'
       - name: Resolve AGP 8.11 and Chaquopy 17.2 with real managed installer and compile Python APK
         run: python3 installer/managed_installer.py plugins --sdk-root "$ANDROID_HOME"
       - name: Verify SDK 36 + both plugin readiness flags come from successful real build
