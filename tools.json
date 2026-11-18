@@ -4,7 +4,7 @@
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "5 real GitHub Release download entries (ARM64 tools or JVM ZIPs), 3 official managed installation entries. GitHub Linux runner Python APK build succeeded. This catalog is NOT proof of on-device installation or APK build. 34.x D8/APKSigner is supplementary, not 35.x Build Tools. Existing root schema_version stays 1 for compatibility with unknown app parser; extra fields are optional metadata.",
+  "notes": "5 real archived tools downloadable; 3 managed tools have runnable SDK Manager/Gradle installer script, not packaged tool archives. GitHub Linux CI can verify all 3; on-device Kotlin IDE integration remains pending. No false Ready flags.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -92,10 +92,16 @@
           "platforms/android-36/android.jar"
         ],
         "license_acceptance_required": true,
-        "device_verified": false
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "sdk",
+        "preflight": "Check JDK 17, sdkmanager, platform SDK license; install platforms;android-36 and build-tools;35.0.0",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
       },
       "device_build_verified": false,
-      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive."
+      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
     },
     {
       "id": "aapt2-zipalign",
@@ -229,10 +235,16 @@
           "mavenCentral()",
           "gradlePluginPortal()"
         ],
-        "device_verified": false
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "plugins",
+        "preflight": "Compile :app:assembleDebug using com.android.application:8.11.0 via Gradle 8.14.3",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
       },
       "device_build_verified": false,
-      "note": "Plugin and transitives must resolve through Gradle. Requires Gradle >=8.13, JDK17 and SDK Build Tools 35.0.0."
+      "note": "Plugin and transitives must resolve through Gradle. Requires Gradle >=8.13, JDK17 and SDK Build Tools 35.0.0. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
     },
     {
       "id": "chaquopy-build",
@@ -259,10 +271,16 @@
           "google()",
           "gradlePluginPortal()"
         ],
-        "device_verified": false
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "plugins",
+        "preflight": "Compile Python 3.10 ARM64 :app:assembleDebug using com.chaquo.python:17.2.0",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
       },
       "device_build_verified": false,
-      "note": "Gradle plugin via Maven Central for Python 3.10+, AGP 7.3-9.5, Android API >=24."
+      "note": "Gradle plugin via Maven Central for Python 3.10+, AGP 7.3-9.5, Android API >=24. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
     }
   ],
   "last_archive_audit": "archive_audit.json",
