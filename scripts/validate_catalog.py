@@ -70,9 +70,9 @@ def check(path: Path):
             filename = url[len(RELEASE_PREFIX):]
             if "/" in filename or not filename or urlparse(url).query:
                 raise ValueError(f"{tool_id}: invalid release asset filename")
-            if not filename.endswith((".zip", ".tar.xz")):
+            if not filename.endswith((".zip", ".tar.xz", ".tar.gz")):
                 raise ValueError(f"{tool_id}: unsupported compressed archive format")
-            if item.get("archive_format") != ("zip" if filename.endswith(".zip") else "tar.xz"):
+            if item.get("archive_format") != ("zip" if filename.endswith(".zip") else "tar.xz" if filename.endswith(".tar.xz") else "tar.gz"):
                 raise ValueError(f"{tool_id}: archive format mismatch")
             if not re.fullmatch(r"[0-9a-f]{64}", str(item.get("sha256", ""))):
                 raise ValueError(f"{tool_id}: SHA-256 is missing or malformed")
