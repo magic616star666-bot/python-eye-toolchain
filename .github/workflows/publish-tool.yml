@@ -1,44 +1,51 @@
-name: Publish Verified Tool Asset
+name: Publish Operator-Verified Tool Archive
 on:
   workflow_dispatch:
     inputs:
       tool_id:
-        description: "Exact id from tools.json, e.g. openjdk-17"
+        description: "Exactly one of the five downloadable tool IDs"
         required: true
         type: string
       version:
-        description: "Tested version, e.g. 17.0.12"
+        description: "Tested version label; must match chosen build profile"
         required: true
         type: string
       source_url:
-        description: "Public HTTPS direct download URL"
+        description: "Direct public HTTPS link to the original zip/tar.xz archive"
         required: true
         type: string
       sha256:
-        description: "Real 64-character SHA-256 hash of the archive"
+        description: "The archive's genuine 64-character SHA-256"
         required: true
         type: string
       asset_name:
-        description: "Release filename (zip, jar, tgz, tar.gz)"
+        description: "Simple filename ending in .zip or .tar.xz"
         required: true
         type: string
       tested_on_android_arm64:
-        description: "Only select yes after testing on a real ARM64 Android phone"
+        description: "Confirmed tested separately on a physical Android ARM64 phone?"
         required: true
         type: choice
-        options:
-          - 'no'
-          - 'yes'
+        options: ['no', 'yes']
         default: 'no'
+      redistribution_rights_checked:
+        description: "Confirmed upstream terms permit redistributing this archive?"
+        required: true
+        type: choice
+        options: ['no', 'yes']
+        default: 'no'
+
 permissions:
   contents: write
 concurrency:
-  group: toolchain-release-publish
+  group: toolchain-asset-publishing
   cancel-in-progress: false
+
 jobs:
   publish:
-    if: inputs.tested_on_android_arm64 == 'yes'
+    if: inputs.tested_on_android_arm64 == 'yes' && inputs.redistribution_rights_checked == 'yes'
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     env:
       TOOL_ID: ${{ inputs.tool_id }}
       TOOL_VERSION: ${{ inputs.version }}
@@ -46,29 +53,25 @@ jobs:
       EXPECTED_SHA256: ${{ inputs.sha256 }}
       ASSET_NAME: ${{ inputs.asset_name }}
       TESTED_ON_ANDROID_ARM64: ${{ inputs.tested_on_android_arm64 }}
+      REDISTRIBUTION_RIGHTS_CHECKED: ${{ inputs.redistribution_rights_checked }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Download and verify archive
+      - name: Verify operator inputs, archive and digest
         run: python scripts/publish_release.py download
-      - name: Create release if needed
-        run: |
-          if ! gh release view toolchain-v1 >/dev/null 2>&1; then
-            gh release create toolchain-v1 --title "Python Eye Toolchain Assets" --notes "Verified binaries for Python Eye IDE."
-          fi
-      - name: Upload checked archive
+      - name: Upload archive to existing GitHub Release
         run: gh release upload toolchain-v1 "dist/$ASSET_NAME"
-      - name: Register release asset in catalog
+      - name: Register uploaded asset and run offline consistency validation
         run: |
           python scripts/publish_release.py mark
           python scripts/validate_catalog.py
-      - name: Commit updated catalog
+      - name: Commit only a validated manifest
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tools.json
-          git commit -m "Publish verified tool $TOOL_ID $TOOL_VERSION"
+          git commit -m "Publish operator-verified tool archive: $TOOL_ID"
           git push
