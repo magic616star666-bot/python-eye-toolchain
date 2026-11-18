@@ -1,23 +1,38 @@
-name: Validate Tool Catalog
+name: Validate Tool Catalog and Real Release Assets
 on:
   push:
     paths:
       - tools.json
+      - managed-tools.json
+      - official_install_routes.json
       - scripts/validate_catalog.py
+      - scripts/verify_release_assets.py
       - .github/workflows/catalog-check.yml
   pull_request:
     paths:
       - tools.json
+      - managed-tools.json
+      - official_install_routes.json
       - scripts/validate_catalog.py
+      - scripts/verify_release_assets.py
       - .github/workflows/catalog-check.yml
+  workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python scripts/validate_catalog.py
+      - name: Validate eight tool IDs, all dependencies and managed install policies
+        run: python scripts/validate_catalog.py
+      - name: Verify uploaded Release sizes and SHA-256 digests
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/verify_release_assets.py
