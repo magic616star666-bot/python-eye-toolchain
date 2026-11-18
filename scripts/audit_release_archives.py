@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only inspection of ALL five published release archives.
+"""Read-only inspection of ALL five published release archives (includes Bionic JDK17 tar.gz).
 
 Downloads every file, checks real SHA-256 and file size, inventories the
 required executables/JARs, and inspects ELF e_machine without executing code.
