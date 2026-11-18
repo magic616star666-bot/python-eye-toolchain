@@ -1,10 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "catalog_id": "python-eye-toolchain",
-  "catalog_name": "Pythan Eye IDE — Android Toolchain",
+  "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "5 published catalog entries with real archives, 3 managed components not implemented in the Android IDE. AAPT2 35.0.2 is PARTIAL (no D8/APK Signer), while D8/APK Signer 34.0.4 is in a separate archive. Do not show APK Builder ready until a real on-device APK build passes.",
+  "notes": "5 real GitHub Release download entries (ARM64 tools or JVM ZIPs), 3 official managed installation entries. GitHub Linux runner Python APK build succeeded. This catalog is NOT proof of on-device installation or APK build. 34.x D8/APKSigner is supplementary, not 35.x Build Tools.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -24,7 +24,20 @@
       "required_probes": [
         "java -version",
         "javac -version"
-      ]
+      ],
+      "file_size_bytes": 157457188,
+      "install": {
+        "method": "archive",
+        "archive_root": "",
+        "required_paths": [
+          "bin/java",
+          "bin/javac"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Android ARM64 JDK 17 upstream build dated 2022; check security and Android runtime compatibility before production."
     },
     {
       "id": "gradle",
@@ -45,20 +58,44 @@
       "archive_format": "zip",
       "required_probes": [
         "gradle --version"
-      ]
+      ],
+      "file_size_bytes": 137393837,
+      "install": {
+        "method": "archive",
+        "archive_root": "gradle-8.14.3",
+        "required_paths": [
+          "bin/gradle"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration."
     },
     {
       "id": "android-sdk-36",
       "name": "Android SDK Platform 36",
       "version": "36",
-      "size_mb_estimate": 45,
+      "size_mb_estimate": null,
       "requires": [],
       "description": "Android platform APIs including android.jar; not the full Android SDK",
       "platform": "platform-independent",
       "published": false,
       "status": "not_published",
       "url": "",
-      "sha256": ""
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "sdkmanager",
+        "package": "platforms;android-36",
+        "required_paths": [
+          "platforms/android-36/android.jar"
+        ],
+        "license_acceptance_required": true,
+        "device_verified": false
+      },
+      "device_build_verified": false,
+      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive."
     },
     {
       "id": "aapt2-zipalign",
@@ -79,7 +116,20 @@
         "aapt2 version",
         "zipalign -h"
       ],
-      "warning": "This 35.0.2 archive has AAPT2 + Zipalign but no D8, apksigner, jars or source.properties. It is not a full SDK Build Tools installation."
+      "warning": "This 35.0.2 archive has AAPT2 + Zipalign but no D8, apksigner, jars or source.properties. It is not a full SDK Build Tools installation.",
+      "file_size_bytes": 14401170,
+      "install": {
+        "method": "archive",
+        "archive_root": "build-tools",
+        "required_paths": [
+          "aapt2",
+          "zipalign"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Verified archive contains AArch64 ELF binaries (AAPT2 and Zipalign 35.0.2). Android Bionic/runtime execution not yet proven."
     },
     {
       "id": "d8-apksigner",
@@ -102,7 +152,22 @@
         "d8 --version",
         "apksigner --version"
       ],
-      "warning": "Older 34.0.4 archive contains both Java launch scripts and jar files; mixing with SDK Build Tools 35.0.0 requires an app-level installer plan."
+      "warning": "Older 34.0.4 archive contains both Java launch scripts and jar files; mixing with SDK Build Tools 35.0.0 requires an app-level installer plan.",
+      "file_size_bytes": 41666832,
+      "install": {
+        "method": "archive",
+        "archive_root": "build-tools/34.0.4",
+        "required_paths": [
+          "d8",
+          "lib/d8.jar",
+          "apksigner",
+          "lib/apksigner.jar"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35."
     },
     {
       "id": "kotlin-compiler",
@@ -124,12 +189,24 @@
       "required_probes": [
         "kotlinc -version"
       ],
-      "warning": "Version 2.1.20 is the published tool; remove any duplicate built-in Kotlin 2.3.21 entry on the Android app side."
+      "warning": "Version 2.1.20 is the published tool; remove any duplicate built-in Kotlin 2.3.21 entry on the Android app side.",
+      "file_size_bytes": 86919262,
+      "install": {
+        "method": "archive",
+        "archive_root": "kotlinc",
+        "required_paths": [
+          "bin/kotlinc"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds."
     },
     {
       "id": "android-gradle-plugin",
       "name": "Android Gradle Plugin",
-      "version": "unselected",
+      "version": "8.11.0",
       "size_mb_estimate": null,
       "requires": [
         "gradle",
@@ -142,13 +219,26 @@
       "published": false,
       "status": "not_published",
       "url": "",
-      "sha256": ""
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "gradle_plugin_resolution",
+        "plugin_id": "com.android.application",
+        "repositories": [
+          "google()",
+          "mavenCentral()",
+          "gradlePluginPortal()"
+        ],
+        "device_verified": false
+      },
+      "device_build_verified": false,
+      "note": "Plugin and transitives must resolve through Gradle. Requires Gradle >=8.13, JDK17 and SDK Build Tools 35.0.0."
     },
     {
       "id": "chaquopy-build",
       "name": "Chaquopy Build Plugin",
-      "version": "unselected",
-      "size_mb_estimate": 60,
+      "version": "17.2.0",
+      "size_mb_estimate": null,
       "requires": [
         "openjdk-17",
         "gradle",
@@ -159,9 +249,33 @@
       "published": false,
       "status": "not_published",
       "url": "",
-      "sha256": ""
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "gradle_plugin_resolution",
+        "plugin_id": "com.chaquo.python",
+        "repositories": [
+          "mavenCentral()",
+          "google()",
+          "gradlePluginPortal()"
+        ],
+        "device_verified": false
+      },
+      "device_build_verified": false,
+      "note": "Gradle plugin via Maven Central for Python 3.10+, AGP 7.3-9.5, Android API >=24."
     }
   ],
   "last_archive_audit": "archive_audit.json",
-  "reported_android_ui_issue": "Built-in unpublished entries and downloaded catalog entries are displayed together, producing duplicate AAPT2 and Kotlin cards. Requires fixing Kotlin catalog loader; remote JSON cannot remove bundled entries."
+  "reported_android_ui_issue": "Built-in unpublished entries and downloaded catalog entries are displayed together, producing duplicate AAPT2 and Kotlin cards. Requires fixing Kotlin catalog loader; remote JSON cannot remove bundled entries.",
+  "compatible_build_profile": {
+    "java": "17",
+    "gradle": "8.14.3",
+    "android_gradle_plugin": "8.11.0",
+    "compile_sdk": 36,
+    "android_sdk_build_tools": "35.0.0",
+    "kotlin": "2.1.20",
+    "chaquopy": "17.2.0",
+    "python": "3.10",
+    "target_arch": "arm64-v8a"
+  }
 }
