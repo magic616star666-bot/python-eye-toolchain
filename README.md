@@ -56,3 +56,12 @@ For the exact contents of the five archives, safe extraction rules, de-duplicati
 No private signing keys or API secrets should go in this public repository. Review each upstream license before redistributing. The SDK's own license acceptance cannot be silently bypassed.
 
 **Next required device proof:** The IDE must parse this JSON, unpack each archive safely, resolve managed packages, point Gradle at valid SDK/JDK host tools, build a debug APK and then install/run it on the phone. These steps remain unverified and should never be shown as Ready based only on a catalog download.
+
+
+## Official managed installer — three remaining components
+
+The repo now includes [`installer/managed_installer.py`](installer/managed_installer.py), which can invoke the real SDK Manager for Android SDK Platform 36 and Build Tools 35.0.0, then use **Gradle 8.14.3** to fetch AGP **8.11.0** and Chaquopy **17.2.0** and compile an actual Python APK.
+
+**[All three managed installation methods passed a real GitHub CI build on 18 November 2026](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44236880906).** The script checks installed files and build results instead of marking tools ready from their metadata. It also requires explicit acceptance of the Google Android SDK license before a fresh SDK install.
+
+Android phone caveat: this pass was on a GitHub **Linux runner**, not inside Python Eye IDE. The three managed entries deliberately remain `published: false` in the legacy archive-style `tools.json` because they are not standalone downloadable archives and the app's Kotlin extension installer has **not been connected** to the managed script. The mobile application's Kotlin source is needed to complete that last step. See [`installer/README.md`](installer/README.md).
