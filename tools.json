@@ -4,7 +4,7 @@
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "5 real archived tools downloadable; 3 managed tools have runnable SDK Manager/Gradle installer script, not packaged tool archives. GitHub Linux CI can verify all 3; on-device Kotlin IDE integration remains pending. No false Ready flags.",
+  "notes": "All eight distinct tool IDs. 5 verified release archives; SDK36 official Google ZIP with pinned SHA256 downloaded directly after license acceptance; AGP 8.11.0 and Chaquopy 17.2.0 resolved as Maven Gradle plugins. Python Eye IDE source is receiving native managed installers; on-phone verification still pending.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -37,7 +37,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Android ARM64 JDK 17 upstream build dated 2022; check security and Android runtime compatibility before production."
+      "note": "Android ARM64 JDK 17 upstream build dated 2022; check security and Android runtime compatibility before production.",
+      "test": "./bin/java -version",
+      "expect": "17"
     },
     {
       "id": "gradle",
@@ -70,18 +72,20 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration."
+      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration.",
+      "test": "./bin/gradle --version",
+      "expect": "Gradle 8.14.3"
     },
     {
       "id": "android-sdk-36",
       "name": "Android SDK Platform 36",
       "version": "36",
-      "size_mb_estimate": null,
+      "size_mb_estimate": 65.9,
       "requires": [],
       "description": "Android platform APIs including android.jar; not the full Android SDK",
       "platform": "platform-independent",
       "published": false,
-      "status": "not_published",
+      "status": "managed_official_google_download",
       "url": "",
       "sha256": "",
       "catalog_state": "managed_via_official_tool_not_integrated",
@@ -89,7 +93,8 @@
         "method": "sdkmanager",
         "package": "platforms;android-36",
         "required_paths": [
-          "platforms/android-36/android.jar"
+          "platforms/android-36/android.jar",
+          "platforms/android-36/source.properties"
         ],
         "license_acceptance_required": true,
         "device_verified": false,
@@ -98,10 +103,16 @@
         "cli_action": "sdk",
         "preflight": "Check JDK 17, sdkmanager, platform SDK license; install platforms;android-36 and build-tools;35.0.0",
         "requires_ide_integration": true,
-        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752",
+        "download_url": "https://dl.google.com/android/repository/platform-36_r02.zip",
+        "download_sha256": "37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e",
+        "archive_format": "zip"
       },
       "device_build_verified": false,
-      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
+      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified.",
+      "test": "test -s platforms/android-36/android.jar && echo SDK36_OK",
+      "expect": "SDK36_OK",
+      "file_size_bytes": 65878410
     },
     {
       "id": "aapt2-zipalign",
@@ -135,7 +146,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Verified archive contains AArch64 ELF binaries (AAPT2 and Zipalign 35.0.2). Android Bionic/runtime execution not yet proven."
+      "note": "Verified archive contains AArch64 ELF binaries (AAPT2 and Zipalign 35.0.2). Android Bionic/runtime execution not yet proven.",
+      "test": "./build-tools/aapt2 version",
+      "expect": ""
     },
     {
       "id": "d8-apksigner",
@@ -173,7 +186,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35."
+      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35.",
+      "test": "./d8 --version",
+      "expect": ""
     },
     {
       "id": "kotlin-compiler",
@@ -207,7 +222,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds."
+      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds.",
+      "test": "./bin/kotlinc -version",
+      "expect": "2.1.20"
     },
     {
       "id": "android-gradle-plugin",
@@ -267,8 +284,8 @@
         "method": "gradle_plugin_resolution",
         "plugin_id": "com.chaquo.python",
         "repositories": [
-          "mavenCentral()",
           "google()",
+          "mavenCentral()",
           "gradlePluginPortal()"
         ],
         "device_verified": false,
