@@ -1,0 +1,16 @@
+{
+  "source": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/MobileStudio-JDK17-Android-ARM64/jdk17-android.tar.gz",
+  "source_release_sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
+  "github_asset_name": "jdk17-android-bionic-17.0.11.tar.gz",
+  "file_size_bytes": 228548390,
+  "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
+  "java_archive_root": "jdk",
+  "important_paths": {
+    "java": "jdk/bin/java",
+    "javac": "jdk/bin/javac",
+    "libjvm": "jdk/lib/server/libjvm.so"
+  },
+  "verified_aarch64_elf": true,
+  "test_status": "Verified archive, not tested on user phone",
+  "license_note": "OpenJDK GPLv2 with Classpath Exception; preserve upstream license notices."
+}
