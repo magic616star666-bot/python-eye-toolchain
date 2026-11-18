@@ -1,29 +1,31 @@
-# Real upstream tooling added
+# Actual Toolchain Release Status — 2026-11-18
 
-[GitHub Releases: toolchain-v1](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/toolchain-v1)
+This document is for operational inspection; the authoritative machine-readable source is `tools.json`.
 
-## Published in this repository
+## Published downloadable assets
 
-Five **real upstream files** are uploaded and have recorded SHA-256 values:
+| Entry | Release file | Verified source |
+|---|---|---|
+| JDK 17 | `jdk17-arm64.tar.xz` | itsaky/android OpenJDK; mirrored digest recorded |
+| Gradle 8.14.3 | `gradle-8.14.3-bin.zip` | Official Gradle SHA-256 |
+| AAPT2 + Zipalign 35.0.2 | `android-sdk-tools-static-aarch64.zip` | lzhiyong Android ARM64 SDK tools; SHA-256 recorded |
+| D8 + APK Signer 34.0.4 (auxiliary) | `build-tools-34.0.4-aarch64.tar.xz` | AndroidIDEOfficial Android ARM64 build tools; SHA-256 recorded |
+| Kotlin 2.1.20 | `kotlin-compiler-2.1.20.zip` | Official JetBrains SHA-256 |
 
-1. `jdk17-arm64.tar.xz` (Android ARM64 JDK 17, upstream from itsaky).
-2. `gradle-8.14.3-bin.zip` (official Gradle, verified against official published digest).
-3. `build-tools-34.0.4-aarch64.tar.xz` (AndroidIDE Android ARM64 build tools; supplies components corresponding to two catalog entries).
-4. `aapt2-arm64-v8a` (additional Android ARM64 AAPT2, verified against upstream GitHub SHA-256).
-5. `kotlin-compiler-2.1.20.zip` (official JetBrains Kotlin distribution, validated against JetBrains SHA-256 file).
+All five archives are present on [toolchain-v1 Releases](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/toolchain-v1). A separate standalone AAPT2 binary also exists as a supplemental Release asset, not an additional catalog entry.
 
-The catalog lists five published entries, but the Android Build Tools archive is shared by two entries, and the newer standalone AAPT2 is an extra Release asset.
+## Three managed components, not mirrored ZIPs
 
-## Other three tool entries
+- Android SDK 36: Google SDK Manager `platforms;android-36`, license acceptance required.
+- Android Gradle Plugin 8.11.0: `com.android.application` from Google Maven.
+- Chaquopy 17.2.0: `com.chaquo.python` via Gradle/Maven Central.
 
-- **SDK Platform 36:** fetch through Google's official Android SDK Manager package `platforms;android-36`, and accept applicable SDK licenses.
-- **Android Gradle Plugin:** Gradle plugin `com.android.application` version `8.11.0` from `google()`.
-- **Chaquopy:** Gradle plugin `com.chaquo.python` version `17.2.0`, using Maven/Gradle repositories.
+They are version-selected and used successfully in [a real GitHub Linux CI APK build](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752), but **remain not installed in the Android IDE** and therefore `published: false` in the old archive-style catalog.
 
-Configuration details are in `official_install_routes.json`. These are official dependency installation routes rather than individual rehosted ZIP files. **They are not yet wired to Python Eye's mobile installer and remain unpublished in the catalog.**
+## Known on-device gaps
 
-## Important
-
-All Release downloads are physically uploaded and verified as downloadable GitHub Release assets, but are **not yet verified by running them on the user's Python Eye IDE**, and are **not proof that APK building works**. Use the repository's `tools.json` in your IDE only after matching the Kotlin catalog schema and unpack/install routines.
-
-The JDK17 Android archive is an older upstream build. A security-supported modern build is preferred for production use; do not treat this as a current security update.
+- Source of Python Eye IDE's catalog reader and installer not present in this repository. Duplicate app UI cards cannot be removed here.
+- The 34.x D8+ApkSigner archive is **not** a complete 35.x SDK Build Tools installation required by AGP 8.11.
+- ARM64 AAPT2/Zipalign were checked for ELF architecture, not executed in the user's Android environment.
+- The mirrored JDK17 upstream release is from 2022; security maintenance must be reassessed before production deployment.
+- No signing keys or user secrets are stored.
