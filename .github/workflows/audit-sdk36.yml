@@ -1,0 +1,19 @@
+name: Verify Official SDK Platform 36 Package
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-sdk36.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  official-package-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download only from Google and record SHA-256 and ZIP structure
+        run: python scripts/audit_official_sdk36.py
