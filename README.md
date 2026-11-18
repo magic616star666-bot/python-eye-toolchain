@@ -64,4 +64,19 @@ The repo now includes [`installer/managed_installer.py`](installer/managed_insta
 
 **[All three managed installation methods passed a real GitHub CI build on 18 November 2026](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44236880906).** The script checks installed files and build results instead of marking tools ready from their metadata. It also requires explicit acceptance of the Google Android SDK license before a fresh SDK install.
 
-Android phone caveat: this pass was on a GitHub **Linux runner**, not inside Python Eye IDE. The three managed entries deliberately remain `published: false` in the legacy archive-style `tools.json` because they are not standalone downloadable archives and the app's Kotlin extension installer has **not been connected** to the managed script. The mobile application's Kotlin source is needed to complete that last step. See [`installer/README.md`](installer/README.md).
+Android phone caveat: this pass was on a GitHub **Linux runner**, not inside Python Eye IDE. The three managed entries deliberately remain `published: false` in the legacy archive-style `tools.json` because they are not standalone downloadable archives and the Android Kotlin app has a separate managed-install implementation in the delivered patched source ZIP. On-device functionality is still pending testing. See [`installer/README.md`](installer/README.md).
+
+## 📱 Python Eye IDE Kotlin integration (source ZIP patch)
+
+The user-supplied Android IDE project **v1.4.8** now has a local updated source ZIP that:
+
+- bundles all eight catalog entries in `app/src/main/assets/tools/catalog.json` as a fallback to GitHub `tools.json`;
+- renders one Extensions card per unique ID using the same dark/coral switch design;
+- uses a Google SDK license confirmation, official direct Android SDK Platform 36 download and pinned SHA-256 `37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e` (no SDK ZIP mirror);
+- includes native Kotlin Gradle plugin resolution for AGP **8.11.0** and Chaquopy **17.2.0**;
+- displays Ready only after the particular tool's real installation/test succeeds.
+
+The GitHub Python CLI installer is **for CI/compatible hosts**; the Android app has separate **native Kotlin integration**. The patched Kotlin ToolStore/ManagedToolResolver compiled in a standalone JVM check, and SDK ZIP layout plus catalog merge/dependency tests passed. **Android project APK compilation and execution on the user's actual phone remain unverified**. The revised app ZIP was delivered in the conversation, not published as a source repository commit.
+
+An important distinction: the IDE's own Code on the Go Gradle build uses AGP 9.3.1 / Kotlin 2.3.21 / Gradle 9.6.1; these pre-existing IDE build dependencies were deliberately preserved. The optional downloaded toolchain is separate (AGP 8.11 / Kotlin 2.1.20 / Gradle 8.14.3). Do not mix the two build profiles.
+
