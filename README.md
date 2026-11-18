@@ -39,6 +39,10 @@ An **ARM64-targeted Android APK** was compiled successfully using the official S
 
 **This proves only the GitHub Linux x86-64 runner build. It does NOT prove that Python Eye IDE itself can compile APKs on Android.** The source for that IDE's actual Kotlin catalog parser/installer has not been provided, so the phone's switches, extraction and external plugin resolution cannot be verified from this repo. Local duplicate cards from bundled + remote extensions must be de-duplicated by ID **inside the IDE**, not by publishing duplicate catalog entries.
 
+## Android IDE integration guide
+
+For the exact contents of the five archives, safe extraction rules, de-duplication of built-in vs remote tools, and the six probes needed before an on-phone APK builder may be called Ready, see [KOTLIN_IDE_INTEGRATION.md](KOTLIN_IDE_INTEGRATION.md).
+
 ## Maintenance and safety
 
 - `tools.json` — **single authoritative catalog**; stable `id` keys and explicit `install.method`. Five archives and three managed dependencies.
