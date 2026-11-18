@@ -1,0 +1,19 @@
+{
+  "source_url": "https://dl.google.com/android/repository/platform-36_r02.zip",
+  "sha256": "37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e",
+  "size_bytes": 65878410,
+  "archive_format": "zip",
+  "top_level_entries": [
+    "android-36"
+  ],
+  "android_jar_paths": [
+    "android-36/android.jar"
+  ],
+  "source_properties_paths": [
+    "android-36/source.properties"
+  ],
+  "file_count": 11342,
+  "license_required": true,
+  "redistributable_by_project": false,
+  "tested_on_android_phone": false
+}
