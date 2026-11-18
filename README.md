@@ -8,20 +8,20 @@ Public catalog and real downloadable tool archives for **Python Eye IDE (Android
 https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/tools.json
 ```
 
-The JSON root contains exactly **eight unique `tools` IDs**. The `published` field means *archive is uploaded*; it **does not** mean *installed* or *verified working on your Android phone*. The catalog keeps `schema_version: 1` for compatibility, but the Kotlin reader's exact schema remains unverified.
+The JSON root contains exactly **eight unique `tools` IDs**. The `published` field means *archive is uploaded*; it **does not** mean *installed* or *verified working on your Android phone*. The catalog keeps `schema_version: 1` for compatibility, but the Kotlin parser has been inspected and its eight-tool catalog schema is supported in the patched app source; Android phone runtime testing is still required.
 
 ## Tool status — 18 November 2026
 
 | ID | Version / platform | Delivery | Phone APK-build proof |
 | --- | --- | --- | --- |
-| `openjdk-17` | Java 17 / Android ARM64 (older 2022 upstream build) | Release .tar.xz ✓ | Not tested |
+| `openjdk-17` | Java 17.0.11 / Android ARM64 Bionic | Release .tar.gz ✓ | Not tested |
 | `gradle` | 8.14.3 / JVM | Release .zip ✓ | Not tested |
 | `aapt2-zipalign` | 35.0.2 / Android ARM64 | Release .zip ✓ | Not tested |
 | `d8-apksigner` | 34.0.4 Java JARs and scripts / ARM64 bundle | Release .tar.xz ✓ | Not tested |
 | `kotlin-compiler` | 2.1.20 / JVM | Release .zip ✓ | Not tested |
-| `android-sdk-36` | Android SDK Platform 36 | Google `sdkmanager`; app installer not yet integrated | Not tested |
-| `android-gradle-plugin` | 8.11.0 | Gradle plugin from Google Maven; app installer not yet integrated | Not tested |
-| `chaquopy-build` | 17.2.0 | Gradle plugin via Maven; app installer not yet integrated | Not tested |
+| `android-sdk-36` | Android SDK Platform 36 | Official Google direct ZIP + user license confirmation; Kotlin source patch included, phone test pending | Not tested |
+| `android-gradle-plugin` | 8.11.0 | Gradle plugin from Google Maven; Kotlin resolver in patched source, device test pending | Not tested |
+| `chaquopy-build` | 17.2.0 | Gradle plugin via Maven; Kotlin resolver in patched source, device test pending | Not tested |
 
 **Important:** D8/ApkSigner **34.0.4** is an auxiliary package and **does not** satisfy AGP 8.11's requirement for **Android SDK Build Tools 35.0.0 or later**. AAPT2/Zipalign 35.0.2 are present but are not a complete Build Tools 35 distribution. The IDE's Android-native installer must use official Build Tools resources and verified ARM64 host tools, and handle Gradle's AAPT2 selection.
 
@@ -29,7 +29,7 @@ The JSON root contains exactly **eight unique `tools` IDs**. The `published` fie
 
 [Download real Toolchain assets](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/toolchain-v1)
 
-Catalog entries contain direct GitHub Release download links, exact file sizes, SHA-256 and extraction metadata. `scripts/validate_catalog.py` validates the catalog structure; `scripts/verify_release_assets.py` checks all SHA-256 values against **live** GitHub Release digests. The old JDK17 build deserves a separate production-security review.
+Catalog entries contain direct GitHub Release download links, exact file sizes, SHA-256 and extraction metadata. `scripts/validate_catalog.py` validates the catalog structure; `scripts/verify_release_assets.py` checks all SHA-256 values against **live** GitHub Release digests. New JDK17.0.11 uses an SHA-256 verified Android Bionic ARM64 build; still not device-tested and does not repair incompatible Gradle/Jansi Linux JNI automatically.
 
 ## Real Python-to-APK test — PASSED on GitHub Linux CI
 
