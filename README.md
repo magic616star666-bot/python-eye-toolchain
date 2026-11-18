@@ -1,69 +1,54 @@
-# Python Eye IDE Toolchain
+# Python Eye IDE — Android Toolchain Distribution
 
-This public repository holds the **tool catalog** for Python Eye IDE on Android ARM64. The user-facing IDE project is separate.
+Public catalog and real downloadable tool archives for **Python Eye IDE (Android ARM64)**. This repository is **not** the source code for the IDE itself.
 
-## Public catalog URL
+### 📲 Load catalog URL
 
+```text
 https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/tools.json
-
-The JSON root contains a `tools` array. **All entries are currently `not_published`**: the app must not try to install them yet.
-
-## Tools represented
-
-- OpenJDK 17
-- Gradle (provisional 9.6.1; final version must be tested against AGP/Chaquopy)
-- Android SDK Platform 36 (not the entire SDK)
-- AAPT2 + Zipalign (Android ARM64 versions required)
-- D8 + APK Signer
-- Kotlin Compiler (provisional 2.3.21)
-- Android Gradle Plugin
-- Chaquopy Build Plugin
-
-## Publishing a tool, safely
-
-1. Select a real **Android ARM64-compatible** archive from its original project or a trusted vendor, and verify redistribution rights.
-2. Test the binary **on an Android ARM64 device**. In particular, ordinary Android SDK host executables for Linux x86_64 will not run natively on the phone.
-3. Upload the archive as an asset under **GitHub Releases** in this repository.
-4. Compute its real SHA-256 using `sha256sum filename.zip`.
-5. Change the matching entry in `tools.json`: give it a tested version, direct HTTPS asset URL, SHA-256, and set `published: true`, `status: "published"`.
-6. Run `python scripts/validate_catalog.py`.
-7. Test automatic download, checksum validation, installation, removal, rollback, disk use, and APK compilation in Python Eye IDE.
-
-For actual Android APK builds, versions of Gradle, Android Gradle Plugin and Chaquopy must be mutually compatible. The SDK Platform package alone does not supply a complete build system. Do not publish signing keys, private tokens or licenses with restrictions on redistribution.
-
-## App compatibility note
-
-The IDE's Kotlin catalog parser has **not** been supplied or verified. This is a starter catalog and conforms to a root `tools` list, but exact field names and installer behavior must be aligned with the app before the **Load catalog** button can be marked working.
-
-## Validation
-
-```sh
-python scripts/validate_catalog.py
 ```
 
-## Upload a verified binary without terminal commands
+The JSON root contains exactly **eight unique `tools` IDs**. The `published` field means *archive is uploaded*; it **does not** mean *installed* or *verified working on your Android phone*. The catalog keeps `schema_version: 1` for compatibility, but the Kotlin reader's exact schema remains unverified.
 
-When a legal-to-redistribute, Android-tested ZIP/JAR is available, go to **Actions → Publish Verified Tool Asset → Run workflow** and fill in:
-- `tool_id` (from `tools.json`), `version`, **direct public HTTPS** source URL, SHA-256 checksum, and filename.
-- Confirm **tested_on_android_arm64 = yes** only after the archive has really been tested on a physical Android ARM64 device.
+## Tool status — 18 November 2026
 
-The workflow downloads the asset, checks SHA-256, adds it to the `toolchain-v1` GitHub Release, and updates `tools.json` with a real Release download URL. A mismatch causes publication to stop. This pipeline has been added but has **not yet published any binary assets**.
+| ID | Version / platform | Delivery | Phone APK-build proof |
+| --- | --- | --- | --- |
+| `openjdk-17` | Java 17 / Android ARM64 (older 2022 upstream build) | Release .tar.xz ✓ | Not tested |
+| `gradle` | 8.14.3 / JVM | Release .zip ✓ | Not tested |
+| `aapt2-zipalign` | 35.0.2 / Android ARM64 | Release .zip ✓ | Not tested |
+| `d8-apksigner` | 34.0.4 Java JARs and scripts / ARM64 bundle | Release .tar.xz ✓ | Not tested |
+| `kotlin-compiler` | 2.1.20 / JVM | Release .zip ✓ | Not tested |
+| `android-sdk-36` | Android SDK Platform 36 | Google `sdkmanager`; app installer not yet integrated | Not tested |
+| `android-gradle-plugin` | 8.11.0 | Gradle plugin from Google Maven; app installer not yet integrated | Not tested |
+| `chaquopy-build` | 17.2.0 | Gradle plugin via Maven; app installer not yet integrated | Not tested |
 
-**Important:** This repo does not currently host the Android build tools. The IDE's Kotlin parser and installer logic still need to be checked against this catalog before the in-app **Load catalog** flow can be declared working.
+**Important:** D8/ApkSigner **34.0.4** is an auxiliary package and **does not** satisfy AGP 8.11's requirement for **Android SDK Build Tools 35.0.0 or later**. AAPT2/Zipalign 35.0.2 are present but are not a complete Build Tools 35 distribution. The IDE's Android-native installer must use official Build Tools resources and verified ARM64 host tools, and handle Gradle's AAPT2 selection.
 
+## Actual published binaries
 
-## ✅ Real Python APK build proof (2026-11-18)
+[Download real Toolchain assets](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/toolchain-v1)
 
-The following **real build passed on GitHub Actions Linux CI**:
+Catalog entries contain direct GitHub Release download links, exact file sizes, SHA-256 and extraction metadata. `scripts/validate_catalog.py` validates the catalog structure; `scripts/verify_release_assets.py` checks all SHA-256 values against **live** GitHub Release digests. The old JDK17 build deserves a separate production-security review.
 
-- Official Android SDK Platform 36 was installed from Google.
-- Android Gradle Plugin 8.11.0 and Chaquopy Gradle Plugin 17.2.0 were downloaded/resolved by Gradle 8.14.3.
-- Python 3.10 code was packaged into an ARM64-only Android debug APK (`app-debug.apk`).
-- Verified APK size: **17,459,980 bytes**; SHA-256: `df7a59cdea7193f70415c5381eafbc3fba302e1f0c8045764f71d5dfa956bfc4`.
+## Real Python-to-APK test — PASSED on GitHub Linux CI
 
-[Download APK from Releases](https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/python-eye-apk-smoke-test/app-debug.apk) · [Successful Actions run](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752)
+[Verified CI build](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752) · [Download demonstration APK (17,459,980 bytes)](https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/python-eye-apk-smoke-test/app-debug.apk)
 
-⚠️ This validates a cloud-runner APK compilation, **not** running Gradle on an Android ARM64 handset. SDK36, AGP and Chaquopy are **managed installers** (official SDK Manager and Maven/Gradle dependency resolution), not three self-contained Release ZIPs. Their app-side on-device installers are not implemented without the Python Eye IDE Kotlin project. See `managed-tools.json` and `MANAGED_TOOL_INSTALL.md`.
+An **ARM64-targeted Android APK** was compiled successfully using the official SDK 36, Build Tools 35.0.0, JDK 17, Gradle 8.14.3, AGP 8.11.0, Chaquopy 17.2.0 and Python 3.10. Build output SHA-256: `df7a59cdea7193f70415c5381eafbc3fba302e1f0c8045764f71d5dfa956bfc4`.
 
-⚠️ **Build Tools version gap:** AGP 8.11 requires Build Tools 35.0.0 or newer. The existing mirror of Android ARM64 34.0.4 tools alone is insufficient; ARM64 replacements / override for the newer host tools must be validated on the phone.
+**This proves only the GitHub Linux x86-64 runner build. It does NOT prove that Python Eye IDE itself can compile APKs on Android.** The source for that IDE's actual Kotlin catalog parser/installer has not been provided, so the phone's switches, extraction and external plugin resolution cannot be verified from this repo. Local duplicate cards from bundled + remote extensions must be de-duplicated by ID **inside the IDE**, not by publishing duplicate catalog entries.
 
+## Maintenance and safety
+
+- `tools.json` — **single authoritative catalog**; stable `id` keys and explicit `install.method`. Five archives and three managed dependencies.
+- `managed-tools.json` — details for Google SDK Manager and Gradle plugin resolution (not ZIP downloads).
+- `archive_audit.json` — recorded archive inventory; confirms AAPT2/Zipalign ARM64 and D8/APKSigner Java JARs are present in their respective archives.
+- `scripts/validate_catalog.py` — offline metadata/version/dependency validation.
+- `scripts/verify_release_assets.py` — live GitHub SHA-256 and size check.
+- `apk-smoke-test/` — real minimal Python→Android APK project for CI.
+- `.github/workflows/build-python-apk.yml` — genuine APK CI; artifact/Release on success.
+
+No private signing keys or API secrets should go in this public repository. Review each upstream license before redistributing. The SDK's own license acceptance cannot be silently bypassed.
+
+**Next required device proof:** The IDE must parse this JSON, unpack each archive safely, resolve managed packages, point Gradle at valid SDK/JDK host tools, build a debug APK and then install/run it on the phone. These steps remain unverified and should never be shown as Ready based only on a catalog download.
