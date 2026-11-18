@@ -4,6 +4,7 @@ on:
     paths:
       - 'apk-smoke-test/**'
       - 'scripts/check_built_apk.py'
+      - 'installer/**'
       - '.github/workflows/build-python-apk.yml'
   workflow_dispatch:
 
@@ -39,9 +40,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
-      - name: Build real Python APK
-        working-directory: apk-smoke-test
-        run: gradle --no-daemon --stacktrace :app:assembleDebug
+      - name: Resolve AGP 8.11 and Chaquopy 17.2 with real managed installer and compile Python APK
+        run: python3 installer/managed_installer.py plugins --sdk-root "$ANDROID_HOME"
+      - name: Verify SDK 36 + both plugin readiness flags come from successful real build
+        run: |
+          python3 installer/managed_installer.py status --sdk-root "$ANDROID_HOME" > managed-result.json
+          python3 -c 'import json; d=json.load(open("managed-result.json")); a={x["id"]:x["ready"] for x in d["components"]}; assert all(a.values()), a; print("PASS: all 3 managed tools resolved by real build",a)'
       - name: Confirm APK exists
         run: |
           test -s apk-smoke-test/app/build/outputs/apk/debug/app-debug.apk
