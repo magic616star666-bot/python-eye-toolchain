@@ -150,6 +150,15 @@ def main(args):
             raise RuntimeError("Gradle 8.14.3 not found; set GRADLE_BIN or PATH")
         if not SMOKE.is_dir():
             raise RuntimeError("apk-smoke-test project is missing. Keep it beside managed_installer.py")
+        # A successful build proves dependency resolution, but only for the
+        # detected Java and Gradle versions. Never stamp readiness for unknown ones.
+        java=locate_java(env)
+        java_info=run([java,"-version"],env=env,timeout=30)
+        gradle_info=run([gradle,"--version"],env=env,timeout=60)
+        if not any(x in java_info for x in ('version "17.', 'openjdk 17.', 'java 17.')):
+            raise RuntimeError("Expected JDK 17; actual Java version must be checked")
+        if "Gradle 8.14.3" not in gradle_info:
+            raise RuntimeError("Expected Gradle 8.14.3; actual Gradle version must be checked")
         # Actually compiles an Android APK, so transitive Maven dependencies,
         # Chaquopy Python runtime, and AGP have all been resolved.
         run([gradle,"--no-daemon",":app:assembleDebug"],env=env,cwd=SMOKE,timeout=1800)
