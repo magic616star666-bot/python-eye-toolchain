@@ -4,31 +4,31 @@
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-18",
-  "notes": "All eight distinct tool IDs. 5 verified release archives; SDK36 official Google ZIP with pinned SHA256 downloaded directly after license acceptance; AGP 8.11.0 and Chaquopy 17.2.0 resolved as Maven Gradle plugins. Python Eye IDE source is receiving native managed installers; on-phone verification still pending.",
+  "notes": "Five verified downloads and three official managed tools. JDK17 upgraded to independently audited Android Bionic 17.0.11; old runtime retained for fallback. Native Gradle and Jansi Android compatibility remains device-test required.",
   "tools": [
     {
       "id": "openjdk-17",
       "name": "OpenJDK 17",
-      "version": "17 (Android ARM64, 2022 upstream build)",
-      "size_mb_estimate": 157.5,
+      "version": "17.0.11 (Android ARM64 Bionic)",
+      "size_mb_estimate": 228.5,
       "requires": [],
       "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
       "platform": "android-arm64",
       "published": true,
       "status": "published_unverified_on_device",
-      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-arm64.tar.xz",
-      "sha256": "1bfde21d5b5d6ed4632c4c36245f2a61532b8c641531c5f468148024223a2b63",
-      "source_url": "https://github.com/itsaky/openjdk-17-android/releases/download/01-01-2022/jdk17-arm64.tar.xz",
-      "verified_upstream_digest": false,
-      "archive_format": "tar.xz",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-android-bionic-17.0.11.tar.gz",
+      "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
+      "source_url": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/MobileStudio-JDK17-Android-ARM64/jdk17-android.tar.gz",
+      "verified_upstream_digest": true,
+      "archive_format": "tar.gz",
       "required_probes": [
         "java -version",
         "javac -version"
       ],
-      "file_size_bytes": 157457188,
+      "file_size_bytes": 228548390,
       "install": {
         "method": "archive",
-        "archive_root": "",
+        "archive_root": "jdk",
         "required_paths": [
           "bin/java",
           "bin/javac"
@@ -37,9 +37,9 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Android ARM64 JDK 17 upstream build dated 2022; check security and Android runtime compatibility before production.",
+      "note": "Android Bionic-targeted OpenJDK 17.0.11, verified AArch64 ELF and SHA256. Improves over 2021 17-internal build; device Gradle/Jansi compatibility is NOT yet proven. Old JDK asset retained for rollback.",
       "test": "./bin/java -version",
-      "expect": "17"
+      "expect": "17.0.11"
     },
     {
       "id": "gradle",
