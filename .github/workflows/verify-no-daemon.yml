@@ -64,3 +64,39 @@ jobs:
             exit 1
           fi
           echo 'PASS: Gradle build performed in the CLI JVM, without forking a build daemon.'
+          cat > "$TEST_DIR/settings.gradle" <<'EOF'
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          rootProject.name = 'PythonEyeManagedPluginNoFork'
+          EOF
+          for ID in agp chaquopy; do
+            if [ "$ID" = agp ]; then
+              cat > "$TEST_DIR/build.gradle" <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.11.0' apply false
+          }
+          EOF
+            else
+              cat > "$TEST_DIR/build.gradle" <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.11.0' apply false
+              id 'com.chaquo.python' version '17.2.0' apply false
+          }
+          EOF
+            fi
+            "$JAVA_HOME/bin/java" "${JVM_ARGS[@]}" -Djava.awt.headless=true -Dorg.gradle.daemon=false \
+              -Dorg.gradle.native=false -Dorg.gradle.vfs.watch=false \
+              -Dorg.gradle.internal.instrumentation.agent=false \
+              -Dorg.gradle.console=plain -Dorg.gradle.console.interactive=false \
+              -Dorg.fusesource.jansi.Ansi.disable=true -Djansi.passthrough=true \
+              -Dorg.jline.terminal.dumb=true \
+              -cp "$GRADLE_HOME/lib/gradle-launcher-8.14.3.jar" org.gradle.launcher.GradleMain \
+              --no-daemon --console=plain --stacktrace --info help 2>&1 | tee "$RUNNER_TEMP/$ID-no-daemon-test.log"
+            grep -q 'BUILD SUCCESSFUL' "$RUNNER_TEMP/$ID-no-daemon-test.log"
+            if grep -Eiq "(single-use daemon|Starting process 'Gradle build daemon'|To honour the JVM settings)" "$RUNNER_TEMP/$ID-no-daemon-test.log"; then
+              echo "FAIL: $ID plugin build forked Gradle daemon"
+              exit 1
+            fi
+            echo "PASS: $ID plugin resolved without a daemon"
+          done
