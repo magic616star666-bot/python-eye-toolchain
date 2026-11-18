@@ -1,0 +1,66 @@
+name: Verify Gradle 8.14.3 In-Process JVM (No Fork)
+on:
+  push:
+    paths:
+      - .github/workflows/verify-no-daemon.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Run native no-daemon Gradle launcher with matching JVM args
+        shell: bash
+        run: |
+          set -euo pipefail
+          GRADLE_BIN_PATH="$(find "$RUNNER_TEMP" -type f -path '*/gradle-8.14.3/bin/gradle' -print -quit)"
+          test -n "$GRADLE_BIN_PATH"
+          GRADLE_HOME="$(dirname "$(dirname "$GRADLE_BIN_PATH")")"
+          TEST_DIR="$(mktemp -d)"
+          cat > "$TEST_DIR/settings.gradle" <<'EOF'
+          rootProject.name = 'PythonEyeNoForkProbe'
+          EOF
+          cat > "$TEST_DIR/build.gradle" <<'EOF'
+          tasks.register('probe') {
+              doLast { println 'PYTHON_EYE_IN_PROCESS_GRADLE_OK' }
+          }
+          EOF
+          JVM_ARGS=(
+            '-Xmx512m'
+            '-XX:MaxMetaspaceSize=384m'
+            '-Dfile.encoding=UTF-8'
+            '--add-opens=java.base/java.lang=ALL-UNNAMED'
+            '--add-opens=java.base/java.lang.invoke=ALL-UNNAMED'
+            '--add-opens=java.base/java.util=ALL-UNNAMED'
+            '--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED'
+            '--add-opens=java.base/java.nio.charset=ALL-UNNAMED'
+            '--add-opens=java.base/java.net=ALL-UNNAMED'
+            '--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED'
+          )
+          {
+            echo 'org.gradle.daemon=false'
+            echo "org.gradle.jvmargs=${JVM_ARGS[*]}"
+            echo 'org.gradle.workers.max=1'
+            echo 'org.gradle.parallel=false'
+            echo 'org.gradle.vfs.watch=false'
+            echo 'org.gradle.native=false'
+            echo 'org.gradle.internal.instrumentation.agent=false'
+          } > "$TEST_DIR/gradle.properties"
+          cd "$TEST_DIR"
+          "$JAVA_HOME/bin/java" "${JVM_ARGS[@]}" -Djava.awt.headless=true -Dorg.gradle.daemon=false             -Dorg.gradle.native=false -Dorg.gradle.vfs.watch=false             -Dorg.gradle.internal.instrumentation.agent=false             -Dorg.gradle.console=plain -Dorg.gradle.console.interactive=false             -Dorg.fusesource.jansi.Ansi.disable=true -Djansi.passthrough=true             -Dorg.jline.terminal.dumb=true             -cp "$GRADLE_HOME/lib/gradle-launcher-8.14.3.jar" org.gradle.launcher.GradleMain             --no-daemon --console=plain --stacktrace --info probe 2>&1 | tee "$RUNNER_TEMP/no-daemon-test.log"
+          grep -q 'PYTHON_EYE_IN_PROCESS_GRADLE_OK' "$RUNNER_TEMP/no-daemon-test.log"
+          if grep -Eiq "(single-use daemon|Starting process 'Gradle build daemon'|To honour the JVM settings)" "$RUNNER_TEMP/no-daemon-test.log"; then
+            echo 'FAIL: Gradle launched a single-use daemon'
+            exit 1
+          fi
+          echo 'PASS: Gradle build performed in the CLI JVM, without forking a build daemon.'
