@@ -1,0 +1,52 @@
+name: Audit Legacy Android Bionic JDK11 and ADB Assets
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audit-legacy-bionic-assets.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: jdk11-aarch64.tar.xz
+            tag: jdk-11
+            expected_size: 236844820
+          - name: platform-tools-34.0.4-aarch64.tar.xz
+            tag: v34.0.4
+            expected_size: 4354052
+    steps:
+      - name: Download direct upstream archive and verify GitHub metadata size
+        shell: bash
+        env:
+          ASSET: ${{ matrix.name }}
+          TAG: ${{ matrix.tag }}
+          SIZE: ${{ matrix.expected_size }}
+        run: |
+          set -euo pipefail
+          URL="https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/$TAG/$ASSET"
+          curl --fail --location --retry 4 --connect-timeout 30 --output "$RUNNER_TEMP/$ASSET" "$URL"
+          ACTUAL="$(stat -c %s "$RUNNER_TEMP/$ASSET")"
+          test "$ACTUAL" = "$SIZE"
+          sha256sum "$RUNNER_TEMP/$ASSET"
+          python3 - "$RUNNER_TEMP/$ASSET" "$TAG" "$SIZE" <<'PY'
+          import hashlib,json,pathlib,sys
+          p=pathlib.Path(sys.argv[1])
+          digest=hashlib.sha256(p.read_bytes()).hexdigest()
+          print("AUDITED_ANDROID_BIONIC_ASSET="+json.dumps({
+              "filename":p.name, "tag":sys.argv[2],
+              "size":int(sys.argv[3]), "sha256":digest
+          },sort_keys=True))
+          PY
+      - name: Inspect archive contents without executable invocation
+        shell: bash
+        run: |
+          tar -tJf "$RUNNER_TEMP/${{ matrix.name }}" | head -25 || true
