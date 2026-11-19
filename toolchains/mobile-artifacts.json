@@ -167,6 +167,45 @@
       "android_apk_build_verified": false,
       "redistribution_permitted": "not_assessed_no_mirroring",
       "note": "Already published. Java jars; supplementary only, not complete Build Tools 35."
+    },
+    {
+      "id": "openjdk-11-bionic",
+      "version": "11 (legacy AndroidIDE)",
+      "family": "jdk",
+      "host": "android-bionic-aarch64",
+      "provider": "AndroidIDEOfficial/androidide-tools",
+      "asset_name": "jdk11-aarch64.tar.xz",
+      "url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/jdk-11/jdk11-aarch64.tar.xz",
+      "sha256": "0e5c9f0c2f83b462573f4e8f9c017401312ac92a6a512ecabaed43c1cac920ad",
+      "file_size_bytes": 236844820,
+      "upstream_asset_metadata_checked": true,
+      "sha256_evidence": "downloaded_and_sha256_hashed_in_github_ci",
+      "sha256_evidence_run": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44616843832",
+      "installed": false,
+      "local_device_probe_passed": false,
+      "android_apk_build_verified": false,
+      "redistribution_permitted": "not_assessed_no_mirroring",
+      "note": "Legacy, deprecated AndroidIDE Bionic JDK 11. SHA-256 calculated from actual downloaded upstream archive in CI, not present in upstream release digest. Phone runtime needs proof."
+    },
+    {
+      "id": "android-adb-34-bionic",
+      "version": "34.0.4",
+      "family": "platform-tools",
+      "host": "android-bionic-aarch64",
+      "provider": "AndroidIDEOfficial/androidide-tools",
+      "asset_name": "platform-tools-34.0.4-aarch64.tar.xz",
+      "url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/v34.0.4/platform-tools-34.0.4-aarch64.tar.xz",
+      "sha256": "08b5b5c9899201081586f8f8682882784458ff67e6421cef65b1d6a0da877236",
+      "file_size_bytes": 4354052,
+      "upstream_asset_metadata_checked": true,
+      "sha256_evidence": "downloaded_and_sha256_hashed_in_github_ci",
+      "sha256_evidence_run": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44616843832",
+      "installed": false,
+      "local_device_probe_passed": false,
+      "android_apk_build_verified": false,
+      "redistribution_permitted": "not_assessed_no_mirroring",
+      "note": "Android ARM64 ADB/platform-tools; SHA-256 calculated from full upstream asset in CI, device use unverified."
     }
-  ]
+  ],
+  "sha256_scope": "Original GitHub sha256 asset digests for first 9 packages; legacy JDK11 and ADB are full upstream archive SHA256 from CI run 44616843832."
 }
