@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-extended-host-tools",
+  "updated": "2026-11-20",
+  "purpose": "Optional build routes separate from legacy eight-tool catalog for Kotlin compatibility.",
+  "legacy_catalog": "../tools.json",
+  "status_semantics": "Entries describe install routes, not real downloaded assets, working APK build proof, or on-phone readiness.",
+  "security": "Explicit SDK license acceptance, no automatic untrusted build execution, no bundled signing secrets.",
+  "tools": [
+    {
+      "id": "jdk-8",
+      "name": "JDK 8",
+      "method": "system_jdk",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "android-native-jdk-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Legacy Java compiler; select only when project Gradle/AGP supports it."
+    },
+    {
+      "id": "jdk-11",
+      "name": "JDK 11",
+      "method": "system_jdk",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "android-native-jdk-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Legacy Java projects; Android Gradle Plugin 8.11 requires Java 17."
+    },
+    {
+      "id": "jdk-21",
+      "name": "JDK 21",
+      "method": "system_jdk",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "android-native-jdk-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Modern Java compiler subject to project Gradle compatibility."
+    },
+    {
+      "id": "gradle-wrapper",
+      "name": "Per-project Gradle Wrapper",
+      "method": "project_wrapper",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "requires-tested-mobile-gradle-runner",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Use project-pinned Gradle; executing a wrapper from ZIP runs untrusted project code, requires explicit approval."
+    },
+    {
+      "id": "android-sdk-platforms",
+      "name": "Android SDK API platforms",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "host-binaries-unverified-on-android",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Official Google sdkmanager installs requested compileSdk, with explicit license consent."
+    },
+    {
+      "id": "android-build-tools",
+      "name": "Android SDK Build Tools",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "linux-host-binaries-not-android",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Official Google sdkmanager; Linux host binaries cannot execute unchanged on Android Bionic."
+    },
+    {
+      "id": "android-platform-tools",
+      "name": "ADB and Platform Tools",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "requires-android-native-build",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Host ADB and logcat; Android phone host requires native port."
+    },
+    {
+      "id": "android-cmdline-tools",
+      "name": "SDK Manager command-line tools",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "linux-host-binaries-not-android",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "A separately bootstrapped sdkmanager must exist before installation."
+    },
+    {
+      "id": "android-ndk",
+      "name": "Android NDK",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "linux-host-clang-not-android",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "C/C++ Android target toolchains; standard Linux host clang does not run inside Android Bionic."
+    },
+    {
+      "id": "android-cmake",
+      "name": "Android SDK CMake",
+      "method": "sdkmanager",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "linux-host-binaries-not-android",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Official CMake through sdkmanager; compatible Android-native host binary is separate."
+    },
+    {
+      "id": "android-gradle-plugin-resolver",
+      "name": "Per-project Android Gradle Plugin",
+      "method": "gradle_maven",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "gradle-on-device-unverified",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Resolve compatible plugin version via Google Maven and Gradle; no standalone ZIP."
+    },
+    {
+      "id": "kotlin-gradle-plugin-resolver",
+      "name": "Kotlin Gradle Plugin",
+      "method": "gradle_maven",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "gradle-on-device-unverified",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Resolve version declared by project via Maven/Gradle."
+    },
+    {
+      "id": "r8-d8",
+      "name": "D8 / R8",
+      "method": "gradle_or_build_tools",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "java-runner-and-aapt2-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "D8 from Build Tools; R8 distributed with AGP."
+    },
+    {
+      "id": "apk-signing",
+      "name": "ApkSigner and Zipalign",
+      "method": "android_build_tools",
+      "host_environments": [
+        "linux-x86_64",
+        "macos"
+      ],
+      "android_arm64_host_status": "android-native-build-tools-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Build Tools apksigner/zipalign; never include signing secrets."
+    },
+    {
+      "id": "android-lint",
+      "name": "Android Lint",
+      "method": "gradle_maven",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "gradle-on-device-unverified",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Run lint through installed AGP/Gradle."
+    },
+    {
+      "id": "bundletool",
+      "name": "Android App Bundle Tool",
+      "method": "maven_google",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "java-runner-required",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Official bundletool dependency; not embedded."
+    },
+    {
+      "id": "chaquopy-python",
+      "name": "Chaquopy Python packaging",
+      "method": "gradle_maven",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "gradle-on-device-unverified",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Chaquopy 17.2.0 already in legacy catalog; Android wheels/recipes limit Python packages."
+    },
+    {
+      "id": "buildozer",
+      "name": "Buildozer",
+      "method": "python_pip",
+      "host_environments": [
+        "linux-ci",
+        "macos"
+      ],
+      "android_arm64_host_status": "cloud-or-linux-host-only",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Buildozer Android frontend; native toolchain requires supported Linux/macOS host."
+    },
+    {
+      "id": "python-for-android",
+      "name": "python-for-android",
+      "method": "python_pip",
+      "host_environments": [
+        "linux-ci",
+        "macos"
+      ],
+      "android_arm64_host_status": "cloud-or-linux-host-only",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Python-to-Android native packaging; native packages may require recipes."
+    },
+    {
+      "id": "flutter-dart",
+      "name": "Flutter SDK and Dart",
+      "method": "official_flutter",
+      "host_environments": [
+        "linux-ci",
+        "macos",
+        "windows"
+      ],
+      "android_arm64_host_status": "android-host-support-unverified",
+      "installed": false,
+      "device_build_verified": false,
+      "published_as_archive": false,
+      "note": "Flutter Android builds on supported hosts; phone execution not established."
+    }
+  ],
+  "sdkmanager_allowlist_examples": [
+    "platforms;android-36",
+    "build-tools;35.0.0",
+    "platform-tools",
+    "ndk;27.0.12077973",
+    "cmake;3.22.1",
+    "cmdline-tools;latest"
+  ],
+  "known_ci_profile": {
+    "jdk": 17,
+    "gradle": "8.14.3",
+    "android_gradle_plugin": "8.11.0",
+    "compile_sdk": 36,
+    "build_tools": "35.0.0",
+    "chaquopy": "17.2.0"
+  },
+  "mobile_proof": "No successful universal on-phone APK build established. Mark ready only after executing binaries and actual build."
+}
