@@ -32,10 +32,10 @@ def desktop_host() -> bool:
 
 def parse_package(name: str) -> str:
     """Reject arbitrary sdkmanager switches, shell syntax and unknown paths."""
-    if name in ("platform-tools", "cmdline-tools;latest"):
+    if name in ("platform-tools", "cmdline-tools;latest", "emulator"):
         return name
     checks = (
-        r"platforms;android-(?:2[1-9]|3[0-6])",
+        r"platforms;android-[1-9][0-9]{1,2}",
         r"build-tools;[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}",
         r"ndk;[0-9]+(?:\.[0-9]+){2,3}",
         r"cmake;[0-9]+(?:\.[0-9]+){2,3}",
@@ -56,6 +56,10 @@ def package_probe(root: Path, name: str) -> Path:
         return root / "cmake" / name.split(";", 1)[1] / "source.properties"
     if name == "platform-tools":
         return root / "platform-tools" / "source.properties"
+    if name == "emulator":
+        return root / "emulator" / "source.properties"
+    if name.startswith("cmdline-tools;"):
+        return root / "cmdline-tools" / name.split(";", 1)[1] / "source.properties"
     if name == "cmdline-tools;latest":
         return root / "cmdline-tools" / "latest" / "source.properties"
     raise ToolError(f"No check known for package {name}")
