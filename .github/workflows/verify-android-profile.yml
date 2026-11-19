@@ -1,0 +1,68 @@
+name: Verify Android-Only IDE Extension Profile
+
+on:
+  push:
+    paths:
+      - "toolchains/android-only-profile.json"
+      - "toolchains/android_setup.py"
+      - "toolchains/test_android_setup.py"
+      - "toolchains/setup_extensions.py"
+      - "toolchains/zip_builder.py"
+      - ".github/workflows/verify-android-profile.yml"
+  pull_request:
+    paths:
+      - "toolchains/android-only-profile.json"
+      - "toolchains/android_setup.py"
+      - "toolchains/test_android_setup.py"
+      - "toolchains/setup_extensions.py"
+      - "toolchains/zip_builder.py"
+      - ".github/workflows/verify-android-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-arm64-only-registry:
+    name: Verify Android Bionic tool selection (NOT phone execution)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify Python scripts compile
+        run: python3 -m compileall -q toolchains
+      - name: Run offline Android profile security tests
+        run: python3 -m unittest discover -s toolchains -p 'test_*.py' -v
+      - name: Default Extensions listing excludes desktop and unported tooling
+        run: |
+          python3 toolchains/setup_extensions.py --compact > /tmp/android-default.json
+          python3 toolchains/android_setup.py catalog > /tmp/android-catalog.json
+          python3 toolchains/setup_extensions.py --target all --compact > /tmp/all-developer-routes.json
+          python3 - <<'PY'
+          import json
+          import subprocess
+          default=json.load(open("/tmp/android-default.json"))
+          catalog=json.load(open("/tmp/android-catalog.json"))
+          all_tools=json.load(open("/tmp/all-developer-routes.json"))
+          assert default["target"] == "android-arm64-v8a-bionic"
+          assert default["count"] == 40
+          assert default["desktop_or_unported_hidden_count"] == 13
+          assert default["all_inventory_count"] == 53
+          assert all_tools["count"] == 53
+          assert catalog["available_upstream_native_archives"] == 11
+          assert not catalog["apk_build_tested_on_this_phone"]
+          assert not any(a["device_ready"] for a in catalog["native_sources"])
+          print("PASS: mobile default is Android ARM64 only; PC routes hidden, 11 native archive sources, none falsely phone-ready")
+          PY
+      - name: Refuse to probe/install Android binaries on GitHub desktop host
+        run: |
+          if python3 toolchains/android_setup.py probe --asset openjdk-17-bionic; then
+            echo "ERROR: desktop runner incorrectly executed Android probe"; exit 1
+          fi
+          if python3 toolchains/android_setup.py install --asset openjdk-17-bionic --approve-download; then
+            echo "ERROR: desktop runner incorrectly allowed phone installation"; exit 1
+          fi
+          echo "PASS: no Linux/PC installation route can masquerade as Android phone"
