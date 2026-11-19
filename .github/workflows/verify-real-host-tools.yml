@@ -3,15 +3,23 @@ name: Verify Real Python Eye Host Toolchains
 on:
   push:
     paths:
-      - 'toolchains/**'
+      - 'toolchains/probe_tools.py'
+      - 'toolchains/sdk_installer.py'
+      - 'toolchains/provision_packagers.py'
       - 'kotlin-smoke-test/**'
       - '.github/workflows/verify-real-host-tools.yml'
   pull_request:
     paths:
-      - 'toolchains/**'
+      - 'toolchains/probe_tools.py'
+      - 'toolchains/sdk_installer.py'
+      - 'toolchains/provision_packagers.py'
       - 'kotlin-smoke-test/**'
       - '.github/workflows/verify-real-host-tools.yml'
   workflow_dispatch:
+
+concurrency:
+  group: python-eye-real-host-tools-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
