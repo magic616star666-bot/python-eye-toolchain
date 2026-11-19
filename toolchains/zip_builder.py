@@ -192,7 +192,13 @@ def run_build(root: Path, result: dict, *, use_wrapper: bool, output_dir: Path) 
         candidates = list(root.glob("*/build/outputs/apk/**/*.apk")) + list(root.glob("build/outputs/apk/**/*.apk"))
     found = []
     for apk in candidates[:30]:
-        if apk.is_file() and apk.stat().st_size > 0:
+        if apk.is_file() and apk.stat().st_size > 0 and zipfile.is_zipfile(apk):
+            with zipfile.ZipFile(apk) as built:
+                members = set(built.namelist())
+                # Verify APK is at least a structurally valid Android package,
+                # not an arbitrary file named .apk.
+                if "AndroidManifest.xml" not in members:
+                    continue
             target = output_dir / apk.name
             if target.exists():
                 target = output_dir / (apk.parent.name + "-" + apk.name)
