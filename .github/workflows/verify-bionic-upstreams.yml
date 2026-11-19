@@ -1,0 +1,52 @@
+name: Verify Android Bionic Native Archive Sources
+
+on:
+  push:
+    paths:
+      - 'toolchains/mobile-artifacts.json'
+      - 'toolchains/mobile_installer.py'
+      - 'toolchains/verify_mobile_sources.py'
+      - 'toolchains/versions_manager.py'
+      - 'toolchains/test_mobile_installer.py'
+      - '.github/workflows/verify-bionic-upstreams.yml'
+  pull_request:
+    paths:
+      - 'toolchains/mobile-artifacts.json'
+      - 'toolchains/mobile_installer.py'
+      - 'toolchains/verify_mobile_sources.py'
+      - 'toolchains/versions_manager.py'
+      - 'toolchains/test_mobile_installer.py'
+      - '.github/workflows/verify-bionic-upstreams.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-upstreams:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check safe import and no-fake-ready invariants
+        run: |
+          python -m compileall -q toolchains
+          python -m unittest discover -s toolchains -p 'test_*.py' -v
+          python3 toolchains/verify_mobile_sources.py
+      - name: Confirm actual live original GitHub Release SHA-256 metadata, sizes and direct asset links
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 toolchains/verify_mobile_sources.py --live
+      - name: Confirm Android binaries are not falsely executed on GitHub Linux
+        run: |
+          python3 toolchains/mobile_installer.py list > /tmp/bionic-manifest.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open("/tmp/bionic-manifest.json"))
+          assert data["android_phone_apk_build_verified"] is False
+          assert all(not a["local_device_probe_passed"] for a in data["assets"])
+          print("PASS: all Bionic assets are verified sources, none falsely labeled phone-ready")
+          PY
