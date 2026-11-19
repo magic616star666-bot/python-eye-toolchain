@@ -20,7 +20,21 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Legacy Java compiler; select only when project Gradle/AGP supports it."
+      "note": "Legacy Java compiler; select only when project Gradle/AGP supports it.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "GitHub Actions actions/setup-java@v4",
+        "method": "official_temurin_distributor",
+        "version": "8",
+        "source": "https://adoptium.net/",
+        "tested_on_ci_linux_x86_64": true,
+        "local_installation_note": "For local desktop use, install a matching Temurin JDK from Adoptium; GitHub CI uses setup-java. Android Bionic binaries are separate."
+      }
     },
     {
       "id": "jdk-11",
@@ -35,7 +49,21 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Legacy Java projects; Android Gradle Plugin 8.11 requires Java 17."
+      "note": "Legacy Java projects; Android Gradle Plugin 8.11 requires Java 17.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "GitHub Actions actions/setup-java@v4",
+        "method": "official_temurin_distributor",
+        "version": "11",
+        "source": "https://adoptium.net/",
+        "tested_on_ci_linux_x86_64": true,
+        "local_installation_note": "For local desktop use, install a matching Temurin JDK from Adoptium; GitHub CI uses setup-java. Android Bionic binaries are separate."
+      }
     },
     {
       "id": "jdk-21",
@@ -50,7 +78,21 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Modern Java compiler subject to project Gradle compatibility."
+      "note": "Modern Java compiler subject to project Gradle compatibility.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "GitHub Actions actions/setup-java@v4",
+        "method": "official_temurin_distributor",
+        "version": "21",
+        "source": "https://adoptium.net/",
+        "tested_on_ci_linux_x86_64": true,
+        "local_installation_note": "For local desktop use, install a matching Temurin JDK from Adoptium; GitHub CI uses setup-java. Android Bionic binaries are separate."
+      }
     },
     {
       "id": "gradle-wrapper",
@@ -65,7 +107,19 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Use project-pinned Gradle; executing a wrapper from ZIP runs untrusted project code, requires explicit approval."
+      "note": "Use project-pinned Gradle; executing a wrapper from ZIP runs untrusted project code, requires explicit approval.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "project_wrapper",
+        "source": "https://docs.gradle.org/current/userguide/gradle_wrapper.html",
+        "executing_requires_project_review": true,
+        "tested_on_ci_linux_x86_64": false
+      }
     },
     {
       "id": "android-sdk-platforms",
@@ -79,7 +133,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Official Google sdkmanager installs requested compileSdk, with explicit license consent."
+      "note": "Official Google sdkmanager installs requested compileSdk, with explicit license consent.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "platforms;android-36",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-build-tools",
@@ -93,7 +165,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Official Google sdkmanager; Linux host binaries cannot execute unchanged on Android Bionic."
+      "note": "Official Google sdkmanager; Linux host binaries cannot execute unchanged on Android Bionic.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "build-tools;35.0.0",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-platform-tools",
@@ -107,7 +197,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Host ADB and logcat; Android phone host requires native port."
+      "note": "Host ADB and logcat; Android phone host requires native port.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "platform-tools",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-cmdline-tools",
@@ -121,7 +229,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "A separately bootstrapped sdkmanager must exist before installation."
+      "note": "A separately bootstrapped sdkmanager must exist before installation.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "cmdline-tools;latest",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": false
+      }
     },
     {
       "id": "android-ndk",
@@ -135,7 +261,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "C/C++ Android target toolchains; standard Linux host clang does not run inside Android Bionic."
+      "note": "C/C++ Android target toolchains; standard Linux host clang does not run inside Android Bionic.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "ndk;27.0.12077973",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-cmake",
@@ -149,7 +293,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Official CMake through sdkmanager; compatible Android-native host binary is separate."
+      "note": "Official CMake through sdkmanager; compatible Android-native host binary is separate.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/sdk_installer.py",
+        "method": "official_google_sdkmanager",
+        "package_id": "cmake;3.22.1",
+        "license_consent_required": true,
+        "download_source": "https://dl.google.com/android/repository/",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-gradle-plugin-resolver",
@@ -164,7 +326,20 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Resolve compatible plugin version via Google Maven and Gradle; no standalone ZIP."
+      "note": "Resolve compatible plugin version via Google Maven and Gradle; no standalone ZIP.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "gradle_maven_project_specific",
+        "source": "https://maven.google.com/",
+        "verification_scope": "real_project_build_only",
+        "tested_on_ci_linux_x86_64": true,
+        "version": "8.11.0"
+      }
     },
     {
       "id": "kotlin-gradle-plugin-resolver",
@@ -179,7 +354,20 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Resolve version declared by project via Maven/Gradle."
+      "note": "Resolve version declared by project via Maven/Gradle.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "gradle_maven_project_specific",
+        "source": "https://maven.google.com/",
+        "verification_scope": "real_project_build_only",
+        "tested_on_ci_linux_x86_64": true,
+        "version": "2.1.20"
+      }
     },
     {
       "id": "r8-d8",
@@ -194,7 +382,19 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "D8 from Build Tools; R8 distributed with AGP."
+      "note": "D8 from Build Tools; R8 distributed with AGP.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "gradle_or_build_tools",
+        "source": "https://developer.android.com/build",
+        "verification_scope": "local_real_executable_probe_required",
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "apk-signing",
@@ -208,7 +408,19 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Build Tools apksigner/zipalign; never include signing secrets."
+      "note": "Build Tools apksigner/zipalign; never include signing secrets.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "android_build_tools",
+        "source": "https://developer.android.com/build",
+        "verification_scope": "local_real_executable_probe_required",
+        "tested_on_ci_linux_x86_64": true
+      }
     },
     {
       "id": "android-lint",
@@ -223,7 +435,20 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Run lint through installed AGP/Gradle."
+      "note": "Run lint through installed AGP/Gradle.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "gradle_maven_project_specific",
+        "source": "https://maven.google.com/",
+        "verification_scope": "real_project_build_only",
+        "tested_on_ci_linux_x86_64": false,
+        "version": "project-dependent"
+      }
     },
     {
       "id": "bundletool",
@@ -238,7 +463,19 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Official bundletool dependency; not embedded."
+      "note": "Official bundletool dependency; not embedded.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "maven_google",
+        "source": "https://github.com/google/bundletool/releases",
+        "verification_scope": "local_real_executable_probe_required",
+        "tested_on_ci_linux_x86_64": false
+      }
     },
     {
       "id": "chaquopy-python",
@@ -253,7 +490,20 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Chaquopy 17.2.0 already in legacy catalog; Android wheels/recipes limit Python packages."
+      "note": "Chaquopy 17.2.0 already in legacy catalog; Android wheels/recipes limit Python packages.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "method": "gradle_maven_project_specific",
+        "source": "https://maven.google.com/",
+        "verification_scope": "real_project_build_only",
+        "tested_on_ci_linux_x86_64": true,
+        "version": "17.2.0"
+      }
     },
     {
       "id": "buildozer",
@@ -267,7 +517,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Buildozer Android frontend; native toolchain requires supported Linux/macOS host."
+      "note": "Buildozer Android frontend; native toolchain requires supported Linux/macOS host.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/provision_packagers.py",
+        "method": "pypi_isolated_venv",
+        "version": "1.6.0",
+        "source": "https://pypi.org/project/buildozer/",
+        "supported_execution_hosts": [
+          "linux",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true,
+        "verification_scope": "package_import_and_cli_only_not_apk"
+      }
     },
     {
       "id": "python-for-android",
@@ -281,7 +549,25 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Python-to-Android native packaging; native packages may require recipes."
+      "note": "Python-to-Android native packaging; native packages may require recipes.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "toolchains/provision_packagers.py",
+        "method": "pypi_isolated_venv",
+        "version": "2026.5.9",
+        "source": "https://pypi.org/project/python-for-android/",
+        "supported_execution_hosts": [
+          "linux",
+          "macos"
+        ],
+        "tested_on_ci_linux_x86_64": true,
+        "verification_scope": "package_import_and_cli_only_not_apk"
+      }
     },
     {
       "id": "flutter-dart",
@@ -296,7 +582,26 @@
       "installed": false,
       "device_build_verified": false,
       "published_as_archive": false,
-      "note": "Flutter Android builds on supported hosts; phone execution not established."
+      "note": "Flutter Android builds on supported hosts; phone execution not established.",
+      "provisioning": {
+        "provisioned_automatically": false,
+        "android_phone_ready": false,
+        "real_installation_must_succeed": true,
+        "local_probe": "toolchains/probe_tools.py",
+        "ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+        "device_claim": "unverified_not_eligible_for_ready",
+        "adapter": "GitHub Actions subosito/flutter-action@v2",
+        "method": "official_flutter_archive",
+        "version": "3.47.9",
+        "source": "https://github.com/flutter/flutter/releases/tag/3.47.9",
+        "supported_execution_hosts": [
+          "linux-x86_64",
+          "macos",
+          "windows"
+        ],
+        "tested_on_ci_linux_x86_64": false,
+        "verification_scope": "APK build pending"
+      }
     }
   ],
   "sdkmanager_allowlist_examples": [
@@ -315,5 +620,8 @@
     "build_tools": "35.0.0",
     "chaquopy": "17.2.0"
   },
-  "mobile_proof": "No successful universal on-phone APK build established. Mark ready only after executing binaries and actual build."
+  "mobile_proof": "No successful universal on-phone APK build established. Mark ready only after executing binaries and actual build.",
+  "provisioner_docs": "toolchains/README.md",
+  "real_host_ci_workflow": ".github/workflows/verify-real-host-tools.yml",
+  "test_scope_warning": "CI tool proof is only for the GitHub Linux x86_64 runner, not Android ARM64/Bionic phone."
 }
