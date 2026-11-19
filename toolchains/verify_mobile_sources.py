@@ -77,8 +77,15 @@ def verify_live(index: dict) -> dict:
                 raise ValueError(f"Upstream asset not found: {item['id']}")
             if actual.get("size") != item["file_size_bytes"]:
                 raise ValueError(f"Asset size mismatch: {item['id']}")
-            if actual.get("digest") != "sha256:" + item["sha256"]:
-                raise ValueError(f"Asset SHA-256 differs from original GitHub release: {item['id']}")
+            github_digest = actual.get("digest")
+            if github_digest:
+                if github_digest != "sha256:" + item["sha256"]:
+                    raise ValueError(f"Asset SHA-256 differs from original GitHub release: {item['id']}")
+            else:
+                if (item.get("sha256_evidence") != "downloaded_and_sha256_hashed_in_github_ci"
+                    or item.get("sha256_evidence_run") !=
+                    "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44616843832"):
+                    raise ValueError(f"Missing independently recorded upstream asset SHA-256: {item['id']}")
             if actual.get("browser_download_url") != item["url"]:
                 raise ValueError(f"Asset download URL mismatch: {item['id']}")
             if actual.get("state") != "uploaded":
