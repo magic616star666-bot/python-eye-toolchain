@@ -1,0 +1,49 @@
+name: Verify Python Eye Extended Toolchains
+
+on:
+  push:
+    paths:
+      - 'toolchains/**'
+      - '.github/workflows/verify-extended-toolchains.yml'
+  pull_request:
+    paths:
+      - 'toolchains/**'
+      - '.github/workflows/verify-extended-toolchains.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-extended-toolchains:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile new toolchain Python files
+        run: python -m compileall -q toolchains
+      - name: Exercise ZIP safety and project detection regression tests
+        run: python -m unittest discover -s toolchains -p 'test_*.py' -v
+      - name: Verify original eight-tool IDE catalog is unchanged and valid
+        run: python scripts/validate_catalog.py
+      - name: Verify extended tools data IDs and status are non-misleading
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          obj = json.loads(Path("toolchains/extended-tools.json").read_text())
+          tools = obj["tools"]
+          ids = [x["id"] for x in tools]
+          assert obj["schema_version"] == 1 and len(tools) == 20, len(tools)
+          assert len(set(ids)) == len(ids), ids
+          for t in tools:
+              assert t["installed"] is False
+              assert t["device_build_verified"] is False
+              assert t["published_as_archive"] is False
+              assert t["android_arm64_host_status"]
+          assert len(json.loads(Path("tools.json").read_text())["tools"]) == 8
+          print("PASS: 20 non-breaking extended routes; existing 8 preserved")
+          PY
