@@ -92,7 +92,8 @@ def run_probe(path: Path, item: dict) -> dict:
             num = int(major.group(1)) if major else -1
         else:
             num = int(major.group(2))
-        requested = 17 if item["id"].startswith("openjdk-17") else 21
+        requested = (11 if item["id"].startswith("openjdk-11")
+                     else 17 if item["id"].startswith("openjdk-17") else 21)
         if num != requested:
             raise InstallError(f"Java major mismatch: {num} != {requested}")
         command([str(javac), "-version"])
@@ -115,6 +116,10 @@ def run_probe(path: Path, item: dict) -> dict:
         if "Zip alignment utility" not in info and "zipalign" not in info.lower():
             raise InstallError("zipalign does not respond with recognizable usage")
         verified.extend(["aapt2 version", "zipalign -h"])
+    elif family == "platform-tools":
+        adb = locate_binary(path, "adb")
+        command([str(adb), "version"], expected="Android Debug Bridge")
+        verified.append("adb version")
     elif family == "d8-apksigner":
         jars = list(path.rglob("d8.jar")) + list(path.rglob("apksigner.jar"))
         if not any(p.name == "d8.jar" for p in jars) or not any(p.name == "apksigner.jar" for p in jars):
