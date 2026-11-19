@@ -1,0 +1,74 @@
+name: Verify Multi-Version JDK and Gradle Downloads
+
+on:
+  push:
+    paths:
+      - 'toolchains/versions_manager.py'
+      - 'toolchains/test_versions_manager.py'
+      - '.github/workflows/verify-multi-version-downloads.yml'
+  pull_request:
+    paths:
+      - 'toolchains/versions_manager.py'
+      - 'toolchains/test_versions_manager.py'
+      - '.github/workflows/verify-multi-version-downloads.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: pyeye-version-downloads-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m unittest discover -s toolchains -p 'test_*.py' -v
+      - run: python3 toolchains/versions_manager.py list
+
+  install-jdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['11', '21']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download JDK from official Adoptium metadata and verify SHA-256 and executable
+        run: |
+          python3 toolchains/versions_manager.py install --kind jdk --version '${{ matrix.java }}' \
+            --root "$RUNNER_TEMP/python-eye-versions" --approve-download
+          python3 toolchains/versions_manager.py status --kind jdk --version '${{ matrix.java }}' \
+            --root "$RUNNER_TEMP/python-eye-versions"
+
+  install-gradle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['8.14.3', '9.9.1']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download official versioned Gradle with official SHA-256 and execute it
+        run: |
+          python3 toolchains/versions_manager.py install --kind gradle --version '${{ matrix.version }}' \
+            --root "$RUNNER_TEMP/python-eye-versions" --approve-download
+          python3 toolchains/versions_manager.py status --kind gradle --version '${{ matrix.version }}' \
+            --root "$RUNNER_TEMP/python-eye-versions"
