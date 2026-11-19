@@ -80,3 +80,21 @@ The GitHub Python CLI installer is **for CI/compatible hosts**; the Android app 
 
 An important distinction: the IDE's own Code on the Go Gradle build uses AGP 9.3.1 / Kotlin 2.3.21 / Gradle 9.6.1; these pre-existing IDE build dependencies were deliberately preserved. The optional downloaded toolchain is separate (AGP 8.11 / Kotlin 2.1.20 / Gradle 8.14.3). Do not mix the two build profiles.
 
+
+
+## Extended toolchains for broader Android ZIP builds (20 November 2026)
+
+See **[Extended Toolchains + Safe ZIP Builder](toolchains/README.md)** for 20 optional
+provisioning routes across Java/JDK, Android SDK/NDK/CMake, Gradle, Flutter,
+Buildozer, python-for-android, Chaquopy, APK signing, debugging and linting.
+
+- [Extended route registry](toolchains/extended-tools.json) — **not** a downloadable binary list.
+- [Project ZIP detector and APK builder](toolchains/zip_builder.py) — inspect without execution; `build --execute` for reviewed projects.
+- [Google SDK/NDK/CMake installer](toolchains/sdk_installer.py) — supported desktop hosts, official sdkmanager and explicit SDK license consent.
+- [Passing ZIP safety CI](https://github.com/magic616star666-bot/python-eye-toolchain/actions/workflows/verify-extended-toolchains.yml) — tested on GitHub Linux runners, **not** on the user's Android phone.
+
+The existing eight-tool `tools.json` remains unchanged for compatibility with
+the delivered Kotlin Extensions parser. Extended routes must be integrated as
+a separate catalog until the app's parser and real Android-native runtime
+are updated. Generic Python/Java ZIPs without Android packaging cannot
+be automatically converted into APKs.
