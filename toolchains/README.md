@@ -51,10 +51,11 @@ python3 -m unittest discover -s toolchains -p 'test_*.py' -v
 ```
 
 The SDK installer **does not bootstrap** a missing `sdkmanager`, Java,
-Gradle, Buildozer, Flutter, NDK native host port, or command-line tools.
-Those components must already be present on the host or installed through
-their official vendor-specific mechanisms. The registry is not a 20-binary
-download catalog. Source-only support does not equal installed and tested.
+Gradle, Flutter, Android-native NDK host port, or command-line tools.
+Buildozer and python-for-android now have an independent, real venv installer
+(`provision_packagers.py`) for supported desktop hosts. Other components must
+be supplied through their official vendor-specific mechanisms. The registry is
+not a 20-binary download catalog. Source-only support does not equal installed.
 
 ## Supported and unsupported ZIP families
 
@@ -101,3 +102,38 @@ on GitHub Actions.
 **Sources:** [AGP 8.11 compatibility](https://developer.android.com/build/releases/agp-8-11-0-release-notes),
 [Chaquopy 17.2 compatibility](https://chaquo.com/chaquopy/doc/current/versions.html),
 [Buildozer installation](https://buildozer.readthedocs.io/en/latest/installation/).
+
+## Real host CI: verified Java, Kotlin, Flutter, SDK, NDK, CMake and Python CLIs
+
+The new [**real toolchain CI run (7 successful jobs)**](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44613219027)
+actually compiled Java using JDK 8/11/21, compiled a **Kotlin 2.1.20 APK**
+with AGP 8.11.0, ran Android Build Tools 35, NDK 27.0.12077973 and
+CMake 3.22.1, **built a real Flutter 3.47.9 APK**, and installed the
+Buildozer 1.6.0 / python-for-android 2026.5.9 packages (CLI checks only).
+
+The existing real Chaquopy Python APK test also passed on GitHub Linux.
+Read [CI_PROOF.md](CI_PROOF.md) for exact verified scope and
+**why this does not prove Android-on-phone toolchain readiness.**
+
+### Setup, diagnose and plan (no app integration required yet)
+
+```bash
+# Read-only. Shows actual locally runnable tools; no network or downloads.
+python3 toolchains/probe_tools.py --sdk-root "$ANDROID_HOME"
+
+# Inspect ZIP safely and select only necessary tool families.
+python3 toolchains/plan_project.py path/to/android-project.zip
+
+# Install real Buildozer + python-for-android into an isolated host venv.
+# Only on supported Linux/macOS; requires explicit approval.
+python3 toolchains/provision_packagers.py install \
+  --prefix "$HOME/python-eye-packagers" --approve-install
+
+# Verify installed Python packager versions, without downloading anything.
+python3 toolchains/provision_packagers.py status --prefix "$HOME/python-eye-packagers"
+```
+
+**The Kotlin IDE source and the Android phone's complete build environment
+are not included in this public toolchain repo.** The app must use this
+registry as setup *instructions*, not a green Ready indication, until real
+device probes and APK build tests pass.
