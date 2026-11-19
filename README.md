@@ -98,3 +98,18 @@ the delivered Kotlin Extensions parser. Extended routes must be integrated as
 a separate catalog until the app's parser and real Android-native runtime
 are updated. Generic Python/Java ZIPs without Android packaging cannot
 be automatically converted into APKs.
+
+
+### Real host toolchain verification (20 November 2026)
+
+[**7-job passing GitHub Actions run**](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44613219027):
+JDK 8/11/21 Java compile-and-run; Kotlin 2.1.20 / AGP 8.11 real APK;
+SDK 36 / Build Tools 35 / NDK 27 / CMake 3.22 executable checks;
+Flutter 3.47.9 real Android APK; Buildozer + python-for-android import and CLI checks.
+
+See [CI evidence and limitations](toolchains/CI_PROOF.md), the
+[automatic ZIP dependency planner](toolchains/plan_project.py), and
+[real local-executable tool doctor](toolchains/probe_tools.py).
+**All proof above is from GitHub Linux x86_64 CI, not actual Android phone
+compilation.** The five pre-existing hosted Android tool ZIP/JDK archives
+are unchanged and do not establish 28 on-device working binaries.
