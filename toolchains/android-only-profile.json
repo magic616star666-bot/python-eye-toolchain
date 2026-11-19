@@ -1,0 +1,508 @@
+{
+  "schema_version": 1,
+  "profile_id": "python-eye-android-arm64-bionic-only",
+  "target_os": "android",
+  "target_abi": "arm64-v8a",
+  "native_libc": "bionic",
+  "default_for_python_eye_ide": true,
+  "stated_goal": "ONLY programs that can actually run on Android ARM64/Bionic, or Android-host JVM Gradle/Maven plugins where a verified Android JVM exists",
+  "excludes": "x86_64 desktop host binaries, desktop-only sdkmanager/NDK, Termux-only shims without proof inside IDE sandbox, desktop/cloud CI as phone evidence",
+  "readiness_policy": {
+    "catalog_entry_is_ready": false,
+    "downloaded_asset_is_ready": false,
+    "checked_sha256_is_ready": false,
+    "cli_probe_required": true,
+    "apk_build_required_for_builder_verified": true,
+    "never_auto_claim_all_tools_working": true
+  },
+  "desktop_routes": "legacy and extended/addon registries retained for docs and compatibility, but NOT offered by Android IDE profile",
+  "core_android_workflow": [
+    {
+      "id": "openjdk-17",
+      "name": "OpenJDK 17",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "gradle",
+      "name": "Gradle",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "android-sdk-36",
+      "name": "Android SDK Platform 36",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "aapt2-zipalign",
+      "name": "AAPT2 + Zipalign",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "d8-apksigner",
+      "name": "D8 + APK Signer",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "kotlin-compiler",
+      "name": "Kotlin Compiler",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "android-gradle-plugin",
+      "name": "Android Gradle Plugin",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "chaquopy-build",
+      "name": "Chaquopy Build Plugin",
+      "from": "legacy",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "gradle-wrapper",
+      "name": "Per-project Gradle Wrapper",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "android-sdk-platforms",
+      "name": "Android SDK API platforms",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "android-gradle-plugin-resolver",
+      "name": "Per-project Android Gradle Plugin",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "kotlin-gradle-plugin-resolver",
+      "name": "Kotlin Gradle Plugin",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "r8-d8",
+      "name": "D8 / R8",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "apk-signing",
+      "name": "ApkSigner and Zipalign",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "android-lint",
+      "name": "Android Lint",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "bundletool",
+      "name": "Android App Bundle Tool",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "chaquopy-python",
+      "name": "Chaquopy Python packaging",
+      "from": "extended",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "ksp-gradle-plugin",
+      "name": "Kotlin Symbol Processing",
+      "from": "addons",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "kapt-gradle-plugin",
+      "name": "Kotlin KAPT",
+      "from": "addons",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "compose-compiler-plugin",
+      "name": "Jetpack Compose Compiler",
+      "from": "addons",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    },
+    {
+      "id": "gradle-compatibility",
+      "name": "Gradle/JDK/AGP compatibility planner",
+      "from": "addons",
+      "availability": "android_core_or_jvm_dependency",
+      "device_ready": false,
+      "install_action": "device_probe_or_managed_project_resolution",
+      "verification": "Android device probe/build required"
+    }
+  ],
+  "optional_android_native": [
+    {
+      "id": "jdk-11",
+      "name": "JDK 11",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "jdk-21",
+      "name": "JDK 21",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "android-build-tools",
+      "name": "Android SDK Build Tools",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "android-platform-tools",
+      "name": "ADB and Platform Tools",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "android-ndk",
+      "name": "Android NDK",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "android-cmake",
+      "name": "Android SDK CMake",
+      "from": "extended",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "apache-maven",
+      "name": "Apache Maven",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "apache-ant",
+      "name": "Apache Ant",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "android-aidl",
+      "name": "Android AIDL compiler",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "ninja-build",
+      "name": "Ninja",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "llvm-clang",
+      "name": "LLVM/Clang toolchain",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "rustup",
+      "name": "Rust toolchain manager",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "rust-cargo",
+      "name": "Rust/Cargo",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "npm",
+      "name": "npm",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "git-cli",
+      "name": "Git",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "apk-analyzer",
+      "name": "APK Analyzer",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "logcat-debug",
+      "name": "Logcat / ADB debugging",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    },
+    {
+      "id": "release-signing",
+      "name": "APK release signing",
+      "from": "addons",
+      "availability": "android_native_port_required",
+      "device_ready": false,
+      "install_action": "only_if_a_real_Bionic_binary_or_JVM_runner_is_available",
+      "verification": "Android arm64 native executable probe required; generic Linux ARM64 does not qualify"
+    }
+  ],
+  "blocked_on_android_until_ported": [
+    {
+      "id": "jdk-8",
+      "name": "JDK 8",
+      "from": "extended",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "android-cmdline-tools",
+      "name": "SDK Manager command-line tools",
+      "from": "extended",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "buildozer",
+      "name": "Buildozer",
+      "from": "extended",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "python-for-android",
+      "name": "python-for-android",
+      "from": "extended",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "flutter-dart",
+      "name": "Flutter SDK and Dart",
+      "from": "extended",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "react-native-cli",
+      "name": "React Native CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "expo-cli",
+      "name": "Expo CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "eas-cli",
+      "name": "Expo EAS CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "capacitor-cli",
+      "name": "Capacitor CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "cordova-cli",
+      "name": "Apache Cordova CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "beeware-briefcase",
+      "name": "BeeWare Briefcase",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "flet-cli",
+      "name": "Flet CLI",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    },
+    {
+      "id": "cloud-build-fallback",
+      "name": "GitHub Actions cloud build option",
+      "from": "addons",
+      "availability": "blocked_from_android_auto_setup",
+      "device_ready": false,
+      "install_action": "none",
+      "verification": "No validated in-IDE native route; never use desktop installer"
+    }
+  ],
+  "native_asset_catalog": "mobile-artifacts.json",
+  "android_setup_cli": "android_setup.py",
+  "legacy_compatibility": "keep root tools.json unchanged with exactly 8 entries",
+  "no_silent_downloads": true,
+  "download_consent_required": true,
+  "untrusted_third_party_execution_requires_approval": true
+}
