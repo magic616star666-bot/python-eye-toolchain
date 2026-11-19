@@ -45,9 +45,12 @@ class MobileTests(unittest.TestCase):
     def test_fake_verified_state_cannot_come_from_catalog(self):
         data = mobile.load_index()
         data["assets"][0]["installed"] = True
-        with patch.object(mobile.INDEX, "read_text", return_value=json.dumps(data)):
-            with self.assertRaisesRegex(InstallError, "Untrusted ready"):
-                mobile.load_index()
+        with tempfile.TemporaryDirectory() as td:
+            spoof = Path(td) / "mobile-artifacts.json"
+            spoof.write_text(json.dumps(data))
+            with patch.object(mobile, "INDEX", spoof):
+                with self.assertRaisesRegex(InstallError, "Untrusted ready"):
+                    mobile.load_index()
 
 
 if __name__ == "__main__":
