@@ -39,6 +39,7 @@ def parse_package(name: str) -> str:
         r"build-tools;[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}",
         r"ndk;[0-9]+(?:\.[0-9]+){2,3}",
         r"cmake;[0-9]+(?:\.[0-9]+){2,3}",
+        r"cmdline-tools;[0-9]+(?:\.[0-9]+){0,2}",
     )
     if any(re.fullmatch(pattern, name) for pattern in checks):
         return name
@@ -60,8 +61,6 @@ def package_probe(root: Path, name: str) -> Path:
         return root / "emulator" / "source.properties"
     if name.startswith("cmdline-tools;"):
         return root / "cmdline-tools" / name.split(";", 1)[1] / "source.properties"
-    if name == "cmdline-tools;latest":
-        return root / "cmdline-tools" / "latest" / "source.properties"
     raise ToolError(f"No check known for package {name}")
 
 
