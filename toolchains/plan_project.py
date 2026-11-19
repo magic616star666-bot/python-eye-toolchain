@@ -52,8 +52,11 @@ def declared_plugins(project: Path) -> dict:
 
 def propose(project: Path) -> dict:
     project = find_root(project)
-    kind = inspect_project(project)["project_type"]
+    inspected = inspect_project(project)
+    kind = inspected["project_type"]
     plugins = declared_plugins(project)
+    from extra_families import plugin_features
+    feature_ids = plugin_features(project)
     android_native = any(k in kind for k in ("android-gradle",)) and plugins["has_native_build_script"]
     mapping = {
         "android-gradle": ["openjdk-17", "gradle", "android-sdk-36",
@@ -65,8 +68,19 @@ def propose(project: Path) -> dict:
                     "android-build-tools", "android-platform-tools"],
         "buildozer-python": ["buildozer", "python-for-android", "android-ndk",
                              "android-sdk-platforms", "android-build-tools"],
+        "react-native": ["nodejs", "npm", "react-native-cli", "openjdk-17", "gradle", "android-sdk-platforms"],
+        "expo": ["nodejs", "npm", "expo-cli", "openjdk-17", "gradle", "android-sdk-platforms"],
+        "capacitor": ["nodejs", "npm", "capacitor-cli", "openjdk-17", "gradle", "android-sdk-platforms"],
+        "cordova": ["nodejs", "npm", "cordova-cli", "openjdk-17", "gradle", "android-sdk-platforms"],
+        "flet-python": ["flet-cli", "flutter-dart", "android-sdk-platforms"],
+        "beeware-briefcase": ["beeware-briefcase", "openjdk-17", "gradle", "android-sdk-platforms"],
+        "maven-java-library": ["apache-maven"],
+        "ant-java-library": ["apache-ant"],
+        "rust-library": ["rust-cargo", "android-ndk"],
+        "node-project": ["nodejs", "npm"],
     }
     requires = list(mapping.get(kind, []))
+    requires.extend(x for x in feature_ids if x not in requires)
     if kind.startswith("android-gradle"):
         uses_kotlin = (plugins["kotlin_plugin"] or
                        any(project.rglob("*.kt")))
@@ -81,8 +95,8 @@ def propose(project: Path) -> dict:
         warnings.append("Project Gradle wrapper differs from 8.14.3; respect project-pinned version and check its AGP/JDK compatibility.")
     if plugins["kotlin_plugin"] and plugins["kotlin_plugin"] != KOTLIN_2120:
         warnings.append("Kotlin plugin differs from the verified 2.1.20 profile; do not force another version.")
-    if not requires:
-        warnings.append("Not a recognized Android APK packaging project. Plain Python or Java source needs a matching Android app/project configuration.")
+    if not inspected["apk_build_supported"]:
+        warnings.extend(inspected.get("framework_blockers") or ["Not an APK-ready Android packaging project. A plain Java/Python/Node/Rust ZIP is not an Android app."])
     if kind == "buildozer-python":
         warnings.append("Buildozer/python-for-android requires supported Linux/macOS host; direct Android Bionic hosting is not verified.")
     if any("android-ndk" == t for t in requires):
@@ -90,7 +104,8 @@ def propose(project: Path) -> dict:
     # No public registry entry by itself indicates a successful phone installation.
     return {
         "project_type": kind,
-        "supported_apk_route": bool(requires),
+        "supported_apk_route": inspected["apk_build_supported"],
+        "additional_framework_features": feature_ids,
         "recommended_legacy_tool_ids": [x for x in requires if x in {
             "openjdk-17", "gradle", "android-sdk-36", "aapt2-zipalign",
             "d8-apksigner", "kotlin-compiler", "android-gradle-plugin", "chaquopy-build"
