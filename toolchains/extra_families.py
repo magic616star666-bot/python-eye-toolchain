@@ -47,9 +47,11 @@ def detect_addon(root: Path) -> dict:
     if (root / "buildozer.spec").is_file():
         return {"project_type": "unknown", "reason": "handled by legacy Buildozer route"}
     data = pkg(root)
-    dependencies = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
-    if not isinstance(dependencies, dict):
-        dependencies = {}
+    dependencies = {}
+    for key in ("dependencies", "devDependencies"):
+        section = data.get(key)
+        if isinstance(section, dict):
+            dependencies.update(section)
     briefcase = bool((root / "pyproject.toml").is_file() and
                     re.search(r"(?m)^\[tool\.briefcase(?:\.|\])", read_small(root / "pyproject.toml")))
     flet = bool((root / "pyproject.toml").is_file() and
@@ -183,7 +185,7 @@ def run_build(root: Path, result: dict, output: Path, use_wrapper: bool) -> dict
         if not executable:
             raise RuntimeError("Flet CLI missing")
         build_root = root
-        cmd = [executable, "build", "apk", "--yes"]
+        cmd = [executable, "build", "apk"]
     elif kind == "beeware-briefcase":
         executable = os.environ.get("BRIEFCASE_BIN") or shutil.which("briefcase")
         if not executable:
