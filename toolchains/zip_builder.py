@@ -109,7 +109,11 @@ def inspect_project(root: Path) -> dict:
     flutter = pubspec.is_file() and re.search(r"(?m)^flutter\s*:", pubspec.read_text("utf-8", errors="replace")[:100_000]) is not None
     gradle = any((root / x).exists() for x in ("settings.gradle", "settings.gradle.kts", "build.gradle", "build.gradle.kts"))
     android = gradle and android_app_plugin(root)
-    if flutter:
+    from extra_families import detect_addon, plugin_features
+    addon = detect_addon(root)
+    if addon["project_type"] not in ("unknown",):
+        project_type = addon["project_type"]
+    elif flutter:
         project_type = "flutter"
     elif android:
         has_python = (root / "app/src/main/python").is_dir() or any(
@@ -134,9 +138,25 @@ def inspect_project(root: Path) -> dict:
         "buildozer-python": ("buildozer android debug", "Buildozer, python-for-android, Linux/macOS, NDK, SDK"),
     }
     command, needs = support.get(project_type, (None, "Android app source project or Android packaging definition"))
+    if addon["project_type"] == project_type and project_type not in ("unknown",):
+        command = {
+            "capacitor": "gradle assembleDebug (from android/)",
+            "react-native": "gradle assembleDebug (from android/)",
+            "expo": "gradle assembleDebug (from android/)",
+            "cordova": "cordova build android --debug",
+            "flet-python": "flet build apk",
+            "beeware-briefcase": "briefcase package android -p apk",
+        }.get(project_type)
+        needs = ", ".join(addon["required_tool_ids"]) or needs
+        supported = addon["apk_build_supported"]
+    else:
+        supported = command is not None
     return {
         "project_type": project_type,
-        "apk_build_supported": command is not None,
+        "apk_build_supported": supported,
+        "framework_blockers": addon["blockers"] if addon["project_type"] == project_type else [],
+        "additional_gradle_plugins": plugin_features(root),
+
         "planned_command": command,
         "required_toolchains": needs,
         "host_execution_verified": False,
@@ -150,6 +170,14 @@ def run_build(root: Path, result: dict, *, use_wrapper: bool, output_dir: Path) 
     kind = result["project_type"]
     if not result["apk_build_supported"]:
         raise BuildError("This project has no recognized APK build route")
+    if kind in ("capacitor", "react-native", "expo", "cordova", "flet-python", "beeware-briefcase"):
+        from extra_families import run_build as build_extra
+        try:
+            data = build_extra(root, result, output_dir, use_wrapper)
+            data["actual_apk_files"] = data.pop("apk_paths")
+            return data
+        except (RuntimeError, subprocess.TimeoutExpired) as error:
+            raise BuildError(str(error)) from error
     if kind == "buildozer-python" and (sys.platform not in ("linux", "darwin")
                                        or "ANDROID_ROOT" in os.environ):
         raise BuildError("Buildozer packaging requires supported Linux/macOS host; not Android Bionic")
