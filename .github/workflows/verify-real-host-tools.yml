@@ -1,0 +1,224 @@
+name: Verify Real Python Eye Host Toolchains
+
+on:
+  push:
+    paths:
+      - 'toolchains/**'
+      - 'kotlin-smoke-test/**'
+      - '.github/workflows/verify-real-host-tools.yml'
+  pull_request:
+    paths:
+      - 'toolchains/**'
+      - 'kotlin-smoke-test/**'
+      - '.github/workflows/verify-real-host-tools.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  java-compilers:
+    name: Compile and run Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['8', '11', '21']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Test real Java compiler and runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -version
+          javac -version
+          mkdir -p "$RUNNER_TEMP/pyeye-java-test"
+          cd "$RUNNER_TEMP/pyeye-java-test"
+          cat > Smoke.java <<'EOF'
+          public final class Smoke {
+            public static void main(String[] args) {
+              if (args.length != 1 || !"PythonEye".equals(args[0])) {
+                throw new IllegalArgumentException("runtime test failed");
+              }
+              System.out.println("REAL_JAVA_COMPILER_RUNTIME_PASS");
+            }
+          }
+          EOF
+          javac Smoke.java
+          java Smoke PythonEye | grep 'REAL_JAVA_COMPILER_RUNTIME_PASS'
+
+  kotlin-android-apk:
+    name: Compile real Kotlin Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - name: Install official SDK 36 plus Build Tools 35
+        run: python3 installer/managed_installer.py sdk --sdk-root "$ANDROID_HOME" --accept-sdk-license
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Compile Kotlin 2.1.20, AGP 8.11.0, Java 17 (real APK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          GRADLE_BIN_PATH="$(find "$RUNNER_TEMP" -type f -path '*/gradle-8.14.3/bin/gradle' -print -quit)"
+          test -n "$GRADLE_BIN_PATH"
+          "$GRADLE_BIN_PATH" --version | grep 'Gradle 8.14.3'
+          cd kotlin-smoke-test
+          "$GRADLE_BIN_PATH" --no-daemon --stacktrace :app:assembleDebug
+      - name: Verify AndroidManifest + Kotlin DEX in built APK
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          apk=Path("kotlin-smoke-test/app/build/outputs/apk/debug/app-debug.apk")
+          assert apk.stat().st_size > 3000, "No real APK built"
+          with ZipFile(apk) as z:
+              files=set(z.namelist())
+              assert "AndroidManifest.xml" in files and "classes.dex" in files
+              assert z.testzip() is None
+          print(f"REAL_KOTLIN_APK_PASS {apk.stat().st_size} bytes")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-eye-kotlin-debug-apk
+          path: kotlin-smoke-test/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 15
+
+  sdk-native-cli:
+    name: Install and execute Android SDK, NDK, CMake and debug tools
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - name: Resolve official Google SDK Platform, Build Tools, NDK and CMake
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 toolchains/sdk_installer.py install --sdk-root "$ANDROID_HOME" \
+            --package 'platforms;android-36' \
+            --package 'build-tools;35.0.0' \
+            --package 'ndk;27.0.12077973' \
+            --package 'cmake;3.22.1' \
+            --package 'platform-tools' \
+            --accept-sdk-license
+      - name: Execute actual compilers and APK tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/clang" --version
+          "$ANDROID_HOME/cmake/3.22.1/bin/cmake" --version
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" version
+          "$ANDROID_HOME/build-tools/35.0.0/d8" --version
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" version
+          "$ANDROID_HOME/platform-tools/adb" version
+          python3 toolchains/probe_tools.py --sdk-root "$ANDROID_HOME" > "$RUNNER_TEMP/tool-status.json"
+          python3 - "$RUNNER_TEMP/tool-status.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          found={x["id"]:x for x in data["tools"]}
+          required=("android-sdk-36","android-sdk-platforms","android-build-tools",
+                    "android-ndk","android-cmake","android-platform-tools","android-cmdline-tools")
+          for key in required:
+              assert found[key]["ready"], f"{key}: {found[key]}"
+          assert not found["chaquopy-build"]["ready"], "Cannot claim Chaquopy ready without a local build"
+          print("REAL_SDK_NDK_CMAKE_CLI_PASS",required)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-eye-desktop-sdk-probe-results
+          path: ${{ runner.temp }}/tool-status.json
+          retention-days: 15
+
+  flutter-android-apk:
+    name: Install Flutter and compile real Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+          cache: true
+      - name: Generate real fresh Android Flutter app and compile it
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter --version
+          flutter create --platforms android --project-name python_eye_flutter_smoke flutter-smoke
+          cd flutter-smoke
+          flutter build apk --debug
+      - name: Validate actual Flutter APK
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          apk=Path("flutter-smoke/build/app/outputs/flutter-apk/app-debug.apk")
+          assert apk.stat().st_size > 3000, "No Flutter APK generated"
+          with ZipFile(apk) as z:
+              assert "AndroidManifest.xml" in z.namelist()
+              assert "classes.dex" in z.namelist()
+              assert z.testzip() is None
+          print("REAL_FLUTTER_APK_PASS",apk.stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-eye-flutter-debug-apk
+          path: flutter-smoke/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 15
+
+  python-packager-cli:
+    name: Install Buildozer and python-for-android real CLI
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install both real packages to isolated venv
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/python-eye-packagers"
+          source "$RUNNER_TEMP/python-eye-packagers/bin/activate"
+          python -m pip install --upgrade pip
+          python -m pip install buildozer python-for-android
+          buildozer --version
+          python - <<'PY'
+          import buildozer
+          import pythonforandroid
+          print("REAL_PYTHON_PACKAGERS_IMPORT_PASS")
+          PY
+      - name: Note limitations explicitly
+        run: echo "CLI installation and import passed; a real Buildozer/Kivy APK build is NOT verified by this job and Android phone host is NOT supported by this runner."
