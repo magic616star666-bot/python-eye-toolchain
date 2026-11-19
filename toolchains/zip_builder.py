@@ -106,7 +106,7 @@ def inspect_project(root: Path) -> dict:
     root = find_root(root)
     buildozer = (root / "buildozer.spec").is_file()
     pubspec = root / "pubspec.yaml"
-    flutter = pubspec.is_file() and re.search(r"(?m)^flutter\s*:", pubspec.read_text("utf-8", errors="replace")[:100_000]) is not None
+    flutter = pubspec.is_file() and re.search(r"(?m)^[ \t]*flutter[ \t]*:", pubspec.read_text("utf-8", errors="replace")[:100_000]) is not None
     gradle = any((root / x).exists() for x in ("settings.gradle", "settings.gradle.kts", "build.gradle", "build.gradle.kts"))
     android = gradle and android_app_plugin(root)
     from extra_families import detect_addon, plugin_features
