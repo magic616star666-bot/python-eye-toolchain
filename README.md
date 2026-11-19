@@ -125,3 +125,12 @@ and [full setup instructions](toolchains/README.md).
 
 [Live asset identity, size and SHA-256 checks PASS](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44617197516).
 GitHub Linux executable checks and Android ARM64 on-device APK-build proof are separate; the native assets are NOT all phone-tested.
+
+
+### Additional 25 Android build and debugging routes (20 November 2026)
+
+[Toolchain add-ons](toolchains/ADDONS_SETUP.md) now cover Maven, Ant, KSP/KAPT/Compose, AIDL, Ninja/LLVM, Rust/Cargo, Node/npm, React Native, Expo, Capacitor, Cordova, BeeWare Briefcase, Flet, Git, APK analysis, Logcat and signing.
+
+[**Real add-on CI run: 5/5 jobs passed**](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44622667164). It built actual Java sources using Maven/Ant and C/Rust source using Ninja/Clang/Cargo; it installed and executed Capacitor/Cordova/Briefcase/Flet CLI packages. **It did not verify every framework creates an APK**.
+
+[Unified 53-ID Extensions setup manifest](toolchains/setup_extensions.py) and [framework-aware ZIP builder](toolchains/zip_builder.py) are available. These are public GitHub scripts; the separate Kotlin Android IDE app still needs source integration and actual Android ARM64 on-phone tests. Only CLI checks on a real host may mark a tool's CLI ready.
