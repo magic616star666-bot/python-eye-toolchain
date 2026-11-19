@@ -122,12 +122,13 @@ class SdkInstallerTests(unittest.TestCase):
     def test_sdk_package_allowlist(self):
         for name in ["platforms;android-36", "platforms;android-21",
                      "build-tools;35.0.0", "ndk;27.0.12077973",
-                     "cmake;3.22.1", "platform-tools", "cmdline-tools;latest"]:
+                     "cmake;3.22.1", "platform-tools", "cmdline-tools;latest",
+                     "platforms;android-37", "cmdline-tools;22.0", "emulator"]:
             self.assertEqual(parse_package(name), name)
 
     def test_injection_and_unknown_sdk_rejected(self):
         for name in ["--help", ";rm -rf /", "extras;some-vendor",
-                     "platforms;android-99", "ndk;../bad", "build-tools;35.0.0;rm"]:
+                     "platforms;android-9999", "ndk;../bad", "build-tools;35.0.0;rm"]:
             with self.assertRaises(ToolError):
                 parse_package(name)
 
