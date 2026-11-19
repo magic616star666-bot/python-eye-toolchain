@@ -113,3 +113,15 @@ See [CI evidence and limitations](toolchains/CI_PROOF.md), the
 **All proof above is from GitHub Linux x86_64 CI, not actual Android phone
 compilation.** The five pre-existing hosted Android tool ZIP/JDK archives
 are unchanged and do not establish 28 on-device working binaries.
+
+
+### Multi-version download and Android Bionic native archive routes
+
+New: [JDK and Gradle multi-version installer](toolchains/versions_manager.py),
+[Android SDK versions discovery](toolchains/sdk_versions.py),
+[11 checksum-pinned Android/Bionic upstream archives](toolchains/mobile-artifacts.json),
+[Android native installer/probes](toolchains/mobile_installer.py),
+and [full setup instructions](toolchains/README.md).
+
+[Live asset identity, size and SHA-256 checks PASS](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44617197516).
+GitHub Linux executable checks and Android ARM64 on-device APK-build proof are separate; the native assets are NOT all phone-tested.
