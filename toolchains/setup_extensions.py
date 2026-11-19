@@ -131,9 +131,40 @@ def main() -> None:
     parser.add_argument("--probe", action="store_true", help="Run fixed read-only local CLI version commands")
     parser.add_argument("--project", type=Path, help="Read-only project dependency planner (.zip or folder)")
     parser.add_argument("--compact", action="store_true", help="Output only summary and required IDs")
+    parser.add_argument("--target", choices=("android", "all"), default="android",
+                        help="Android ARM64/Bionic is the IDE default; 'all' is an explicit legacy developer inventory")
     args = parser.parse_args()
     try:
-        data = manifest(probe=args.probe, project=args.project)
+        if args.target == "android":
+            from android_setup import android_profile
+            from mobile_installer import device_host
+            profile = android_profile()
+            accepted = {r["id"] for r in profile["core_android_workflow"] + profile["optional_android_native"]}
+            data = manifest(probe=False, project=args.project)
+            data["all_inventory_count"] = data["count"]
+            data["desktop_or_unported_hidden_count"] = len(profile["blocked_on_android_until_ported"])
+            data["target"] = "android-arm64-v8a-bionic"
+            data["tools"] = [t for t in data["tools"] if t["id"] in accepted]
+            data["count"] = len(data["tools"])
+            data["ready_cli_count"] = 0
+            if args.probe and device_host():
+                for tool in data["tools"]:
+                    checked = cli_probe(tool)
+                    tool["cli_probe_passed"] = checked["ready"]
+                    tool["ready"] = checked["ready"]
+                    tool["apk_build_verified_on_this_host"] = False
+                    tool["android_phone_verified"] = False
+                    tool["probe"] = checked["probe"]
+                data["ready_cli_count"] = sum(t["ready"] for t in data["tools"])
+            elif args.probe:
+                data["probe_warning"] = "Android CLI readiness cannot be proven on a desktop Linux runner. Run in the phone's Python Eye process."
+            if args.project:
+                blocked = {r["id"] for r in profile["blocked_on_android_until_ported"]}
+                data["project_hidden_requirements"] = sorted(set(data.get("project_required_ids", [])) & blocked)
+                data["project_eligible_requirements"] = sorted(set(data.get("project_required_ids", [])) & accepted)
+        else:
+            data = manifest(probe=args.probe, project=args.project)
+            data["target"] = "legacy-all-developer-inventory-not-android"
         if args.compact:
             data.pop("tools")
         print(json.dumps(data, indent=2))
