@@ -1,0 +1,168 @@
+name: Verify Python Eye Additional Build Tools
+
+on:
+  push:
+    paths:
+      - "toolchains/addons-catalog.json"
+      - "toolchains/extra_families.py"
+      - "toolchains/provision_addons.py"
+      - "toolchains/test_addons.py"
+      - ".github/workflows/verify-addons.yml"
+  pull_request:
+    paths:
+      - "toolchains/addons-catalog.json"
+      - "toolchains/extra_families.py"
+      - "toolchains/provision_addons.py"
+      - "toolchains/test_addons.py"
+      - ".github/workflows/verify-addons.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: pyeye-addons-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  project-detector:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m compileall -q toolchains
+      - name: Test extra project detector and consent boundaries
+        run: python3 -m unittest discover -s toolchains -p 'test_*.py' -v
+      - name: Validate catalog unique routes and no device-ready claims
+        run: |
+          python3 - <<'PY'
+          import json
+          a=json.load(open("toolchains/addons-catalog.json"))["tools"]
+          ids=[x["id"] for x in a]
+          assert len(ids) == len(set(ids)) == 25, len(ids)
+          assert all(x["installed"] is False and x["android_phone_verified"] is False for x in a)
+          assert len(json.load(open("tools.json"))["tools"]) == 8
+          print("PASS: 25 new optional addon routes, 8 legacy unchanged, no fake Android ready status")
+          PY
+
+  java-build-tools:
+    name: Compile Java with Maven and Ant
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Locate real Maven and Ant
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v mvn; then sudo apt-get update -qq && sudo apt-get install -y maven; fi
+          if ! command -v ant; then sudo apt-get update -qq && sudo apt-get install -y ant; fi
+          mvn --version
+          ant -version
+      - name: Compile and test actual Maven and Ant projects
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pyeye-maven/src/main/java /tmp/pyeye-ant/src
+          cat > /tmp/pyeye-maven/pom.xml <<'EOF'
+          <project xmlns="http://maven.apache.org/POM/4.0.0">
+            <modelVersion>4.0.0</modelVersion>
+            <groupId>dev.pyeye</groupId><artifactId>smoke</artifactId><version>1.0.0</version>
+            <properties><maven.compiler.release>17</maven.compiler.release></properties>
+            <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version>
+            </plugin></plugins></build>
+          </project>
+          EOF
+          printf 'public final class Smoke { public static String pass() { return "JAVA_MAVEN_PASS"; } }\n' > /tmp/pyeye-maven/src/main/java/Smoke.java
+          (cd /tmp/pyeye-maven && mvn -B -q package)
+          test -s /tmp/pyeye-maven/target/smoke-1.0.0.jar
+          cp /tmp/pyeye-maven/src/main/java/Smoke.java /tmp/pyeye-ant/src/Smoke.java
+          cat > /tmp/pyeye-ant/build.xml <<'EOF'
+          <project name="pyeye" default="compile">
+            <target name="compile">
+              <mkdir dir="bin"/>
+              <javac srcdir="src" destdir="bin" includeantruntime="false" source="17" target="17"/>
+            </target>
+          </project>
+          EOF
+          (cd /tmp/pyeye-ant && ant -q compile)
+          test -s /tmp/pyeye-ant/bin/Smoke.class
+          echo REAL_MAVEN_ANT_JAVA_COMPILATION_PASS
+
+  native-rust-build-tools:
+    name: Run real Ninja Clang Rust Cargo and Git
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check native tools and build actual source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ninja; then sudo apt-get update -qq && sudo apt-get install -y ninja-build; fi
+          if ! command -v clang; then sudo apt-get update -qq && sudo apt-get install -y clang; fi
+          git --version; ninja --version; clang --version; rustc --version; cargo --version
+          mkdir -p /tmp/pyeye-native
+          printf 'int answer(void) { return 42; }\n' > /tmp/pyeye-native/main.c
+          cat > /tmp/pyeye-native/build.ninja <<'EOF'
+          rule cc
+            command = clang -c main.c -o out.o
+          build out.o: cc main.c
+          EOF
+          (cd /tmp/pyeye-native && ninja)
+          test -s /tmp/pyeye-native/out.o
+          cargo new --lib /tmp/pyeye-rust
+          (cd /tmp/pyeye-rust && cargo test --offline)
+          echo REAL_NATIVE_RUST_GIT_TOOLS_PASS
+
+  javascript-packagers:
+    name: Install and execute Capacitor and Cordova CLIs
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe actual Node and npm
+        run: node --version && npm --version
+      - name: Pin, install and execute real Capacitor CLI
+        run: |
+          python3 toolchains/provision_addons.py install --id capacitor-cli --version 7.0.0 \
+            --prefix "$RUNNER_TEMP/pyeye-addons" --approve-install
+          python3 toolchains/provision_addons.py status --id capacitor-cli --version 7.0.0 \
+            --prefix "$RUNNER_TEMP/pyeye-addons"
+      - name: Pin, install and execute real Cordova CLI
+        run: |
+          python3 toolchains/provision_addons.py install --id cordova-cli --version 12.0.0 \
+            --prefix "$RUNNER_TEMP/pyeye-addons" --approve-install
+          python3 toolchains/provision_addons.py status --id cordova-cli --version 12.0.0 \
+            --prefix "$RUNNER_TEMP/pyeye-addons"
+
+  python-packagers:
+    name: Install and execute BeeWare Briefcase and Flet
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install and validate isolated BeeWare Briefcase 0.3.26
+        run: |
+          python3 toolchains/provision_addons.py install --id beeware-briefcase --version 0.3.26 \
+            --prefix "$RUNNER_TEMP/pyeye-addons" --approve-install
+      - name: Install and validate isolated Flet 0.28.3
+        run: |
+          python3 toolchains/provision_addons.py install --id flet-cli --version 0.28.3 \
+            --prefix "$RUNNER_TEMP/pyeye-addons" --approve-install
