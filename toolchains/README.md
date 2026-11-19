@@ -137,3 +137,34 @@ python3 toolchains/provision_packagers.py status --prefix "$HOME/python-eye-pack
 are not included in this public toolchain repo.** The app must use this
 registry as setup *instructions*, not a green Ready indication, until real
 device probes and APK build tests pass.
+
+
+## Multi-version setup and Android Bionic archive sources (20 November 2026)
+
+These CLI installers exist now. The Android Kotlin Extensions UI has NOT been wired to them.
+
+- [versions_manager.py](versions_manager.py): official Temurin JDK families 8, 11, 17, 21 and 25; any existing numbered official Gradle release with official SHA-256. Installs chosen versions side by side, safely extracts and executes for verification on supported desktop hosts, NOT Android Bionic.
+- [sdk_versions.py](sdk_versions.py): local SDK version inventory and live official Google sdkmanager package discovery.
+- [sdk_installer.py](sdk_installer.py): chosen official SDK Platforms, Build Tools, NDK and CMake for compatible desktop hosts after explicit SDK license acceptance.
+- [mobile-artifacts.json](mobile-artifacts.json): 11 original upstream Android/Bionic ARM64 release archives: JDK 11/17/21; CMake 3.22.1/3.31.5; community NDK r28c/r29/r30; AAPT2+Zipalign, D8+APKSigner, and ADB. Each includes a recorded file size and SHA-256. SHA-256 of older JDK11 and ADB archives was measured from complete downloaded bytes in [audit run 44616843832](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44616843832).
+- [mobile_installer.py](mobile_installer.py): explicit consent and checksum-verified Android-only install, with opt-in real executable probes; separates archive installation from device readiness.
+- [verify_mobile_sources.py](verify_mobile_sources.py): checks the original GitHub release asset identities, SHA-256 provenance, file size and URLs. [Passing upstream verification CI](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44617197516).
+
+### Example commands
+
+Desktop: python3 toolchains/versions_manager.py list
+Desktop: python3 toolchains/versions_manager.py install --kind jdk --version 21 --approve-download
+Desktop: python3 toolchains/versions_manager.py install --kind gradle --version 8.14.3 --approve-download
+Desktop: python3 toolchains/sdk_versions.py available --sdk-root /path/to/android-sdk
+
+Android ARM64 only, after reviewing the source: python3 toolchains/mobile_installer.py list
+Android ARM64 only, with explicit user approval: python3 toolchains/mobile_installer.py install --id android-cmake-3-22-1 --approve-download --approve-third-party --execute-probe
+Android ARM64 status: python3 toolchains/mobile_installer.py status --id android-cmake-3-22-1
+
+### Verification boundaries
+
+- The 11 asset entries point to REAL upstream downloadable releases, not rehosted binaries in this repository; redistribution rights were not assumed.
+- Upstream checksums do not demonstrate binaries run on the user's Android Bionic handset. Actual on-device test is still required.
+- A successful local executable probe does not prove a real Gradle/Flutter/Python APK compile, install and launch.
+- There is no guarantee for every ZIP or every historical JDK/NDK/Gradle version. Project compatibility and license constraints apply.
+- Real JDK and Gradle download jobs have passed on GitHub Linux. [Five JDK/four Gradle downloads](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44616479513) succeeded; that run had a separate regression-test fixture failure which was subsequently fixed and verified [here](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44617197439).
