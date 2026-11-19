@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-additional-build-families",
+  "updated": "2026-11-20",
+  "legacy_catalog": "../tools.json",
+  "previous_extended_catalog": "extended-tools.json",
+  "format_notice": "Separate optional extension registry. Never inject 25 IDs into old 8-ID Kotlin parser.",
+  "scope": "Tools/providers and CLI probes, NOT downloaded binary packages and NOT on-phone proof.",
+  "tools": [
+    {
+      "id": "apache-maven",
+      "name": "Apache Maven",
+      "method": "cli",
+      "probe": "mvn -version",
+      "homepage": "https://maven.apache.org/",
+      "requires": [
+        "jdk-17"
+      ],
+      "note": "Java Maven (not directly Android APK unless Android packaging project)",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "apache-ant",
+      "name": "Apache Ant",
+      "method": "cli",
+      "probe": "ant -version",
+      "homepage": "https://ant.apache.org/",
+      "requires": [
+        "jdk-17"
+      ],
+      "note": "Legacy Java build; not direct APK for ordinary Java",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "ksp-gradle-plugin",
+      "name": "Kotlin Symbol Processing",
+      "method": "gradle_plugin",
+      "probe": "com.google.devtools.ksp",
+      "homepage": "https://kotlinlang.org/docs/ksp-overview.html",
+      "requires": [
+        "kotlin-gradle-plugin-resolver"
+      ],
+      "note": "Keep KSP compatible with project's Kotlin and AGP; do not auto-pin",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "kapt-gradle-plugin",
+      "name": "Kotlin KAPT",
+      "method": "gradle_plugin",
+      "probe": "org.jetbrains.kotlin.kapt",
+      "homepage": "https://kotlinlang.org/docs/kapt.html",
+      "requires": [
+        "kotlin-gradle-plugin-resolver"
+      ],
+      "note": "Compile-time annotation processing inside Gradle",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "compose-compiler-plugin",
+      "name": "Jetpack Compose Compiler",
+      "method": "gradle_plugin",
+      "probe": "org.jetbrains.kotlin.plugin.compose",
+      "homepage": "https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler",
+      "requires": [
+        "kotlin-gradle-plugin-resolver"
+      ],
+      "note": "Kotlin 2.0+ Compose compiler plugin must match Kotlin plugin version",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "android-aidl",
+      "name": "Android AIDL compiler",
+      "method": "sdk_build_tool",
+      "probe": "aidl --help",
+      "homepage": "https://developer.android.com/guide/components/aidl",
+      "requires": [
+        "android-build-tools"
+      ],
+      "note": "Use matching Android SDK Build Tools; Android-host executable required",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "ninja-build",
+      "name": "Ninja",
+      "method": "cli",
+      "probe": "ninja --version",
+      "homepage": "https://ninja-build.org/",
+      "requires": [
+        "android-cmake"
+      ],
+      "note": "Used by CMake for native projects",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "llvm-clang",
+      "name": "LLVM/Clang toolchain",
+      "method": "cli",
+      "probe": "clang --version",
+      "homepage": "https://developer.android.com/ndk/guides/other_build_systems",
+      "requires": [
+        "android-ndk"
+      ],
+      "note": "Desktop LLVM does not replace Android Bionic-host NDK compiler",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "rustup",
+      "name": "Rust toolchain manager",
+      "method": "cli",
+      "probe": "rustup --version",
+      "homepage": "https://rustup.rs/",
+      "requires": [],
+      "note": "Rust toolchain installation requires explicit user approval",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "rust-cargo",
+      "name": "Rust/Cargo",
+      "method": "cli",
+      "probe": "cargo --version",
+      "homepage": "https://doc.rust-lang.org/cargo/",
+      "requires": [
+        "rustup",
+        "android-ndk"
+      ],
+      "note": "Rust Android target and NDK linker required for Android APK inclusion",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "method": "cli",
+      "probe": "node --version",
+      "homepage": "https://nodejs.org/",
+      "requires": [],
+      "note": "Host runtime for JavaScript project tooling",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "npm",
+      "name": "npm",
+      "method": "cli",
+      "probe": "npm --version",
+      "homepage": "https://docs.npmjs.com/",
+      "requires": [
+        "nodejs"
+      ],
+      "note": "Project dependencies must respect lockfile",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "react-native-cli",
+      "name": "React Native CLI",
+      "method": "npm_project",
+      "probe": "react-native",
+      "homepage": "https://reactnative.dev/docs/environment-setup",
+      "requires": [
+        "nodejs",
+        "npm",
+        "android-sdk-platforms",
+        "android-gradle-plugin-resolver"
+      ],
+      "note": "Android native project and Node dependencies required",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "expo-cli",
+      "name": "Expo CLI",
+      "method": "npm_project",
+      "probe": "expo",
+      "homepage": "https://docs.expo.dev/",
+      "requires": [
+        "nodejs",
+        "npm",
+        "android-sdk-platforms"
+      ],
+      "note": "Expo local builds require Android SDK and project dependencies",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "eas-cli",
+      "name": "Expo EAS CLI",
+      "method": "npm_isolated",
+      "probe": "eas",
+      "homepage": "https://docs.expo.dev/build/",
+      "requires": [
+        "nodejs",
+        "npm"
+      ],
+      "note": "Remote builds require credentials; not run automatically",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "capacitor-cli",
+      "name": "Capacitor CLI",
+      "method": "npm_isolated",
+      "probe": "cap",
+      "homepage": "https://capacitorjs.com/docs/",
+      "requires": [
+        "nodejs",
+        "npm",
+        "android-sdk-platforms"
+      ],
+      "note": "Requires Android platform in project and Node dependencies",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "cordova-cli",
+      "name": "Apache Cordova CLI",
+      "method": "npm_isolated",
+      "probe": "cordova",
+      "homepage": "https://cordova.apache.org/docs/en/latest/guide/cli/",
+      "requires": [
+        "nodejs",
+        "npm",
+        "android-sdk-platforms"
+      ],
+      "note": "Requires installed cordova-android platform, JDK and SDK",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "beeware-briefcase",
+      "name": "BeeWare Briefcase",
+      "method": "python_venv",
+      "probe": "briefcase",
+      "homepage": "https://briefcase.beeware.org/",
+      "requires": [
+        "jdk-17",
+        "gradle",
+        "android-sdk-platforms"
+      ],
+      "note": "Python Android packaging route; APK build needs Android Gradle and wheels",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "flet-cli",
+      "name": "Flet CLI",
+      "method": "python_venv",
+      "probe": "flet",
+      "homepage": "https://flet.dev/docs/publish/android/",
+      "requires": [
+        "flutter-dart",
+        "android-sdk-platforms"
+      ],
+      "note": "Flet build apk needs Flutter and compatible Python packages",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "git-cli",
+      "name": "Git",
+      "method": "cli",
+      "probe": "git --version",
+      "homepage": "https://git-scm.com/",
+      "requires": [],
+      "note": "Source and project dependencies; read-only probe only",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "apk-analyzer",
+      "name": "APK Analyzer",
+      "method": "sdk_build_tool",
+      "probe": "apkanalyzer",
+      "homepage": "https://developer.android.com/studio/command-line/apkanalyzer",
+      "requires": [
+        "android-build-tools"
+      ],
+      "note": "Requires Android SDK command-line APK analyzer support",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "logcat-debug",
+      "name": "Logcat / ADB debugging",
+      "method": "sdk_build_tool",
+      "probe": "adb version",
+      "homepage": "https://developer.android.com/tools/adb",
+      "requires": [
+        "android-platform-tools"
+      ],
+      "note": "Inspect device logs with proper permissions, no automatic pairing",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "release-signing",
+      "name": "APK release signing",
+      "method": "sdk_build_tool",
+      "probe": "apksigner version",
+      "homepage": "https://developer.android.com/studio/publish/app-signing",
+      "requires": [
+        "apk-signing"
+      ],
+      "note": "Debug signing/test only; user-owned signing keys remain private",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "gradle-compatibility",
+      "name": "Gradle/JDK/AGP compatibility planner",
+      "method": "local_python",
+      "probe": "plan_project.py",
+      "homepage": "https://developer.android.com/build/releases/gradle-plugin",
+      "requires": [],
+      "note": "Version discovery and non-destructive recommendations only",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    },
+    {
+      "id": "cloud-build-fallback",
+      "name": "GitHub Actions cloud build option",
+      "method": "manual_ci",
+      "probe": "workflow_dispatch",
+      "homepage": "https://docs.github.com/en/actions",
+      "requires": [],
+      "note": "Explicit repo authorization/workflow run needed; not automatic uploaded APK",
+      "installed": false,
+      "android_phone_verified": false,
+      "apk_build_verified": false,
+      "ci_verification": "pending",
+      "default_install_permission": "explicit-user-approval-required"
+    }
+  ],
+  "project_scripts": "toolchains/extra_families.py",
+  "provisioner": "toolchains/provision_addons.py"
+}
