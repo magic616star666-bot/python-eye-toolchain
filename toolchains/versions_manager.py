@@ -201,9 +201,9 @@ def safe_unpack(archive: Path, dest: Path, *, limit: int) -> None:
                     mode = (item.external_attr >> 16) & 0o777
                     if mode and os.name != "nt":
                         target.chmod(mode & 0o755)
-    elif archive.name.endswith(".tar.gz"):
+    elif archive.name.endswith((".tar.gz", ".tar.xz")):
         links = []
-        with tarfile.open(archive, "r:gz") as tf:
+        with tarfile.open(archive, "r:*") as tf:
             members = tf.getmembers()
             if len(members) > MAX_FILES:
                 raise InstallError("Too many TAR entries")
