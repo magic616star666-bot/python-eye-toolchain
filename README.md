@@ -1,4 +1,4 @@
-> **PYTHON EYE IDE IS ANDROID ARM64 ONLY.** The Android Extensions default now loads the [Android-only profile](toolchains/android-only-profile.json) and [Android setup CLI](toolchains/android_setup.py). It shows **40 Android-related routes**, excludes **13 desktop-only/unported routes**, and offers **26 Android/Bionic upstream archive candidates** (not all tested on a phone). Desktop CI/testing recipes remain in this repository for maintenance but are **not installed by the mobile IDE**. See [Android-only installation instructions](toolchains/ANDROID_ONLY.md). A CLI/ZIP/CI check is not a working APK-build proof on your device.
+> **PYTHON EYE IDE IS ANDROID ARM64 ONLY.** The Android Extensions default now loads the [Android-only profile](toolchains/android-only-profile.json) and [Android setup CLI](toolchains/android_setup.py). It shows **40 Android-related routes**, excludes **13 desktop-only/unported routes**, and offers **37 Android/Bionic upstream archive candidates** (not all tested on a phone). Desktop CI/testing recipes remain in this repository for maintenance but are **not installed by the mobile IDE**. See [Android-only installation instructions](toolchains/ANDROID_ONLY.md). A CLI/ZIP/CI check is not a working APK-build proof on your device.
 
 # Python Eye IDE — Android Toolchain Distribution
 
@@ -121,7 +121,7 @@ are unchanged and do not establish 28 on-device working binaries.
 
 New: [JDK and Gradle multi-version installer](toolchains/versions_manager.py),
 [Android SDK versions discovery](toolchains/sdk_versions.py),
-[11 checksum-pinned Android/Bionic upstream archives](toolchains/mobile-artifacts.json),
+[37 checksum-pinned Android/Bionic upstream archives](toolchains/mobile-artifacts.json),
 [Android native installer/probes](toolchains/mobile_installer.py),
 and [full setup instructions](toolchains/README.md).
 
