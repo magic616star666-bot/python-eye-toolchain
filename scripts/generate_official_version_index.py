@@ -34,7 +34,7 @@ def sdk_parse(b):
             if tag(a)!="complete":continue
             data={tag(c):c for c in a}
             h=data.get("checksum")
-            sha=(h.text or "").strip().lower() if h is not None and h.get("type","").lower()=="sha1" else ""
+            sha=(h.text or "").strip().lower() if h is not None and h.get("type","").lower() in ("","sha1") else ""
             name=(data["url"].text or "").strip() if "url" in data else ""
             size=(data["size"].text or "").strip() if "size" in data else ""
             if (re.fullmatch(r"[0-9a-f]{40}",sha) and re.fullmatch(r"platform-[A-Za-z0-9._+-]+\.zip",name)
