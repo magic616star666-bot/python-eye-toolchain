@@ -121,7 +121,7 @@ def run_probe(path: Path, item: dict) -> dict:
     elif family == "ninja":
         ninja = locate_binary(path, "ninja")
         output = command([str(ninja), "--version"]).strip()
-        if not re.fullmatch(r"[0-9]+(?:\\.[0-9]+){1,3}(?:[-+a-zA-Z0-9.]*)?", output):
+        if not re.fullmatch(r"[0-9]+(?:\.[0-9]+){1,3}(?:[-+a-zA-Z0-9.]*)?", output):
             raise InstallError(f"Ninja did not return a version: {output[:80]}")
         verified.append("ninja --version")
     elif family in ("clang", "clangd", "clang-tidy", "lld"):
@@ -132,7 +132,7 @@ def run_probe(path: Path, item: dict) -> dict:
             if "clang" not in output.lower():
                 raise InstallError("Clang version response missing")
             command([str(tool), "-x", "c", "-fsyntax-only", "-"],
-                    stdin="int pyeye_smoke(void) { return 1; }\\n")
+                    stdin="int pyeye_smoke(void) { return 1; }\n")
             verified.extend(["clang --version", "clang real C syntax compile"])
         else:
             if not output.strip() or (family != "lld" and family not in output.lower()):
