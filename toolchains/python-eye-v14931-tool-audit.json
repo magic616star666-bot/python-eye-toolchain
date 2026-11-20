@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "version": "1.4.9.31",
+  "platform": "Android ARM64/Bionic",
+  "counts": {
+    "core": 21,
+    "optional_native": 19,
+    "blocked_unported": 13,
+    "total_routes": 53,
+    "native_archive_candidates": 37
+  },
+  "disclaimer": "Workflow inventory only. No evidence of installation, Android CLI success, or successful APK builds is asserted.",
+  "sdk_build_tools_36": {
+    "required_by": "AGP >=9.0",
+    "required_version": "36.0.0",
+    "in_current_pinned_native_catalog": false,
+    "download_url": null,
+    "sha256": null,
+    "installed": false,
+    "device_tested": false,
+    "compatibility_note": "Do not copy desktop x86_64 build-tools executables into an Android Bionic SDK. Obtain verified native ARM64 binaries plus Java artifacts and run device tests before marking Ready."
+  },
+  "integration": {
+    "app": "Python Eye IDE Extensions → Full Android tool inventory · 53 routes",
+    "remote_catalog": "toolchains/android-only-profile.json",
+    "native_download_index": "toolchains/mobile-artifacts.json",
+    "on_demand_index": "toolchains/official-on-demand.json"
+  },
+  "routes": [
+    {
+      "id": "openjdk-17",
+      "name": "OpenJDK 17",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "gradle",
+      "name": "Gradle",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-sdk-36",
+      "name": "Android SDK Platform 36",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "aapt2-zipalign",
+      "name": "AAPT2 + Zipalign",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "d8-apksigner",
+      "name": "D8 + APK Signer",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "kotlin-compiler",
+      "name": "Kotlin Compiler",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-gradle-plugin",
+      "name": "Android Gradle Plugin",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "chaquopy-build",
+      "name": "Chaquopy Build Plugin",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "gradle-wrapper",
+      "name": "Per-project Gradle Wrapper",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-sdk-platforms",
+      "name": "Android SDK API platforms",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-gradle-plugin-resolver",
+      "name": "Per-project Android Gradle Plugin",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "kotlin-gradle-plugin-resolver",
+      "name": "Kotlin Gradle Plugin",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "r8-d8",
+      "name": "D8 / R8",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "apk-signing",
+      "name": "ApkSigner and Zipalign",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-lint",
+      "name": "Android Lint",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "bundletool",
+      "name": "Android App Bundle Tool",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "chaquopy-python",
+      "name": "Chaquopy Python packaging",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "ksp-gradle-plugin",
+      "name": "Kotlin Symbol Processing",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "kapt-gradle-plugin",
+      "name": "Kotlin KAPT",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "compose-compiler-plugin",
+      "name": "Jetpack Compose Compiler",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "gradle-compatibility",
+      "name": "Gradle/JDK/AGP compatibility planner",
+      "group": "core",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "jdk-11",
+      "name": "JDK 11",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "jdk-21",
+      "name": "JDK 21",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-build-tools",
+      "name": "Android SDK Build Tools",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-platform-tools",
+      "name": "ADB and Platform Tools",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-ndk",
+      "name": "Android NDK",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-cmake",
+      "name": "Android SDK CMake",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "apache-maven",
+      "name": "Apache Maven",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "apache-ant",
+      "name": "Apache Ant",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-aidl",
+      "name": "Android AIDL compiler",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "ninja-build",
+      "name": "Ninja",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "llvm-clang",
+      "name": "LLVM/Clang toolchain",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "rustup",
+      "name": "Rust toolchain manager",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "rust-cargo",
+      "name": "Rust/Cargo",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "npm",
+      "name": "npm",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "git-cli",
+      "name": "Git",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "apk-analyzer",
+      "name": "APK Analyzer",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "logcat-debug",
+      "name": "Logcat / ADB debugging",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "release-signing",
+      "name": "APK release signing",
+      "group": "optional_native",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "jdk-8",
+      "name": "JDK 8",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "android-cmdline-tools",
+      "name": "SDK Manager command-line tools",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "buildozer",
+      "name": "Buildozer",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "python-for-android",
+      "name": "python-for-android",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "flutter-dart",
+      "name": "Flutter SDK and Dart",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "react-native-cli",
+      "name": "React Native CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "expo-cli",
+      "name": "Expo CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "eas-cli",
+      "name": "Expo EAS CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "capacitor-cli",
+      "name": "Capacitor CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "cordova-cli",
+      "name": "Apache Cordova CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "beeware-briefcase",
+      "name": "BeeWare Briefcase",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "flet-cli",
+      "name": "Flet CLI",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    },
+    {
+      "id": "cloud-build-fallback",
+      "name": "GitHub Actions cloud build option",
+      "group": "blocked",
+      "availability": "not_verified_by_this_manifest",
+      "device_ready": false,
+      "source": "toolchains/android-only-profile.json"
+    }
+  ]
+}
