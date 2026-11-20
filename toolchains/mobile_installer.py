@@ -113,7 +113,9 @@ def run_probe(path: Path, item: dict) -> dict:
     elif family == "build-tools":
         aapt2 = locate_binary(path, "aapt2")
         zipalign = locate_binary(path, "zipalign")
-        command([str(aapt2), "version"], expected="aapt2")
+        aapt_output = command([str(aapt2), "version"])
+        if not re.search(r"(?i)(aapt2|Android Asset Packaging Tool|aapt\b)", aapt_output):
+            raise InstallError("AAPT2 did not return a recognizable version banner")
         usage = command([str(zipalign), "-h"], code_must_be_zero=False)
         if "zipalign" not in usage.lower() and "Zip alignment utility" not in usage:
             raise InstallError("Android Build Tools zipalign probe failed")
@@ -141,7 +143,9 @@ def run_probe(path: Path, item: dict) -> dict:
     elif family == "aapt2-zipalign":
         aapt = locate_binary(path, "aapt2")
         align = locate_binary(path, "zipalign")
-        command([str(aapt), "version"], expected="aapt2")
+        aapt_output = command([str(aapt), "version"])
+        if not re.search(r"(?i)(aapt2|Android Asset Packaging Tool|aapt\\b)", aapt_output):
+            raise InstallError("AAPT2 did not return a recognizable version banner")
         info = command([str(align), "-h"], code_must_be_zero=False)
         if "Zip alignment utility" not in info and "zipalign" not in info.lower():
             raise InstallError("zipalign does not respond with recognizable usage")
