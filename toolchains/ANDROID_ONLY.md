@@ -10,7 +10,7 @@
 - **19 optional Android-native-dependent routes:** Android/Bionic JDK 11/21, NDK, CMake, ADB, AIDL, Ninja, Clang, Rust/Cargo, Node/npm, Git, etc. Some have native upstream assets; others are hidden from installation until a functioning Bionic executable is independently proven.
 - **13 desktop-only or unported routes excluded from the mobile Auto Setup:** desktop sdkmanager, desktop Buildozer/p4a, Flutter/Flet/BeeWare and React Native/Expo/Capacitor/Cordova CLI tool installers that are not validated **inside the IDE app sandbox**, and cloud build.
 
-**26 actual upstream Android/Bionic archives** are in [mobile-artifacts.json](mobile-artifacts.json), each with a real SHA-256, source link and recorded size. Release assets are hosted by the original upstream projects; not all are mirrored or executable-tested on the user's handset. A downloaded archive is NOT a working tool. A device CLI probe is NOT a successful APK build.
+**37 actual upstream Android/Bionic archives** are in [mobile-artifacts.json](mobile-artifacts.json), each with a real SHA-256, source link and recorded size. Release assets are hosted by the original upstream projects; not all are mirrored or executable-tested on the user's handset. A downloaded archive is NOT a working tool. A device CLI probe is NOT a successful APK build.
 
 ### Android-only Auto Setup CLI (the eventual app Extensions Manager can call this)
 
