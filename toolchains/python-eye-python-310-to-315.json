@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "release": "Python Eye IDE v1.5.2",
+  "android_abi": "arm64-v8a",
+  "python_versions": [
+    "3.10",
+    "3.11",
+    "3.12",
+    "3.13",
+    "3.14",
+    "3.15"
+  ],
+  "chaquopy": {
+    "plugin": "com.chaquo.python",
+    "version": "17.2.0",
+    "version_support_official_docs": "https://chaquo.com/chaquopy/doc/current/versions.html",
+    "installed_in_user_device": false,
+    "build_time_one_interpreter_per_apk": true,
+    "abi_notes": "Python 3.12-3.15 64-bit only; 3.10/3.11 also support 32-bit",
+    "requires_matching_host_python_for_some_features": true
+  },
+  "app_integration": {
+    "embedded_ide_version_property": "pydroid.python.version",
+    "embedded_default": "3.10",
+    "export_ui": "Build APK > Build Options > Python version",
+    "export_project_gradle": "chaquopy { defaultConfig { version '3.x' } }",
+    "saved_per_project": true
+  },
+  "python_for_android": {
+    "platform": "GitHub Actions Linux runner via Buildozer",
+    "installed_locally_on_android": false,
+    "kivy_cloud_workflow_dependency": "python-for-android",
+    "verified_build": false,
+    "version_315_recipe_support_verified": false
+  },
+  "proof": {
+    "host_kotlin_policy_tests": true,
+    "generated_gradle_files_for_six_versions": true,
+    "android_device_apk_build_verified": false,
+    "all_six_python_binaries_embedded_in_one_apk": false
+  },
+  "source_archive": "Shared separately in ChatGPT; this repository contains toolchain manifests, not IDE source APK."
+}
