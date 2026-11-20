@@ -15,7 +15,7 @@ from versions_manager import InstallError
 class MobileTests(unittest.TestCase):
     def test_real_digest_entries_have_no_fake_ready_flag(self):
         data = mobile.load_index()
-        self.assertEqual(len(data["assets"]), 26)
+        self.assertEqual(len(data["assets"]), 37)
         self.assertTrue(any(x["id"] == "openjdk-21-bionic" for x in data["assets"]))
         self.assertTrue(any(x["id"] == "android-ndk-r30-bionic" for x in data["assets"]))
         self.assertTrue(any(x["id"] == "android-ninja-arm64" for x in data["assets"]))
