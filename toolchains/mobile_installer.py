@@ -104,7 +104,7 @@ def run_probe(path: Path, item: dict) -> dict:
         cmake = locate_binary(path, "cmake")
         command([str(cmake), "--version"], expected="cmake version")
         verified.append("cmake --version")
-    elif family == "ndk":
+    elif family in ("ndk", "llvm"):
         clang = locate_binary(path, "clang")
         command([str(clang), "--version"], expected="clang version")
         command([str(clang), "--target=aarch64-linux-android24", "-x", "c",
