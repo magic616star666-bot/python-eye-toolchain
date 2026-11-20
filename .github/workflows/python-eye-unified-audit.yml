@@ -1,0 +1,15 @@
+name: Python Eye Android toolchain catalog integrity
+on:
+  push:
+    paths:
+      - 'toolchains/python-eye-unified-android-arm64.json'
+      - 'toolchains/verify_unified_android_catalog.py'
+      - '.github/workflows/python-eye-unified-audit.yml'
+  workflow_dispatch:
+jobs:
+  validate-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Android-only sources and safety status
+        run: python3 toolchains/verify_unified_android_catalog.py
