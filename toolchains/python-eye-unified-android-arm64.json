@@ -194,7 +194,16 @@
       "android_apk_build_verified": false,
       "probe_contract": "executable/version + package identity + device subprocess success",
       "build_requirement": "APK build/install on user handset to verify builder",
-      "capability": "chaquopy-build"
+      "capability": "chaquopy-build",
+      "python_versions": [
+        "3.10",
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+        "3.15"
+      ],
+      "plugin_version": "17.2.0"
     },
     {
       "id": "gradle-wrapper",
@@ -329,7 +338,16 @@
       "android_apk_build_verified": false,
       "probe_contract": "executable/version + package identity + device subprocess success",
       "build_requirement": "APK build/install on user handset to verify builder",
-      "capability": "chaquopy-python"
+      "capability": "chaquopy-python",
+      "python_versions": [
+        "3.10",
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+        "3.15"
+      ],
+      "plugin_version": "17.2.0"
     },
     {
       "id": "ksp-gradle-plugin",
@@ -776,7 +794,9 @@
       "android_apk_build_verified": false,
       "probe_contract": "unavailable",
       "build_requirement": "unavailable",
-      "capability": "python-for-android"
+      "capability": "python-for-android",
+      "cloud_build_via": "Buildozer + python-for-android on GitHub Actions Linux",
+      "android_native_port_verified": false
     },
     {
       "id": "flutter-dart",
@@ -1945,5 +1965,20 @@
       "Check downloaded archive SHA-1 and size",
       "Separate CLI readiness from APK build proof"
     ]
+  },
+  "python_runtime_matrix": {
+    "supported": [
+      "3.10",
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14",
+      "3.15"
+    ],
+    "chaquopy_plugin": "17.2.0",
+    "android_abi": "arm64-v8a",
+    "selection": "Build-time per APK, not six resident runtimes",
+    "metadata": "toolchains/python-eye-python-310-to-315.json",
+    "on_device_verified": false
   }
 }
