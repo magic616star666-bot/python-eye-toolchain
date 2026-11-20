@@ -52,10 +52,10 @@ jobs:
           assert default["desktop_or_unported_hidden_count"] == 13
           assert default["all_inventory_count"] == 53
           assert all_tools["count"] == 53
-          assert catalog["available_upstream_native_archives"] == 11
+          assert catalog["available_upstream_native_archives"] == 26
           assert not catalog["apk_build_tested_on_this_phone"]
           assert not any(a["device_ready"] for a in catalog["native_sources"])
-          print("PASS: mobile default is Android ARM64 only; PC routes hidden, 11 native archive sources, none falsely phone-ready")
+          print("PASS: mobile default is Android ARM64 only; PC routes hidden, 26 native archive sources, none falsely phone-ready")
           PY
       - name: Refuse to probe/install Android binaries on GitHub desktop host
         run: |
