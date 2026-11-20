@@ -48,7 +48,9 @@ def load_index() -> dict:
             raise InstallError("Invalid upstream download metadata")
         if item["provider"] not in item["url"] or "/releases/download/" not in item["url"]:
             raise InstallError("Upstream provider mismatch")
-        if not item["asset_name"].endswith((".tar.gz", ".tar.xz", ".zip")):
+        if (not item["asset_name"].endswith((".tar.gz", ".tar.xz", ".zip"))
+                and not (item["family"] == "ninja" and item["asset_name"] == "ninja"
+                         and item.get("archive_format") == "native-binary")):
             raise InstallError("Unsupported artifact format")
     return catalog
 
@@ -108,6 +110,34 @@ def run_probe(path: Path, item: dict) -> dict:
         command([str(clang), "--target=aarch64-linux-android24", "-x", "c",
                  "-fsyntax-only", "-"], stdin="int test(void) { return 0; }\n")
         verified.extend(["clang --version", "clang -target aarch64-linux-android24 syntax test"])
+    elif family == "build-tools":
+        aapt2 = locate_binary(path, "aapt2")
+        zipalign = locate_binary(path, "zipalign")
+        command([str(aapt2), "version"], expected="aapt2")
+        usage = command([str(zipalign), "-h"], code_must_be_zero=False)
+        if "zipalign" not in usage.lower() and "Zip alignment utility" not in usage:
+            raise InstallError("Android Build Tools zipalign probe failed")
+        verified.extend(["aapt2 version", "zipalign -h"])
+    elif family == "ninja":
+        ninja = locate_binary(path, "ninja")
+        output = command([str(ninja), "--version"]).strip()
+        if not re.fullmatch(r"[0-9]+(?:\\.[0-9]+){1,3}(?:[-+a-zA-Z0-9.]*)?", output):
+            raise InstallError(f"Ninja did not return a version: {output[:80]}")
+        verified.append("ninja --version")
+    elif family in ("clang", "clangd", "clang-tidy", "lld"):
+        expected_name = {"lld": "ld.lld"}.get(family, family)
+        tool = locate_binary(path, expected_name)
+        output = command([str(tool), "--version"])
+        if family == "clang":
+            if "clang" not in output.lower():
+                raise InstallError("Clang version response missing")
+            command([str(tool), "-x", "c", "-fsyntax-only", "-"],
+                    stdin="int pyeye_smoke(void) { return 1; }\\n")
+            verified.extend(["clang --version", "clang real C syntax compile"])
+        else:
+            if not output.strip() or (family != "lld" and family not in output.lower()):
+                raise InstallError(f"Unrecognized {family} version output")
+            verified.append(f"{expected_name} --version")
     elif family == "aapt2-zipalign":
         aapt = locate_binary(path, "aapt2")
         align = locate_binary(path, "zipalign")
@@ -159,7 +189,15 @@ def install(root: Path, item: dict, *, approve_third_party: bool,
             raise InstallError("Verified archive size differs from upstream release metadata")
         extracted = workspace / "unpacked"
         extracted.mkdir()
-        safe_unpack(archive, extracted, limit=3_000_000_000)
+        if item.get("archive_format") == "native-binary":
+            if item["asset_name"] != "ninja" or item["family"] != "ninja":
+                raise InstallError("Unrecognized raw native binary")
+            native = extracted / "bin" / "ninja"
+            native.parent.mkdir(parents=True)
+            shutil.copyfile(archive, native)
+            native.chmod(0o700)
+        else:
+            safe_unpack(archive, extracted, limit=3_000_000_000)
         extracted.rename(target)
     outcome = {"id": item["id"], "archive_sha256": item["sha256"],
                "download_and_extract_verified": True,
