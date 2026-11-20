@@ -28,7 +28,7 @@ class AndroidProfileTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             result = android.android_catalog(Path(td))
             self.assertEqual(result["target"], "android-arm64-v8a-bionic")
-            self.assertEqual(result["available_upstream_native_archives"], 11)
+            self.assertEqual(result["available_upstream_native_archives"], 26)
             self.assertFalse(result["apk_build_tested_on_this_phone"])
             self.assertTrue(all(not x["device_ready"] for x in result["native_sources"]))
 
