@@ -130,9 +130,13 @@ def do_install(asset_id: str, root: Path, approve_download: bool,
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Python Eye ANDROID-only ARM64/Bionic toolchain setup")
-    parser.add_argument("action", choices=("catalog", "plan", "status", "probe", "install"))
+    parser.add_argument("action", choices=("catalog", "plan", "status", "probe", "install",
+                                          "gradle-list", "gradle-resolve", "gradle-status",
+                                          "gradle-install", "gradle-probe"))
     parser.add_argument("--project", type=Path, help="Android project directory or ZIP for dependency plan")
     parser.add_argument("--asset", help="Exact Android native asset ID")
+    parser.add_argument("--version", help="Exact official Gradle release number, e.g. 8.14.3")
+    parser.add_argument("--java", help="Path to working Android/Bionic JDK java binary")
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT,
                         help="IDE-private executable-writable tool directory")
     parser.add_argument("--approve-download", action="store_true")
@@ -141,7 +145,32 @@ def main() -> None:
     args = parser.parse_args()
     try:
         root = args.root.expanduser().resolve()
-        if args.action == "catalog":
+        if args.action.startswith("gradle-"):
+            from android_gradle_versions import (
+                gradle_metadata, resolve_java,
+                install as gradle_install, status as gradle_status,
+            )
+            if args.action == "gradle-list":
+                data = {"source": "https://services.gradle.org/distributions",
+                        "versions": "Any real released Gradle numeric version with SHA-256",
+                        "android_phone_apk_build_verified": False}
+            else:
+                if not args.version:
+                    parser.error("Gradle actions require --version")
+                if args.action == "gradle-resolve":
+                    data = gradle_metadata(args.version)
+                elif args.action == "gradle-status":
+                    data = gradle_status(args.version, root / "gradle-versions")
+                else:
+                    java = resolve_java(args.java)
+                    if args.action == "gradle-probe":
+                        data = gradle_status(args.version, root / "gradle-versions",
+                                             java=java, execute_probe=True)
+                    else:
+                        data = gradle_install(args.version, root / "gradle-versions",
+                                              java=java, approve=args.approve_download,
+                                              execute_probe=args.execute_probe)
+        elif args.action == "catalog":
             data = android_catalog(root)
         elif args.action == "plan":
             if args.project is None:
