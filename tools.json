@@ -232,12 +232,10 @@
       "version": "8.11.0",
       "size_mb_estimate": null,
       "requires": [
-        "gradle",
-        "android-sdk-36",
-        "aapt2-zipalign",
-        "d8-apksigner"
+        "openjdk-17",
+        "gradle"
       ],
-      "description": "Android app build plugin, sourced through Maven dependency resolution",
+      "description": "Android app build plugin, sourced through Maven dependency resolution · Maven plugin resolution needs JDK and Gradle; standalone D8 is for separate CLI tasks, not a plugin prerequisite.",
       "platform": "java-cross-platform",
       "published": false,
       "status": "gradle_maven_resolution_requires_device_test",
