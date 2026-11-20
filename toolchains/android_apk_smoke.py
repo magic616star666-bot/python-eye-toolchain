@@ -91,7 +91,7 @@ def run_smoke(project: Path, gradle_root: Path, version: str,
                                      timeout=30, check=False, errors="replace")
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise InstallError(f"aapt2 cannot execute on Android device: {exc}") from exc
-    if aapt2_check.returncode or "aapt2" not in aapt2_check.stdout.lower():
+    if aapt2_check.returncode or not re.search(r"(?i)(aapt2|Android Asset Packaging Tool|aapt\b)", aapt2_check.stdout):
         raise InstallError("Android-native aapt2 version probe failed")
     jdk_major = require_android_jdk(java)
     jar = jar_for(gradle_root, version)
