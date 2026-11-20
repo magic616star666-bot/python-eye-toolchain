@@ -1,0 +1,68 @@
+name: Verify Android JVM Gradle Version Bootstrap
+
+on:
+  push:
+    paths:
+      - 'toolchains/android_gradle_versions.py'
+      - 'toolchains/test_android_gradle_versions.py'
+      - 'toolchains/android_setup.py'
+      - '.github/workflows/verify-android-jvm-gradle.yml'
+  pull_request:
+    paths:
+      - 'toolchains/android_gradle_versions.py'
+      - 'toolchains/test_android_gradle_versions.py'
+      - 'toolchains/android_setup.py'
+      - '.github/workflows/verify-android-jvm-gradle.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gradle-java-launcher:
+    name: Run real official Gradle ZIP via pure JVM bootstrap (Linux check, NOT Android device)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['8.13', '8.14.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download official Gradle ZIP with official SHA256
+        shell: bash
+        env:
+          VERSION: ${{ matrix.version }}
+        run: |
+          python3 - <<'PY'
+          import sys,os,pathlib,tempfile,subprocess
+          sys.path.insert(0, "toolchains")
+          from android_gradle_versions import gradle_metadata, jar_for
+          from versions_manager import download_verified, safe_unpack
+          version=os.environ["VERSION"]
+          metadata=gradle_metadata(version)
+          with tempfile.TemporaryDirectory(prefix="pyeye-gradle-") as tmp:
+            base=pathlib.Path(tmp)
+            archive=base/metadata["asset_name"]
+            download_verified(metadata,archive,600_000_000)
+            installed=base/"install"
+            installed.mkdir()
+            safe_unpack(archive,installed,limit=1_200_000_000)
+            launcher=jar_for(installed,version)
+            print("EXTRACTED_JVM_LAUNCHER="+str(launcher))
+            proc=subprocess.run(["java","-cp",str(launcher),
+                   "org.gradle.launcher.GradleMain","--version"],
+                   text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
+                   timeout=180,check=False,cwd=installed)
+            print(proc.stdout[-1600:])
+            assert proc.returncode == 0, proc.returncode
+            assert "Gradle "+version in proc.stdout
+            print("REAL_JAVA_GRADLE_LAUNCHER_CHECK_PASSED",version)
+          PY
+      - name: Keep Android phone results unclaimed
+        run: python3 -m unittest discover -s toolchains -p 'test_*.py' -v
