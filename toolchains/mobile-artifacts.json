@@ -34,20 +34,20 @@
     },
     {
       "id": "openjdk-21-bionic",
-      "version": "21.0.4",
+      "version": "21.0.14",
       "family": "jdk",
       "host": "android-bionic-aarch64",
       "provider": "MobileStudio-AndroidIDE/MobileStudio_AndroidIDE",
-      "asset_name": "jdk21-android.tar.gz",
-      "url": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/jdk21-android-21.0.4/jdk21-android.tar.gz",
-      "sha256": "9e38b66557db40481d90a6f5cfbce05180414e3131a6b77c4dea1304fcba6e9b",
-      "file_size_bytes": 312374105,
+      "asset_name": "jdk21-android-arm64.tar.gz",
+      "url": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/jdk21-android-21.0.14/jdk21-android-arm64.tar.gz",
+      "sha256": "b6575760724183350c98206082da7829808b62b766e2d30fc253101b1e8cda0e",
+      "file_size_bytes": 201284627,
       "upstream_asset_metadata_checked": true,
       "installed": false,
       "local_device_probe_passed": false,
       "android_apk_build_verified": false,
       "redistribution_permitted": "not_assessed_no_mirroring",
-      "note": "Third-party OpenJDK Bionic; major-21 executable probe required. No phone proof."
+      "note": "Replaces missing JDK 21.0.4 release (HTTP 404) with upstream GitHub Release jdk21-android-21.0.14, whose size and SHA-256 were verified against its release asset metadata. Device CLI not yet verified."
     },
     {
       "id": "android-cmake-3-22-1",
