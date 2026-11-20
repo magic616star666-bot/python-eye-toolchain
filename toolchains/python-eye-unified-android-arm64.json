@@ -53,7 +53,10 @@
       "https://developer.android.com/build/releases/agp-9-3-0-release-notes",
       "https://github.com/termux/android-build-tools",
       "https://github.com/Commit451/android-arm-build-tools"
-    ]
+    ],
+    "official_36_package_source_available": true,
+    "official_36_package_checksum_available": true,
+    "working_bionic_36_composite_installed_or_tested": false
   },
   "pipeline": [
     "detect-project-AGP-Gradle-wrapper-JDK-SDK-build-tools",
@@ -1920,5 +1923,27 @@
       "sha256": null,
       "sha1": "2c1a80dd4d9f7d0e6dd336ec603d9b5c55a6f576"
     }
-  ]
+  ],
+  "official_sdk_build_tools_36": {
+    "version": "36.0.0",
+    "source": "Google Android SDK repository2-3.xml: build-tools;36.0.0 linux",
+    "url": "https://dl.google.com/android/repository/build-tools_r36_linux.zip",
+    "size_bytes": 63737259,
+    "sha1": "b0b6376977657e8ad9b969bacf4093601da2c6fb",
+    "requires_license": "android-sdk-license",
+    "host_native_executables_in_google_zip": "linux-x86_64-glibc; NOT runnable on Android/Bionic",
+    "verified_android_arm64_binary_pinned": false,
+    "integration": "Python Eye IDE installs Google package data only after explicit consent and checksum verification, overlays individually tested Bionic aapt2/aidl/zipalign from SHA-256 pinned native candidates, runs executable probes, preserves source.properties revision, requires real APK build before Ready.",
+    "native_provider_assets_needed": [
+      "mobile-android-aapt2-zipalign-35",
+      "mobile-android-build-tools-34-0-0-bionic"
+    ],
+    "safety": [
+      "Never automatically accept SDK terms",
+      "Never reuse x86_64 or Linux glibc ARM64 executables",
+      "Never modify official package revision metadata",
+      "Check downloaded archive SHA-1 and size",
+      "Separate CLI readiness from APK build proof"
+    ]
+  }
 }
