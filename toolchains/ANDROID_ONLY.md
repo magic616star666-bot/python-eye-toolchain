@@ -55,3 +55,46 @@ All commands refuse unapproved downloads/executable installation, and the mobile
 - *Build verified*: a real generated APK from the project is validated. Only after same-phone build can this become green for that project/host.
 
 **CI proof is about metadata tests on GitHub Linux, not actual on-device installation.** The current public toolchain repo has *no Kotlin Android app source*; final integration into the IDE Extensions UI requires editing the separate IDE project. The existing 8-ID manifest stays unchanged for backward compatibility.
+
+
+## Real Android-native version coverage and device APK check
+
+**Native download catalog now contains 37 distinct source archives/binaries** with SHA-256 and exact size.
+Build Tools and ADB ports cover 33.0.1, 33.0.3, 34.0.0, 34.0.1, 34.0.3 and (previously) 34.0.4.
+NDK Android/Bionic community ports cover r26/r26b/r26c/r26d, r27/r27b/r27c/r27d, r28/r28b/r28c, r29 and r30.
+JDK ports cover major 11, 17 and 21. Optional Ninja, Clang, LLD, clangd, clang-tidy, LLVM and CMake versions are also indexed.
+
+**[Live 37-source SHA-256 verifier](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44678173834) passed.** GitHub verifies original upstream asset links, size and hashes; it does not execute Android/Bionic binaries on a phone.
+
+### Gradle versions are Java, not PC/Linux native binaries
+
+Official, version-selectable Gradle releases can now be installed *from Android itself* using [android_gradle_versions.py](android_gradle_versions.py) through the Android-only setup CLI. They use a working Bionic JDK and the Java Gradle launcher directly, not the Linux Gradle executable.
+
+```bash
+python3 toolchains/android_setup.py gradle-list
+python3 toolchains/android_setup.py gradle-resolve --version 8.14.3
+python3 toolchains/android_setup.py gradle-install --version 8.14.3 --approve-download --execute-probe --java "$JAVA_HOME/bin/java"
+python3 toolchains/android_setup.py gradle-status --version 8.14.3
+python3 toolchains/android_setup.py gradle-probe --version 8.14.3 --java "$JAVA_HOME/bin/java"
+```
+
+SHA-256 is fetched from official Gradle distributions for the exact version requested; no fixed list can promise every past/future Gradle version. [Real Java launcher CLI checks passed for Gradle 8.13 and 8.14.3 on Linux](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44677658233), but the Bionic Java invocation requires an on-device test.
+
+### Real same-phone Kotlin/Java Android APK smoke (only with your explicit approval)
+
+[android_apk_smoke.py](android_apk_smoke.py) uses the installed Bionic JDK + selected Gradle Java launcher + installed Android SDK `android.jar` + native AAPT2. It builds only a recognized Android Gradle project and confirms a **new nonempty APK ZIP containing `AndroidManifest.xml` and `classes.dex`**. No fake output, no desktop fallback, no automatic project wrapper.
+
+```bash
+python3 toolchains/android_apk_smoke.py \
+  --project kotlin-smoke-test \
+  --gradle-version 8.14.3 \
+  --sdk-root "$ANDROID_HOME" \
+  --java "$JAVA_HOME/bin/java" \
+  --aapt2 "$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+  --output ./phone-apk-results \
+  --approve-build
+```
+
+Set the real device paths from your IDE; the example AAPT2 path must **actually exist and execute on Android/Bionic**. If compilation, AAPT2 execution, APK output or checksum checks fail, the script outputs a real error instead of announcing success. It does not automatically install or launch APKs.
+
+**Still required to finish the Android app itself:** actual Python Eye IDE Kotlin source integration, Android private-executable storage compatibility, installed SDK platform versions, and genuine APK build+install+launch smoke on the user's phone. There is no direct connection to the user's device in this chat, so these device claims remain unverified.
