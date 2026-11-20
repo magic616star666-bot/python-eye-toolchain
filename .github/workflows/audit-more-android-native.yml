@@ -1,0 +1,69 @@
+name: Audit Additional Android Native Build Tool Versions
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-more-android-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sha256-upstream-androidide:
+    name: Audit ${{ matrix.asset }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag: v33.0.1
+            asset: build-tools-33.0.1-aarch64.tar.xz
+            size: 41276048
+          - tag: v33.0.1
+            asset: platform-tools-33.0.1-aarch64.tar.xz
+            size: 6474560
+          - tag: v33.0.3
+            asset: build-tools-33.0.3-aarch64.tar.xz
+            size: 38647264
+          - tag: v33.0.3
+            asset: platform-tools-33.0.3-aarch64.tar.xz
+            size: 3862316
+          - tag: v34.0.0
+            asset: build-tools-34.0.0-aarch64.tar.xz
+            size: 41655884
+          - tag: v34.0.0
+            asset: platform-tools-34.0.0-aarch64.tar.xz
+            size: 4328596
+          - tag: v34.0.1
+            asset: build-tools-34.0.1-aarch64.tar.xz
+            size: 41651444
+          - tag: v34.0.1
+            asset: platform-tools-34.0.1-aarch64.tar.xz
+            size: 4348748
+          - tag: v34.0.3
+            asset: build-tools-34.0.3-aarch64.tar.xz
+            size: 41677236
+          - tag: v34.0.3
+            asset: platform-tools-34.0.3-aarch64.tar.xz
+            size: 4367248
+    steps:
+      - name: Download ORIGINAL Android Bionic ARM64 archive and record verified SHA-256
+        env:
+          ASSET: ${{ matrix.asset }}
+          TAG: ${{ matrix.tag }}
+          SIZE: ${{ matrix.size }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 4 --connect-timeout 30             "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/$TAG/$ASSET"             --output "$RUNNER_TEMP/$ASSET"
+          test "$(stat -c %s "$RUNNER_TEMP/$ASSET")" = "$SIZE"
+          sha256sum "$RUNNER_TEMP/$ASSET"
+          python3 - "$RUNNER_TEMP/$ASSET" "$TAG" <<'PY'
+          import pathlib,hashlib,json,sys
+          file=pathlib.Path(sys.argv[1])
+          print("PYTHON_EYE_ANDROID_AUDIT="+json.dumps({
+            "asset":file.name,"tag":sys.argv[2],"size":file.stat().st_size,
+            "sha256":hashlib.sha256(file.read_bytes()).hexdigest(),
+            "binary_executed_on_phone":False
+          },sort_keys=True))
+          PY
+          tar -tJf "$RUNNER_TEMP/$ASSET" | head -12 || true
