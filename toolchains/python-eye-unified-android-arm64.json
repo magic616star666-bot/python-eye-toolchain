@@ -56,7 +56,10 @@
     ],
     "official_36_package_source_available": true,
     "official_36_package_checksum_available": true,
-    "working_bionic_36_composite_installed_or_tested": false
+    "working_bionic_36_composite_installed_or_tested": false,
+    "github_repair_utility_available": true,
+    "repair_source_path": "toolchains/sdk36_repair.py",
+    "repair_installed_on_phone": false
   },
   "pipeline": [
     "detect-project-AGP-Gradle-wrapper-JDK-SDK-build-tools",
@@ -1955,8 +1958,12 @@
     "verified_android_arm64_binary_pinned": false,
     "integration": "Python Eye IDE installs Google package data only after explicit consent and checksum verification, overlays individually tested Bionic aapt2/aidl/zipalign from SHA-256 pinned native candidates, runs executable probes, preserves source.properties revision, requires real APK build before Ready.",
     "native_provider_assets_needed": [
-      "mobile-android-aapt2-zipalign-35",
-      "mobile-android-build-tools-34-0-0-bionic"
+      "android-build-tools-34-0-3-bionic",
+      "android-build-tools-34-0-1-bionic",
+      "android-build-tools-34-0-0-bionic",
+      "android-build-tools-33-0-3-bionic",
+      "android-build-tools-33-0-1-bionic",
+      "android-aapt2-zipalign-35"
     ],
     "safety": [
       "Never automatically accept SDK terms",
@@ -1964,7 +1971,39 @@
       "Never modify official package revision metadata",
       "Check downloaded archive SHA-1 and size",
       "Separate CLI readiness from APK build proof"
-    ]
+    ],
+    "native_provider_store_tool_ids": [
+      "mobile-android-build-tools-34-0-3-bionic",
+      "mobile-android-build-tools-34-0-1-bionic",
+      "mobile-android-build-tools-34-0-0-bionic",
+      "mobile-android-build-tools-33-0-3-bionic",
+      "mobile-android-build-tools-33-0-1-bionic",
+      "mobile-android-aapt2-zipalign-35"
+    ],
+    "repair": {
+      "state": "available_in_github; on-device installation NOT performed",
+      "script": "toolchains/sdk36_repair.py",
+      "raw_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/toolchains/sdk36_repair.py",
+      "procedure": "In Python Eye Extensions approve and Load+Test compatible Bionic provider; approve Google SDK license explicitly; then SDK36 UI installer or recovery script can download genuine Google 36 package and verify Android ARM64 binaries.",
+      "action": "user-approved-install-verify-rollback",
+      "requires_manual_approval": true,
+      "automatic_installed_by_catalog_sync": false,
+      "expected_mobile_ide_version": "1.6.3 or later",
+      "version": "36.0.0",
+      "downloaded_in_user_app": false,
+      "android_device_apk_tested": false,
+      "required_executables": [
+        "aapt2",
+        "aidl",
+        "zipalign"
+      ],
+      "optional_executables": [
+        "aapt",
+        "dexdump",
+        "split-select"
+      ],
+      "full_agp93_apk_success": false
+    }
   },
   "python_runtime_matrix": {
     "supported": [
