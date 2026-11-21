@@ -1,0 +1,23 @@
+name: Python Eye SDK36 repair safety checks
+on:
+  push:
+    paths:
+      - 'toolchains/sdk36_repair.py'
+      - 'toolchains/test_sdk36_repair.py'
+      - 'toolchains/python-eye-unified-android-arm64.json'
+      - '.github/workflows/sdk36-repair-verify.yml'
+  workflow_dispatch:
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Syntax-check repair utility
+        run: python -m py_compile toolchains/sdk36_repair.py toolchains/test_sdk36_repair.py
+      - name: Offline safety tests (no SDK install, no downloads)
+        run: python -m unittest discover -s toolchains -p 'test_sdk36_repair.py' -v
+      - name: Unified toolchain metadata integrity
+        run: python toolchains/verify_unified_android_catalog.py
