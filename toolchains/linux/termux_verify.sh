@@ -38,11 +38,13 @@ guest() {
   local t="$1"
   local a=("${ARGS[@]}")
   a[${#a[@]}-1]="$2"
-  timeout --kill-after=30 "$t" env "${ENVS[@]}" "${a[@]}"
+  # stdin from /dev/null: otherwise the guest (npm, apt, bash) eats the recipe list
+  # this script is reading in its while-loop.
+  timeout --kill-after=30 "$t" env "${ENVS[@]}" "${a[@]}" < /dev/null
 }
 b64() { printf '%s' "$1" | base64 | tr -d '\n'; }
 
-env "${ENVS[@]}" "$BASE/proot/bin/proot" --version > "$OUT/proot-version.txt" 2>&1
+env "${ENVS[@]}" "$BASE/proot/bin/proot" --version > "$OUT/proot-version.txt" 2>&1 < /dev/null
 log "proot --version exit=$? : $(head -n3 "$OUT/proot-version.txt" | tr '\n' ' ')"
 
 guest 300 'cat /etc/os-release; echo "arch=$(uname -m)"; id; echo pyeye-boot-ok' > "$OUT/boot.txt" 2>&1
