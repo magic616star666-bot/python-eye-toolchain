@@ -41,6 +41,11 @@ INDEXES = [
 ]
 PREFIX = Path("data/data/com.termux/files/usr")
 SYSTEM_LIBS = {"libc.so", "libdl.so", "libm.so", "liblog.so"}
+# Shared library -> Termux package that ships it.
+LIB_PACKAGES = {
+    "libtalloc.so.2": "libtalloc",
+    "libandroid-shmem.so": "libandroid-shmem",
+}
 SOURCES = {
     "proot": {
         "upstream": "https://github.com/termux/proot",
@@ -51,6 +56,11 @@ SOURCES = {
         "upstream": "https://www.samba.org/ftp/talloc/",
         "build_recipe": "https://github.com/termux/termux-packages/tree/master/packages/libtalloc",
         "license": "LGPL-3.0-or-later",
+    },
+    "libandroid-shmem": {
+        "upstream": "https://github.com/termux/libandroid-shmem",
+        "build_recipe": "https://github.com/termux/termux-packages/tree/master/packages/libandroid-shmem",
+        "license": "BSD-3-Clause",
     },
 }
 
@@ -123,7 +133,10 @@ def main() -> None:
     work = Path(tempfile.mkdtemp(prefix="pyeye-proot-"))
     sources = []
     unpacked = {}
-    for name in ("proot", "libtalloc"):
+
+    def get_package(name: str) -> Path:
+        if name in unpacked:
+            return unpacked[name]
         meta = index.get(name)
         if not meta:
             raise SystemExit(f"{name} is not in the Termux aarch64 index")
@@ -143,12 +156,17 @@ def main() -> None:
             "deb_url": url,
             "deb_sha256": digest,
             "architecture": meta.get("Architecture"),
-            **SOURCES[name],
+            **SOURCES.get(name, {
+                "upstream": f"https://github.com/termux/termux-packages/tree/master/packages/{name}",
+                "build_recipe": f"https://github.com/termux/termux-packages/tree/master/packages/{name}",
+                "license": meta.get("License", "see LICENSES/"),
+            }),
         })
         print(f"{name} {meta['Version']} OK sha256={digest}")
+        return unpacked[name]
 
+    get_package("proot")
     proot_version = next(s["version"] for s in sources if s["package"] == "proot")
-    talloc_version = next(s["version"] for s in sources if s["package"] == "libtalloc")
     bundle = work / "bundle" / "proot"
     (bundle / "bin").mkdir(parents=True)
     (bundle / "lib").mkdir()
@@ -170,33 +188,37 @@ def main() -> None:
     if "AArch64" not in header or "DYN" not in header:
         raise SystemExit("proot is not an ARM64 PIE executable:\n" + header)
 
+    # Bundle every non-system shared library proot needs, recursively.
     deps = needed(bundle / "bin" / "proot")
     print("proot NEEDED:", deps)
-    for dep in deps:
-        if dep in SYSTEM_LIBS:
+    queue, bundled = list(deps), []
+    while queue:
+        dep = queue.pop(0)
+        if dep in SYSTEM_LIBS or dep in bundled:
             continue
-        candidates = sorted((unpacked["libtalloc"] / "lib").glob(dep + "*")) + \
-            sorted((unpacked["libtalloc"] / "lib").glob(dep.split(".so")[0] + ".so*"))
+        package = LIB_PACKAGES.get(dep) or re.sub(r"\.so.*$", "", dep)
+        root = get_package(package)
+        candidates = sorted((root / "lib").glob(dep + "*"))
         real = next((c for c in candidates if c.is_file() and not c.is_symlink()), None)
         if real is None:
             real = next((c.resolve() for c in candidates if c.exists()), None)
-        if real is None or "talloc" not in dep:
-            raise SystemExit(f"Unexpected dependency {dep}; bundle refuses to guess")
+        if real is None:
+            raise SystemExit(f"{dep}: not found in Termux package {package}")
         shutil.copy2(real, bundle / "lib" / dep)
-        lib_deps = needed(bundle / "lib" / dep)
-        unknown = [d for d in lib_deps if d not in SYSTEM_LIBS]
-        if unknown:
-            raise SystemExit(f"{dep} needs {unknown}")
-    for name in ("proot", "libtalloc"):
-        doc = unpacked[name] / "share" / "doc" / name / "copyright"
+        bundled.append(dep)
+        more = needed(bundle / "lib" / dep)
+        print(f"  {dep} <- {package} NEEDED: {more}")
+        queue.extend(m for m in more if m not in SYSTEM_LIBS)
+    talloc_version = next((s["version"] for s in sources if s["package"] == "libtalloc"), "")
+    for name, root in unpacked.items():
+        doc = root / "share" / "doc" / name / "copyright"
         if doc.is_file():
             shutil.copy2(doc, bundle / "LICENSES" / f"{name}.copyright")
-        for lic in (unpacked[name] / "share" / "LICENSES").glob("*") if (unpacked[name] / "share" / "LICENSES").is_dir() else []:
-            shutil.copy2(lic, bundle / "LICENSES" / f"{name}-{lic.name}")
     (bundle / "SOURCES.json").write_text(json.dumps({
         "built_by": "python-eye-toolchain .github/workflows/linux-runtime.yml",
         "termux_mirror": mirror,
         "packages": sources,
+        "bundled_libraries": bundled,
         "runtime_env": {
             "LD_LIBRARY_PATH": "<bundle>/lib",
             "PROOT_LOADER": "<bundle>/libexec/proot/loader",
@@ -225,6 +247,7 @@ def main() -> None:
         "top_dir": "proot",
         "loaders": loaders,
         "needed": deps,
+        "bundled_libraries": bundled,
         "sources": sources,
     }
     (out / "proot-bundle.json").write_text(json.dumps(info, indent=2) + "\n")
