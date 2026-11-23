@@ -2,7 +2,7 @@
   "schema_version": 1,
   "catalog_id": "python-eye-linux-runtime",
   "host_abi": "arm64-v8a",
-  "updated": "2026-11-23T10:43:01Z",
+  "updated": "2026-11-23T10:50:42Z",
   "purpose": "Ubuntu userland for Python Eye IDE via PRoot (no root). The IDE downloads both files, checks SHA-256 and size, unpacks them in app-private storage and boots Ubuntu with PRoot.",
   "proot": {
     "version": "5.1.107.102",
@@ -10,8 +10,8 @@
     "provider": "magic616star666-bot/python-eye-toolchain",
     "asset_name": "proot-android-arm64-5.1.107.102.tar.gz",
     "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/linux-runtime-v1/proot-android-arm64-5.1.107.102.tar.gz",
-    "sha256": "3ebb0c8a6d23d19828371bb7661edefada9ebf16f66949b2f180f28d21bb231d",
-    "file_size_bytes": 139305,
+    "sha256": "171b51e6d02df4096aabbe9987932e3110d3eaf4914b009f5935c7608b038c28",
+    "file_size_bytes": 139306,
     "top_dir": "proot",
     "loaders": [
       "loader",
@@ -70,15 +70,15 @@
     }
   ],
   "ci_proof": {
-    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45157959352",
-    "tested_at": "2026-11-23T10:43:01Z",
+    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45158778414",
+    "tested_at": "2026-11-23T10:50:42Z",
     "environment": "GitHub ubuntu-24.04-arm runner + termux/termux-docker:aarch64 (Android Bionic userland, privileged); bundle installed outside the Termux prefix",
     "extracted_by": "IDE RootfsExtractor (LinuxCore.kt) via Harness.kt",
     "boot": "ok",
     "guest_arch": "aarch64",
     "project_bind": "ok",
-    "packages_ok": 17,
-    "packages_total": 17,
+    "packages_ok": 31,
+    "packages_total": 32,
     "not_proven": "A real phone adds SELinux and app-sandbox limits that Docker does not have. The IDE marks a tool Ready only after the same probe passes on the phone."
   }
 }
