@@ -422,12 +422,12 @@
       "id": "neofetch",
       "name": "System info (neofetch)",
       "category": "tools",
-      "description": "Shows the container's OS, kernel, CPU and memory in the terminal.",
+      "description": "Shows the container's OS, kernel, CPU and memory in the terminal. (neofetch --version exits 1 by design, so the test checks its output.)",
       "apt": [
         "neofetch"
       ],
-      "probe": "neofetch --version 2>&1",
-      "expect": "[Nn]eofetch",
+      "probe": "neofetch --version 2>&1 || true",
+      "expect": "Neofetch \\d",
       "size": "~2 MB",
       "timeout_minutes": 10,
       "icon": "monitor"
