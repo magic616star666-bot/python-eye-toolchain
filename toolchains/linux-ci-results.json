@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45160010088",
-  "tested_at": "2026-11-23T10:59:22Z",
+  "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45161906205",
+  "tested_at": "2026-11-23T11:12:03Z",
   "environment": "GitHub ubuntu-24.04-arm runner + termux/termux-docker:aarch64 (Android Bionic userland, privileged); bundle installed outside the Termux prefix",
   "rootfs": "Ubuntu 24.04.1 LTS",
   "results": {
     "cli-utils": {
       "status": "ok",
-      "seconds": 14,
+      "seconds": 16,
       "output": "curl 8.5.0 (aarch64-unknown-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.7\njq-1.7"
     },
     "python3": {
       "status": "ok",
-      "seconds": 23,
+      "seconds": 24,
       "output": "Python 3.12.3\npip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.12)"
     },
     "uv": {
@@ -27,7 +27,7 @@
     },
     "typescript": {
       "status": "ok",
-      "seconds": 2,
+      "seconds": 3,
       "output": "Version 7.0.2"
     },
     "bun": {
@@ -37,7 +37,7 @@
     },
     "gcc": {
       "status": "ok",
-      "seconds": 20,
+      "seconds": 18,
       "output": "pyeye-c-ok\ng++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
     },
     "clang": {
@@ -52,12 +52,12 @@
     },
     "go": {
       "status": "ok",
-      "seconds": 29,
+      "seconds": 27,
       "output": "pyeye-go-ok\ngo version go1.22.2 linux/arm64"
     },
     "gopls": {
       "status": "ok",
-      "seconds": 2,
+      "seconds": 3,
       "output": "golang.org/x/tools/gopls (unknown)"
     },
     "rust": {
@@ -67,12 +67,12 @@
     },
     "php": {
       "status": "ok",
-      "seconds": 24,
+      "seconds": 23,
       "output": "PHP 8.3.6 (cli) (built: Nov 18 2026 23:42:07) (NTS)\nComposer version 2.7.1 2024-02-09 15:26:28"
     },
     "java21": {
       "status": "ok",
-      "seconds": 8,
+      "seconds": 9,
       "output": "openjdk version \"21.0.13.1\" 2026-11-17\nOpenJDK Runtime Environment (build 21.0.13.1+2-1-24.04.1-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.13.1+2-1-24.04.1-Ubuntu, mixed mode, sharing)\njavac 21.0.13.1"
     },
     "ruby": {
@@ -87,37 +87,37 @@
     },
     "gemini-cli": {
       "status": "ok",
-      "seconds": 16,
+      "seconds": 17,
       "output": "0.70.0"
     },
     "codex": {
       "status": "ok",
-      "seconds": 6,
+      "seconds": 5,
       "output": "codex-cli 0.171.0"
     },
     "git": {
       "status": "ok",
-      "seconds": 5,
+      "seconds": 6,
       "output": "git version 2.43.0\ngit-lfs/3.4.1 (GitHub; linux arm64; go 1.22.2)"
     },
     "gh": {
       "status": "ok",
-      "seconds": 3,
+      "seconds": 4,
       "output": "gh version 2.45.0 (2025-07-18 Ubuntu 2.45.0-1ubuntu0.3)"
     },
     "ripgrep": {
       "status": "ok",
-      "seconds": 1,
+      "seconds": 3,
       "output": "ripgrep 14.1.0"
     },
     "sqlite-dev": {
       "status": "ok",
-      "seconds": 4,
+      "seconds": 5,
       "output": "3.45.1 2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257ccalt1 (64-bit)"
     },
     "protoc": {
       "status": "ok",
-      "seconds": 1,
+      "seconds": 2,
       "output": "libprotoc 3.21.12"
     },
     "ssh": {
@@ -127,12 +127,12 @@
     },
     "neofetch": {
       "status": "ok",
-      "seconds": 1,
+      "seconds": 2,
       "output": "Neofetch 7.1.0"
     },
     "qemu-x86_64": {
       "status": "ok",
-      "seconds": 4,
+      "seconds": 3,
       "output": "qemu-x86_64 version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)"
     },
     "pyright": {
@@ -152,17 +152,17 @@
     },
     "yaml-language-server": {
       "status": "ok",
-      "seconds": 3,
+      "seconds": 2,
       "output": "/usr/local/bin/yaml-language-server"
     },
     "bash-language-server": {
       "status": "ok",
-      "seconds": 3,
+      "seconds": 4,
       "output": "/usr/local/bin/bash-language-server"
     },
     "flutter": {
       "status": "ok",
-      "seconds": 47,
+      "seconds": 45,
       "output": "   Woah! You appear to be trying to run flutter as root.\n   We strongly recommend running the flutter tool without superuser privileges.\n  /\n\ud83d\udcce\nFlutter 3.50.1 \u2022 channel stable \u2022 https://github.com/flutter/flutter.git\nFramework \u2022 revision ae9b586f34 (4 days ago) \u2022 2026-11-18 17:01:07 -0800\nEngine \u2022 hash 51379e6df48ea8ee7205623b90fe66491cad8df3 (revision 4d35714800) (5 days ago) \u2022 2026-11-18 01:50:07.000Z\nTools \u2022 Dart 3.14.0 \u2022 DevTools 2.61.0"
     }
   }

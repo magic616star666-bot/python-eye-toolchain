@@ -2,16 +2,16 @@
   "schema_version": 1,
   "catalog_id": "python-eye-linux-runtime",
   "host_abi": "arm64-v8a",
-  "updated": "2026-11-23T10:59:22Z",
+  "updated": "2026-11-23T11:12:03Z",
   "purpose": "Ubuntu userland for Python Eye IDE via PRoot (no root). The IDE downloads both files, checks SHA-256 and size, unpacks them in app-private storage and boots Ubuntu with PRoot.",
   "proot": {
     "version": "5.1.107.102",
     "talloc_version": "2.5.0",
     "provider": "magic616star666-bot/python-eye-toolchain",
-    "asset_name": "proot-android-arm64-5.1.107.102.tar.gz",
-    "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/linux-runtime-v1/proot-android-arm64-5.1.107.102.tar.gz",
-    "sha256": "79fea2c79433cfc42f9950bd3cf044afb93b90f06246a10e76132aa3bd2b68fa",
-    "file_size_bytes": 139307,
+    "asset_name": "proot-android-arm64-5.1.107.102-1552dbb29c13.tar.gz",
+    "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/linux-runtime-v1/proot-android-arm64-5.1.107.102-1552dbb29c13.tar.gz",
+    "sha256": "1552dbb29c139fbf47d19b06acc6967f84ba8e1e8685b1b4e619964a13c6c9a9",
+    "file_size_bytes": 138630,
     "top_dir": "proot",
     "loaders": [
       "loader",
@@ -70,8 +70,8 @@
     }
   ],
   "ci_proof": {
-    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45160010088",
-    "tested_at": "2026-11-23T10:59:22Z",
+    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45161906205",
+    "tested_at": "2026-11-23T11:12:03Z",
     "environment": "GitHub ubuntu-24.04-arm runner + termux/termux-docker:aarch64 (Android Bionic userland, privileged); bundle installed outside the Termux prefix",
     "extracted_by": "IDE RootfsExtractor (LinuxCore.kt) via Harness.kt",
     "boot": "ok",
