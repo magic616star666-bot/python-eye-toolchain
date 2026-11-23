@@ -2,7 +2,7 @@
   "schema_version": 1,
   "catalog_id": "python-eye-linux-runtime",
   "host_abi": "arm64-v8a",
-  "updated": "2026-11-23T11:12:03Z",
+  "updated": "2026-11-23T11:25:45Z",
   "purpose": "Ubuntu userland for Python Eye IDE via PRoot (no root). The IDE downloads both files, checks SHA-256 and size, unpacks them in app-private storage and boots Ubuntu with PRoot.",
   "proot": {
     "version": "5.1.107.102",
@@ -70,8 +70,8 @@
     }
   ],
   "ci_proof": {
-    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45161906205",
-    "tested_at": "2026-11-23T11:12:03Z",
+    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45164022956",
+    "tested_at": "2026-11-23T11:25:45Z",
     "environment": "GitHub ubuntu-24.04-arm runner + termux/termux-docker:aarch64 (Android Bionic userland, privileged); bundle installed outside the Termux prefix",
     "extracted_by": "IDE RootfsExtractor (LinuxCore.kt) via Harness.kt",
     "boot": "ok",
