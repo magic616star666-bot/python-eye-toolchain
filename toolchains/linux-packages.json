@@ -1,0 +1,553 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-linux-packages",
+  "runtime": "ubuntu-arm64-proot",
+  "updated": "2026-11-23",
+  "purpose": "Tools installed INSIDE the Python Eye Ubuntu (PRoot) container. apt packages come from Ubuntu's signed archive; Node.js from nodejs.org with SHASUMS256 verification; npm/pip packages from their official registries.",
+  "command_rules": {
+    "install": "bash -lc: 'set -e' + apt-get install -y --no-install-recommends <apt> + <script> + python3 -m pip install --break-system-packages --no-cache-dir <pip> + npm install -g --no-fund --no-audit <npm>",
+    "probe": "bash -lc <probe>; Ready only when exit code is 0 AND the output matches the 'expect' regular expression",
+    "remove": "apt-get remove -y <apt> / python3 -m pip uninstall -y --break-system-packages <pip> / npm uninstall -g <npm> / <remove>"
+  },
+  "categories": [
+    {
+      "id": "languages",
+      "label": "Languages"
+    },
+    {
+      "id": "ai",
+      "label": "AI agents"
+    },
+    {
+      "id": "tools",
+      "label": "Tools"
+    },
+    {
+      "id": "lsp",
+      "label": "Language servers"
+    },
+    {
+      "id": "build",
+      "label": "Build"
+    }
+  ],
+  "packages": [
+    {
+      "id": "cli-utils",
+      "name": "Core CLI utilities",
+      "category": "tools",
+      "description": "curl, wget, jq, tree, zip/unzip, nano, xz and CA certificates — needed by most other tools.",
+      "apt": [
+        "ca-certificates",
+        "curl",
+        "wget",
+        "jq",
+        "tree",
+        "zip",
+        "unzip",
+        "xz-utils",
+        "nano",
+        "less",
+        "procps",
+        "file"
+      ],
+      "probe": "curl --version | head -n1 && jq --version",
+      "expect": "jq-\\d",
+      "size": "~30 MB",
+      "timeout_minutes": 20,
+      "icon": "tools"
+    },
+    {
+      "id": "python3",
+      "name": "Python 3 + pip + venv",
+      "category": "languages",
+      "description": "Ubuntu's full CPython 3 with pip, venv and headers, for scripts, data work and Python backends (separate from the IDE's built-in Python 3.10 engine).",
+      "apt": [
+        "python3",
+        "python3-pip",
+        "python3-venv",
+        "python3-dev"
+      ],
+      "probe": "python3 --version && python3 -m pip --version",
+      "expect": "Python 3\\.\\d+",
+      "size": "~90 MB",
+      "timeout_minutes": 25,
+      "icon": "python"
+    },
+    {
+      "id": "uv",
+      "name": "uv (fast Python package manager)",
+      "category": "tools",
+      "description": "Astral's uv: Rust-based pip/venv replacement, 10-100x faster resolving and installing.",
+      "needs": [
+        "python3"
+      ],
+      "pip": [
+        "uv"
+      ],
+      "probe": "uv --version",
+      "expect": "^uv \\d",
+      "size": "~40 MB",
+      "timeout_minutes": 15,
+      "icon": "bolt"
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js LTS + npm",
+      "category": "languages",
+      "description": "Official Node.js 24 LTS for linux-arm64 from nodejs.org (SHA-256 checked against SHASUMS256.txt) with npm and npx.",
+      "needs": [
+        "cli-utils"
+      ],
+      "script": "set -e\nDIR=latest-v24.x\nSUMS=$(curl -fsSL https://nodejs.org/dist/$DIR/SHASUMS256.txt)\nF=$(printf '%s\\n' \"$SUMS\" | grep -o 'node-v[0-9.]*-linux-arm64\\.tar\\.xz' | head -n1)\ntest -n \"$F\"\ncd /tmp\ncurl -fsSLO \"https://nodejs.org/dist/$DIR/$F\"\nprintf '%s\\n' \"$SUMS\" | grep \"  $F\\$\" | sha256sum -c -\ntar -xJf \"$F\" -C /usr/local --strip-components=1 --no-same-owner\nrm -f \"$F\"",
+      "remove": "rm -rf /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/lib/node_modules /usr/local/include/node",
+      "probe": "node --version && npm --version",
+      "expect": "^v2\\d\\.",
+      "size": "~130 MB",
+      "timeout_minutes": 20,
+      "icon": "node"
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript compiler",
+      "category": "languages",
+      "description": "tsc — the official TypeScript compiler (npm).",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "typescript"
+      ],
+      "probe": "tsc --version",
+      "expect": "Version \\d",
+      "size": "~25 MB",
+      "timeout_minutes": 15,
+      "icon": "code"
+    },
+    {
+      "id": "bun",
+      "name": "Bun (fast JS/TS runtime)",
+      "category": "languages",
+      "description": "Bun runtime, bundler and package manager (linux-arm64 build via npm).",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "bun"
+      ],
+      "probe": "bun --version",
+      "expect": "^\\d+\\.\\d+",
+      "size": "~100 MB",
+      "timeout_minutes": 15,
+      "icon": "bolt"
+    },
+    {
+      "id": "gcc",
+      "name": "C/C++ Build Tools (GCC, make, gdb)",
+      "category": "languages",
+      "description": "build-essential: gcc, g++, make, libc headers and gdb. Probe compiles and runs a real C program.",
+      "apt": [
+        "build-essential",
+        "gdb"
+      ],
+      "probe": "printf '#include <stdio.h>\\nint main(void){puts(\"pyeye-c-ok\");return 0;}\\n' > /tmp/pyeye.c && gcc /tmp/pyeye.c -o /tmp/pyeye-c && /tmp/pyeye-c && g++ --version | head -n1",
+      "expect": "pyeye-c-ok",
+      "size": "~250 MB",
+      "timeout_minutes": 30,
+      "icon": "hammer"
+    },
+    {
+      "id": "clang",
+      "name": "Clang / LLVM + clangd",
+      "category": "languages",
+      "description": "Clang C/C++ compiler, LLD linker and the clangd language server.",
+      "apt": [
+        "clang",
+        "clangd",
+        "lld"
+      ],
+      "probe": "clang --version | head -n1 && clangd --version | head -n1",
+      "expect": "clang version",
+      "size": "~600 MB",
+      "timeout_minutes": 40,
+      "icon": "cpu"
+    },
+    {
+      "id": "cmake",
+      "name": "CMake + Ninja",
+      "category": "build",
+      "description": "CMake meta-build system and the Ninja build tool.",
+      "apt": [
+        "cmake",
+        "ninja-build"
+      ],
+      "probe": "cmake --version | head -n1 && ninja --version",
+      "expect": "cmake version",
+      "size": "~60 MB",
+      "timeout_minutes": 20,
+      "icon": "cube"
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "category": "languages",
+      "description": "Go compiler and tools. Probe builds and runs a real Go program.",
+      "apt": [
+        "golang-go"
+      ],
+      "probe": "mkdir -p /tmp/pyeye-go && cd /tmp/pyeye-go && printf 'package main\\nimport \"fmt\"\\nfunc main(){fmt.Println(\"pyeye-go-ok\")}\\n' > main.go && go run main.go && go version",
+      "expect": "pyeye-go-ok",
+      "size": "~250 MB",
+      "timeout_minutes": 30,
+      "icon": "code"
+    },
+    {
+      "id": "gopls",
+      "name": "gopls (Go language server)",
+      "category": "lsp",
+      "description": "Official Go language server for completion, diagnostics and navigation.",
+      "needs": [
+        "go"
+      ],
+      "apt": [
+        "gopls"
+      ],
+      "probe": "gopls version",
+      "expect": "gopls",
+      "size": "~40 MB",
+      "timeout_minutes": 15,
+      "icon": "code"
+    },
+    {
+      "id": "rust",
+      "name": "Rust + Cargo",
+      "category": "languages",
+      "description": "rustc compiler and the Cargo package manager from Ubuntu.",
+      "apt": [
+        "rustc",
+        "cargo"
+      ],
+      "probe": "rustc --version && cargo --version",
+      "expect": "rustc 1\\.",
+      "size": "~400 MB",
+      "timeout_minutes": 30,
+      "icon": "shield"
+    },
+    {
+      "id": "php",
+      "name": "PHP + Composer",
+      "category": "languages",
+      "description": "PHP CLI and the Composer dependency manager for classic sites and Laravel projects.",
+      "apt": [
+        "php-cli",
+        "composer"
+      ],
+      "probe": "php --version | head -n1 && COMPOSER_ALLOW_SUPERUSER=1 composer --version",
+      "expect": "PHP 8",
+      "size": "~60 MB",
+      "timeout_minutes": 20,
+      "icon": "globe"
+    },
+    {
+      "id": "java21",
+      "name": "OpenJDK 21 (Ubuntu)",
+      "category": "languages",
+      "description": "Headless OpenJDK 21 JDK inside the container (the IDE's own Android JDK tools are separate).",
+      "apt": [
+        "openjdk-21-jdk-headless"
+      ],
+      "probe": "java -version 2>&1 && javac -version 2>&1",
+      "expect": "version \"21",
+      "size": "~250 MB",
+      "timeout_minutes": 30,
+      "icon": "coffee"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "category": "languages",
+      "description": "Ruby interpreter with gem and development headers.",
+      "apt": [
+        "ruby-full"
+      ],
+      "probe": "ruby --version",
+      "expect": "^ruby \\d",
+      "size": "~60 MB",
+      "timeout_minutes": 20,
+      "icon": "code"
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code CLI (claude)",
+      "category": "ai",
+      "description": "Anthropic's agentic coding CLI. Run `claude` in the Ubuntu terminal; needs your own Anthropic account or API key.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "@anthropic-ai/claude-code"
+      ],
+      "probe": "claude --version",
+      "expect": "\\d+\\.\\d+\\.\\d+",
+      "size": "~60 MB",
+      "timeout_minutes": 15,
+      "icon": "robot"
+    },
+    {
+      "id": "gemini-cli",
+      "name": "Gemini CLI (gemini)",
+      "category": "ai",
+      "description": "Google's open-source AI agent for the terminal. Needs your own Google account or API key.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "@google/gemini-cli"
+      ],
+      "probe": "gemini --version",
+      "expect": "\\d+\\.\\d+",
+      "size": "~120 MB",
+      "timeout_minutes": 20,
+      "icon": "sparkles"
+    },
+    {
+      "id": "codex",
+      "name": "OpenAI Codex CLI (codex)",
+      "category": "ai",
+      "description": "OpenAI's coding agent for the terminal. Needs your own OpenAI account or API key.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "@openai/codex"
+      ],
+      "probe": "codex --version",
+      "expect": "\\d+\\.\\d+",
+      "size": "~80 MB",
+      "timeout_minutes": 15,
+      "icon": "robot"
+    },
+    {
+      "id": "git",
+      "name": "Git + Git LFS",
+      "category": "tools",
+      "description": "Distributed version control, plus Large File Storage for big assets.",
+      "apt": [
+        "git",
+        "git-lfs"
+      ],
+      "probe": "git --version && git lfs version",
+      "expect": "git version",
+      "size": "~30 MB",
+      "timeout_minutes": 15,
+      "icon": "branch"
+    },
+    {
+      "id": "gh",
+      "name": "GitHub CLI (gh)",
+      "category": "tools",
+      "description": "Pull requests, issues, releases and repositories from the terminal.",
+      "needs": [
+        "git"
+      ],
+      "apt": [
+        "gh"
+      ],
+      "probe": "gh --version | head -n1",
+      "expect": "gh version",
+      "size": "~45 MB",
+      "timeout_minutes": 15,
+      "icon": "branch"
+    },
+    {
+      "id": "ripgrep",
+      "name": "Ripgrep (rg)",
+      "category": "tools",
+      "description": "Super-fast recursive text search.",
+      "apt": [
+        "ripgrep"
+      ],
+      "probe": "rg --version | head -n1",
+      "expect": "ripgrep",
+      "size": "~6 MB",
+      "timeout_minutes": 10,
+      "icon": "search"
+    },
+    {
+      "id": "sqlite-dev",
+      "name": "SQLite3, OpenSSL & FFI dev libraries",
+      "category": "tools",
+      "description": "sqlite3 shell plus SQLite, OpenSSL and libffi headers for building native extensions.",
+      "apt": [
+        "sqlite3",
+        "libsqlite3-dev",
+        "libssl-dev",
+        "libffi-dev"
+      ],
+      "probe": "sqlite3 --version",
+      "expect": "^3\\.",
+      "size": "~20 MB",
+      "timeout_minutes": 15,
+      "icon": "database"
+    },
+    {
+      "id": "protoc",
+      "name": "Protobuf compiler (protoc)",
+      "category": "tools",
+      "description": "Protocol Buffers compiler for gRPC / .proto code generation.",
+      "apt": [
+        "protobuf-compiler"
+      ],
+      "probe": "protoc --version",
+      "expect": "libprotoc",
+      "size": "~10 MB",
+      "timeout_minutes": 10,
+      "icon": "code"
+    },
+    {
+      "id": "ssh",
+      "name": "SSH / SFTP client",
+      "category": "tools",
+      "description": "OpenSSH client: ssh, scp and sftp for remote servers and file transfer.",
+      "apt": [
+        "openssh-client"
+      ],
+      "probe": "ssh -V 2>&1",
+      "expect": "OpenSSH",
+      "size": "~10 MB",
+      "timeout_minutes": 10,
+      "icon": "globe"
+    },
+    {
+      "id": "neofetch",
+      "name": "System info (neofetch)",
+      "category": "tools",
+      "description": "Shows the container's OS, kernel, CPU and memory in the terminal.",
+      "apt": [
+        "neofetch"
+      ],
+      "probe": "neofetch --version 2>&1",
+      "expect": "[Nn]eofetch",
+      "size": "~2 MB",
+      "timeout_minutes": 10,
+      "icon": "monitor"
+    },
+    {
+      "id": "qemu-x86_64",
+      "name": "QEMU x86_64 user-mode emulator",
+      "category": "build",
+      "description": "Runs x86_64 Linux programs on ARM64 (slow; useful for x86-only build helpers).",
+      "apt": [
+        "qemu-user"
+      ],
+      "probe": "qemu-x86_64 --version | head -n1",
+      "expect": "qemu-x86_64 version",
+      "size": "~100 MB",
+      "timeout_minutes": 20,
+      "icon": "cpu"
+    },
+    {
+      "id": "pyright",
+      "name": "Python language server (Pyright)",
+      "category": "lsp",
+      "description": "Microsoft's Pyright: fast static type checking and Python hints.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "pyright"
+      ],
+      "probe": "pyright --version",
+      "expect": "pyright",
+      "size": "~20 MB",
+      "timeout_minutes": 15,
+      "icon": "python"
+    },
+    {
+      "id": "ts-language-server",
+      "name": "JavaScript & TypeScript language server",
+      "category": "lsp",
+      "description": "typescript-language-server for JS/TS completion, types and JSDoc.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "typescript",
+        "typescript-language-server"
+      ],
+      "probe": "typescript-language-server --version",
+      "expect": "\\d+\\.\\d+",
+      "size": "~30 MB",
+      "timeout_minutes": 15,
+      "icon": "code"
+    },
+    {
+      "id": "web-language-servers",
+      "name": "HTML, CSS & JSON language servers",
+      "category": "lsp",
+      "description": "vscode-langservers-extracted: HTML, CSS, JSON and ESLint servers.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "vscode-langservers-extracted"
+      ],
+      "probe": "command -v vscode-html-language-server vscode-css-language-server vscode-json-language-server",
+      "expect": "vscode-json-language-server",
+      "size": "~20 MB",
+      "timeout_minutes": 15,
+      "icon": "globe"
+    },
+    {
+      "id": "yaml-language-server",
+      "name": "YAML language server",
+      "category": "lsp",
+      "description": "Validation, completion and schemas for YAML files.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "yaml-language-server"
+      ],
+      "probe": "command -v yaml-language-server",
+      "expect": "yaml-language-server",
+      "size": "~15 MB",
+      "timeout_minutes": 15,
+      "icon": "file"
+    },
+    {
+      "id": "bash-language-server",
+      "name": "Bash language server",
+      "category": "lsp",
+      "description": "Completion and diagnostics for shell scripts.",
+      "needs": [
+        "nodejs"
+      ],
+      "npm": [
+        "bash-language-server"
+      ],
+      "probe": "command -v bash-language-server",
+      "expect": "bash-language-server",
+      "size": "~15 MB",
+      "timeout_minutes": 15,
+      "icon": "terminal"
+    },
+    {
+      "id": "flutter",
+      "name": "Flutter & Dart SDK (stable)",
+      "category": "languages",
+      "description": "Flutter stable channel and Dart for linux-arm64 (CLI, web and Linux targets). Large download. Android APK builds additionally need Android SDK tools that run on ARM64.",
+      "needs": [
+        "git",
+        "cli-utils"
+      ],
+      "script": "set -e\nif [ ! -d /opt/flutter/.git ]; then git clone --depth 1 -b stable https://github.com/flutter/flutter.git /opt/flutter; fi\ngit config --global --add safe.directory /opt/flutter\nln -sf /opt/flutter/bin/flutter /usr/local/bin/flutter\nln -sf /opt/flutter/bin/dart /usr/local/bin/dart\nflutter --disable-analytics >/dev/null 2>&1 || true\nflutter --version",
+      "remove": "rm -rf /opt/flutter /usr/local/bin/flutter /usr/local/bin/dart",
+      "probe": "flutter --version 2>&1",
+      "expect": "Flutter \\d",
+      "size": "~2 GB",
+      "timeout_minutes": 60,
+      "icon": "phone"
+    }
+  ]
+}
