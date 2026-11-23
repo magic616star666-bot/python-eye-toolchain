@@ -48,6 +48,26 @@ jobs:
           ./kotlinc/bin/kotlinc toolchains/linux/kotlin/LinuxCore.kt toolchains/linux/kotlin/Harness.kt -include-runtime -d dist/harness.jar
       - name: Extractor safety self-test (no writes outside rootfs)
         run: python3 toolchains/linux/selftest_extractor.py dist/harness.jar
+      - name: Reproducible bundle (a second build must be byte-identical)
+        run: |
+          set -euo pipefail
+          python3 toolchains/linux/build_proot_bundle.py --out dist-again > /dev/null
+          A=$(jq -r .sha256 dist/proot-bundle.json); B=$(jq -r .sha256 dist-again/proot-bundle.json)
+          echo "build 1: $A"; echo "build 2: $B"
+          test "$A" = "$B"
+          rm -rf dist-again
+      - name: Unpack the PRoot bundle with the IDE's extractor (must equal tar's result)
+        run: |
+          set -euo pipefail
+          mkdir -p work/bundle-tar work/bundle-ide
+          tar -xzf dist/proot-android-arm64-*.tar.gz -C work/bundle-tar
+          gzip -dc dist/proot-android-arm64-*.tar.gz | java -jar dist/harness.jar extract - work/bundle-ide 0
+          diff -r work/bundle-tar work/bundle-ide
+          (cd work/bundle-tar && find . -type f -perm -u+x | sort) > work/x-tar.txt
+          (cd work/bundle-ide && find . -type f -perm -u+x | sort) > work/x-ide.txt
+          diff work/x-tar.txt work/x-ide.txt
+          test -x work/bundle-ide/proot/bin/proot
+          echo "IDE extractor == tar; executables:"; cat work/x-ide.txt
       - name: Unpack + configure Ubuntu exactly like the IDE
         run: |
           set -euo pipefail
@@ -126,7 +146,18 @@ jobs:
           gh release view linux-runtime-v1 >/dev/null 2>&1 || gh release create linux-runtime-v1 \
             --title "Python Eye Linux runtime (PRoot + Ubuntu)" \
             --notes "Relocatable PRoot bundle for Python Eye IDE (Android ARM64). Built and tested by .github/workflows/linux-runtime.yml. Upstream sources, versions and licences are inside the archive (SOURCES.json, LICENSES/)."
-          gh release upload linux-runtime-v1 "dist/$ASSET" --clobber
+          # Assets are content-addressed (SHA-256 prefix in the name) and never replaced:
+          # catalogs already published, and copies bundled inside IDE builds, stay valid.
+          SHA=$(jq -r .sha256 dist/proot-bundle.json)
+          EXISTING=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/linux-runtime-v1" --jq ".assets[] | select(.name==\"$ASSET\") | (.digest // \"present\")")
+          if [ -n "$EXISTING" ]; then
+            echo "$ASSET is already published ($EXISTING) - keeping it"
+            if [ "$EXISTING" != "present" ] && [ "$EXISTING" != "sha256:$SHA" ]; then
+              echo "::error::published $ASSET has $EXISTING, this build is sha256:$SHA"; exit 1
+            fi
+          else
+            gh release upload linux-runtime-v1 "dist/$ASSET"
+          fi
           DIGEST=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/linux-runtime-v1" --jq ".assets[] | select(.name==\"$ASSET\") | .digest // \"\"")
           echo "uploaded digest: $DIGEST"
           echo "DIGEST=$DIGEST" >> "$GITHUB_ENV"

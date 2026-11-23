@@ -245,8 +245,10 @@ object RootfsExtractor {
         return result
     }
 
+    // Only POSIX ustar headers (magic "ustar\u0000") carry a name prefix at 345. GNU headers
+    // (magic "ustar  \u0000") keep atime/ctime there, which must never become part of a path.
     private fun ustarPrefix(h: ByteArray): String =
-        if (String(h, 257, 5, Charsets.US_ASCII) == "ustar") cString(h, 345, 155) else ""
+        if (String(h, 257, 5, Charsets.US_ASCII) == "ustar" && h[262] == 0.toByte()) cString(h, 345, 155) else ""
 
     private fun cString(b: ByteArray, off: Int, len: Int): String {
         var end = off

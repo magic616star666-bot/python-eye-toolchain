@@ -40,6 +40,8 @@ INDEXES = [
     "dists/stable/main/binary-aarch64/Packages",
 ]
 PREFIX = Path("data/data/com.termux/files/usr")
+# Fixed metadata so the same Termux packages always give a byte-identical archive.
+EPOCH = 1704067200  # 2024-01-01T00:00:00Z
 SYSTEM_LIBS = {"libc.so", "libdl.so", "libm.so", "liblog.so"}
 # Shared library -> Termux package that ships it.
 LIB_PACKAGES = {
@@ -143,6 +145,9 @@ def main() -> None:
         url = f"{mirror}/{meta['Filename']}"
         deb = work / Path(meta["Filename"]).name
         deb.write_bytes(fetch(url))
+        # Record the canonical URL (same file on every mirror, identified by its SHA-256),
+        # so the archive does not depend on which mirror answered.
+        url = f"{MIRRORS[0]}/{meta['Filename']}"
         digest = sha256(deb)
         if digest != meta["SHA256"].lower():
             raise SystemExit(f"{name}: SHA-256 mismatch {digest} != {meta['SHA256']}")
@@ -216,7 +221,7 @@ def main() -> None:
             shutil.copy2(doc, bundle / "LICENSES" / f"{name}.copyright")
     (bundle / "SOURCES.json").write_text(json.dumps({
         "built_by": "python-eye-toolchain .github/workflows/linux-runtime.yml",
-        "termux_mirror": mirror,
+        "termux_repository": MIRRORS[0],
         "packages": sources,
         "bundled_libraries": bundled,
         "runtime_env": {
@@ -230,19 +235,36 @@ def main() -> None:
         f.chmod(0o755)
 
     safe_version = re.sub(r"[^0-9A-Za-z._-]", "_", proot_version)
-    asset = f"proot-android-arm64-{safe_version}.tar.gz"
-    archive = out / asset
-    with tarfile.open(archive, "w:gz", format=tarfile.PAX_FORMAT) as tar:
+    # Reproducible archive: plain ustar (no PAX time records), fixed mtime/owner/modes,
+    # sorted entries (tarfile.add sorts) and a gzip header without name or time.
+    tar_path = out / "proot-bundle.tar"
+    with tarfile.open(tar_path, "w", format=tarfile.USTAR_FORMAT) as tar:
         def clean(info):
             info.uid = info.gid = 0
             info.uname = info.gname = "root"
+            info.mtime = EPOCH
+            if info.isdir():
+                info.mode = 0o755
+            elif info.isfile():
+                info.mode = 0o755 if info.mode & 0o111 else 0o644
             return info
         tar.add(bundle, arcname="proot", filter=clean)
+    packed = out / "proot-bundle.tar.gz"
+    with open(tar_path, "rb") as src, open(packed, "wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=0) as gz:
+            shutil.copyfileobj(src, gz)
+    tar_path.unlink()
+    digest = sha256(packed)
+    # Content-addressed name: a published asset is never replaced, so every catalog that
+    # pins it (including copies bundled inside released IDE builds) keeps working.
+    asset = f"proot-android-arm64-{safe_version}-{digest[:12]}.tar.gz"
+    archive = out / asset
+    packed.replace(archive)
     info = {
         "asset_name": asset,
         "version": proot_version,
         "talloc_version": talloc_version,
-        "sha256": sha256(archive),
+        "sha256": digest,
         "file_size_bytes": archive.stat().st_size,
         "top_dir": "proot",
         "loaders": loaders,
