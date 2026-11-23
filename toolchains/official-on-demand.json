@@ -8,7 +8,7 @@
     "sdk": "https://dl.google.com/android/repository/repository2-1.xml"
   },
   "source_sha256": {
-    "gradle": "3f4e75c75a81285edf7364ecdf320e7620f9908894eefaf0d5928f5a8e48bdc0",
+    "gradle": "aa4c4a036510fae93d5475202ba4aa4a061f0d005eaf24092db4bfee8939a3af",
     "sdk": "8cee2903fb5a87de5f0820e8279623a5ff39d3b3038c030f37b389b41cf803c8"
   },
   "gradle_count": 67,
