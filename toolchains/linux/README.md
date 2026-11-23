@@ -11,13 +11,18 @@ Bash, clangd, gopls), AI CLIs (Claude Code, Gemini CLI, Codex) and Flutter.
 
 | File | From | Check |
 |---|---|---|
-| `proot-android-arm64-<version>.tar.gz` | this repo, Release [`linux-runtime-v1`](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/linux-runtime-v1) | SHA-256 + size from [`linux-runtime.json`](../linux-runtime.json) |
+| `proot-android-arm64-<version>-<sha256[:12]>.tar.gz` | this repo, Release [`linux-runtime-v1`](https://github.com/magic616star666-bot/python-eye-toolchain/releases/tag/linux-runtime-v1) | SHA-256 + size from [`linux-runtime.json`](../linux-runtime.json) |
 | Ubuntu ARM64 rootfs `.tar.xz` | original [termux/proot-distro](https://github.com/termux/proot-distro/releases) release (not re-hosted) | SHA-256 + size from [`linux-runtime.json`](../linux-runtime.json) |
 
-The PRoot bundle is built by CI from the official Termux `proot` and `libtalloc`
-aarch64 packages (their SHA-256 is checked against the Termux package index). It
-contains `bin/proot`, `lib/libtalloc.so.2`, `libexec/proot/loader[32]`, the licence
-files and `SOURCES.json`. The IDE sets `LD_LIBRARY_PATH`, `PROOT_LOADER` and
+The PRoot bundle is built by CI from the official Termux `proot`, `libtalloc` and
+`libandroid-shmem` aarch64 packages (their SHA-256 is checked against the Termux package
+index). It contains `bin/proot`, `lib/libtalloc.so.2`, `lib/libandroid-shmem.so`,
+`libexec/proot/loader[32]`, the licence files and `SOURCES.json`.
+
+The archive is **reproducible** (fixed timestamps/owners/modes, gzip without name or
+time; CI builds it twice and requires identical bytes) and **content-addressed**: the
+asset name carries its SHA-256 prefix and a published asset is never replaced, so every
+pin that was ever published — including the copy bundled inside IDE builds — stays valid. The IDE sets `LD_LIBRARY_PATH`, `PROOT_LOADER` and
 `PROOT_TMP_DIR`, so nothing depends on Termux being installed.
 
 ## Catalogs
@@ -34,15 +39,17 @@ tool family.
 
 1. **bundle** (x86_64): builds the PRoot bundle, pins the rootfs, compiles the IDE's own
    [`LinuxCore.kt`](kotlin/LinuxCore.kt) (identical to the IDE source) with
-   [`Harness.kt`](kotlin/Harness.kt), runs the extractor safety self-test, then unpacks
-   and configures Ubuntu **with the IDE's code** and generates the IDE's exact PRoot
-   command line.
+   [`Harness.kt`](kotlin/Harness.kt), runs the extractor safety self-test, checks that a
+   second bundle build is byte-identical, unpacks the bundle with the IDE's extractor
+   (must equal `tar`), then unpacks and configures Ubuntu **with the IDE's code** and
+   generates the IDE's exact PRoot command line.
 2. **verify** (GitHub `ubuntu-24.04-arm`): starts `termux/termux-docker:aarch64` — a real
    Android **Bionic** userland on ARM64 — installs the bundle outside the Termux prefix,
    boots Ubuntu, checks the project-folder bind, runs `apt-get update`, then installs and
    probes every package (compile-and-run tests for C and Go).
-3. **publish**: uploads the bundle to the `linux-runtime-v1` Release, checks GitHub's
-   asset digest, writes the two JSON files and commits them.
+3. **publish**: uploads the bundle to the `linux-runtime-v1` Release unless that exact
+   asset already exists (never replaced; its digest must match), checks GitHub's asset
+   digest, writes the two JSON files and commits them.
 
 ## Status truth
 
