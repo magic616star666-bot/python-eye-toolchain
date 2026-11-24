@@ -136,3 +136,18 @@ GitHub Linux executable checks and Android ARM64 on-device APK-build proof are s
 [**Real add-on CI run: 5/5 jobs passed**](https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44622667164). It built actual Java sources using Maven/Ant and C/Rust source using Ninja/Clang/Cargo; it installed and executed Capacitor/Cordova/Briefcase/Flet CLI packages. **It did not verify every framework creates an APK**.
 
 [Unified 53-ID Extensions setup manifest](toolchains/setup_extensions.py) and [framework-aware ZIP builder](toolchains/zip_builder.py) are available. These are public GitHub scripts; the separate Kotlin Android IDE app still needs source integration and actual Android ARM64 on-phone tests. Only CLI checks on a real host may mark a tool's CLI ready.
+
+
+## R8 Release Checker (Android / Python Eye)
+
+R8 is **already part of Android Gradle Plugin** (AGP). It is not a separate Android ARM64 executable that the IDE needs to download. The Android-only profile already includes the **`r8-d8`** route. To avoid breaking the existing eight-ID `tools.json` catalog and its Kotlin parser, **do not add a second R8 card to the legacy catalog**.
+
+A read-only, standalone Python preflight is provided at [`toolchains/r8_release_check.py`](toolchains/r8_release_check.py):
+
+```bash
+python3 toolchains/r8_release_check.py --project /path/to/extracted/ARINA-gradle-project
+```
+
+This verifies the `release` Gradle block has minification enabled and does not explicitly set debug signing/debuggable. It prints structured JSON and never downloads tools, edits source, accesses a keystore, or falsely reports successful APK builds. **Static checks are not a substitute for Gradle `assembleRelease`**, `mapping.txt` inspection, signature verification, or an on-device regression test. The APK must be signed with the developer's **own private release key**; R8 does not turn a debug-signed APK into a release-signed one.
+
+**Python Eye sync limitation:** The public GitHub toolchain repo is a catalog/scripts distribution, not the Android IDE's Kotlin app source. Sync only refreshes the manifest that the installed IDE already supports. To create a new visible `R8 Checker` Load/Test button inside Python Eye requires IDE UI/parser integration; uploading this script to GitHub does not by itself wire that button. The existing `r8-d8` route is preserved and no tool is marked ready without phone validation.
