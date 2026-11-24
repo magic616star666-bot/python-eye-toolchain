@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "about": "Read by Python Eye IDE (BuildRules.kt) on Sync. Change this file - not the app - when a new AGP needs a new Build-Tools revision.",
+  "agp_build_tools": [
+    { "min_agp_major": 9, "build_tools": "36.0.0" },
+    { "min_agp_major": 0, "build_tools": "35.0.0" }
+  ],
+  "arm64_aliases": ["36.0.0"]
+}

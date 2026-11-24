@@ -9,6 +9,8 @@ on:
       - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
       - scripts/verify_maven_tools.py
+      - toolchains/build-rules.json
+      - scripts/validate_build_rules.py
       - .github/workflows/catalog-check.yml
   pull_request:
     paths:
@@ -19,6 +21,8 @@ on:
       - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
       - scripts/verify_maven_tools.py
+      - toolchains/build-rules.json
+      - scripts/validate_build_rules.py
       - .github/workflows/catalog-check.yml
   workflow_dispatch:
 
@@ -38,6 +42,8 @@ jobs:
         run: python scripts/validate_catalog.py
       - name: Check rejection of fake downloads, duplicate IDs, unsupported versions
         run: PYTHONPATH=scripts python scripts/test_catalog_validator.py
+      - name: Build rules (AGP -> Build-Tools) use the IDE's own validation rules
+        run: python scripts/validate_build_rules.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
