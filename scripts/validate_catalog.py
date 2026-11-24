@@ -34,7 +34,7 @@ def check(path: Path):
         if not isinstance(item, dict):
             raise ValueError("Every tool must be an object")
         tool_id = item.get("id")
-        if not isinstance(tool_id, str) or not re.fullmatch(r"[a-z0-9-]+", tool_id):
+        if not isinstance(tool_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", tool_id):
             raise ValueError(f"Invalid tool ID: {tool_id!r}")
         if tool_id in by_id:
             raise ValueError(f"Duplicate tool ID: {tool_id}")
