@@ -6,11 +6,33 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
+# The original eight must always stay. NEW tools may be added freely (no app update):
+# a Maven JAR tool only needs the generic rules in check_maven_tool() below.
 EXPECTED = {
     "openjdk-17", "gradle", "android-sdk-36", "aapt2-zipalign",
     "d8-apksigner", "kotlin-compiler", "android-gradle-plugin", "chaquopy-build",
-    "r8-8.11.18"
 }
+# Same rules as the IDE's MavenTools (ToolStore.kt) - keep them in step.
+MAVEN_COORD = re.compile(r"[A-Za-z0-9_.-]{2,120}:[A-Za-z0-9_.-]{1,120}")
+MAVEN_VERSION = re.compile(r"[0-9][0-9A-Za-z.+-]{0,40}")
+JAVA_PROBE = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*(\.[A-Za-z_$][A-Za-z0-9_$]*)+( [A-Za-z0-9_.=:/+-]+){0,6}")
+
+
+def check_maven_tool(tool_id, item, install):
+    if item.get("published") is not False or item.get("url") or item.get("sha256"):
+        raise ValueError(f"{tool_id}: Maven tool must not advertise a release archive URL/checksum")
+    coord, version = install.get("plugin_id", ""), item.get("version", "")
+    if not MAVEN_COORD.fullmatch(coord) or not MAVEN_VERSION.fullmatch(version):
+        raise ValueError(f"{tool_id}: invalid Maven coordinate {coord}:{version}")
+    probes = item.get("required_probes")
+    if not isinstance(probes, list) or not 1 <= len(probes) <= 6 or not all(
+            isinstance(x, str) and JAVA_PROBE.fullmatch(x.strip()) for x in probes):
+        raise ValueError(f"{tool_id}: required_probes must be 1-6 'java.main.Class [args]' strings")
+    paths = install.get("required_paths", [])
+    if not isinstance(paths, list) or not all(re.fullmatch(r"lib/[A-Za-z0-9_.-]+\.jar", x) for x in paths):
+        raise ValueError(f"{tool_id}: required_paths must be lib/<name>.jar")
+    if item.get("catalog_state") != "maven_resolution_not_device_verified":
+        raise ValueError(f"{tool_id}: Maven tool cannot be marked device ready before actual Test")
 MANAGED = {"android-sdk-36", "android-gradle-plugin", "chaquopy-build"}
 RELEASE_PREFIX = (
     "https://github.com/magic616star666-bot/python-eye-toolchain/"
@@ -27,8 +49,8 @@ def check(path: Path):
         raise ValueError("Expected backwards-compatible schema_version 1")
     if data.get("architecture") != "arm64-v8a":
         raise ValueError("Catalog must target Android arm64-v8a")
-    if len(tools) != 9:
-        raise ValueError(f"Expected exactly 9 tools, got {len(tools)}")
+    if not 8 <= len(tools) <= 200:
+        raise ValueError(f"Unexpected tool count {len(tools)}")
     by_id = {}
     for item in tools:
         if not isinstance(item, dict):
@@ -62,17 +84,8 @@ def check(path: Path):
                 raise ValueError(f"{tool_id}: cannot pretend a managed dependency is an uploaded archive")
             if item.get("catalog_state") != "managed_via_official_tool_not_integrated":
                 raise ValueError(f"{tool_id}: invalid managed state")
-        elif tool_id == "r8-8.11.18":
-            if kind != "maven_artifact_resolution" or item.get("published") is not False:
-                raise ValueError("R8 must use official managed Maven resolution, not a fake archive")
-            if item.get("url") or item.get("sha256"):
-                raise ValueError("R8 Maven tool must not advertise a fake archive URL/checksum")
-            if item.get("version") != "8.11.18" or install.get("plugin_id") != "com.android.tools:r8":
-                raise ValueError("R8 version/coordinate mismatch")
-            if item.get("catalog_state") != "maven_resolution_not_device_verified":
-                raise ValueError("R8 cannot be marked device ready before actual Test")
-            if install.get("required_paths") != ["lib/r8.jar"]:
-                raise ValueError("R8 JAR required path missing")
+        elif kind == "maven_artifact_resolution":
+            check_maven_tool(tool_id, item, install)
         else:
             if kind != "archive" or item.get("published") is not True:
                 raise ValueError(f"{tool_id}: expected downloadable archive")
@@ -94,12 +107,12 @@ def check(path: Path):
                 raise ValueError(f"{tool_id}: extracted required_paths missing")
             if item.get("catalog_state") != "downloadable_not_device_verified":
                 raise ValueError(f"{tool_id}: invalid archive status")
-    if set(by_id) != EXPECTED:
-        raise ValueError(f"Unexpected or missing tools: expected {sorted(EXPECTED)}, got {sorted(by_id)}")
+    if not EXPECTED <= set(by_id):
+        raise ValueError(f"Original tools missing: {sorted(EXPECTED - set(by_id))}")
     for k, deps in ((k, v["requires"]) for k, v in by_id.items()):
         if k in deps or len(set(deps)) != len(deps):
             raise ValueError(f"{k}: duplicate or self-referential dependency")
-        unknown = set(deps) - EXPECTED
+        unknown = set(deps) - set(by_id)
         if unknown:
             raise ValueError(f"{k}: unknown dependencies {unknown}")
     visited, stack = set(), set()
@@ -140,7 +153,9 @@ def check(path: Path):
     for key, expected_key in version_keys.items():
         if routes["build_version_recommendation"][key] != profile[expected_key]:
             raise ValueError(f"Build profile mismatch: {key}")
-    print("PASS: 9 unique tool IDs; 5 real release archives, 3 existing managed tools, 1 R8 Maven tool;")
+    kinds = [t["install"]["method"] for t in tools]
+    print(f"PASS: {len(tools)} unique tool IDs; {kinds.count('archive')} real release archives, "
+          f"{len(MANAGED)} existing managed tools, {kinds.count('maven_artifact_resolution')} Maven JAR tool(s);")
     print("      SHA-256 metadata, stable schema, ARM64 profile, dependencies all consistent.")
     print("      NOTE: Device installation and APK building inside Python Eye IDE NOT verified.")
     return 0

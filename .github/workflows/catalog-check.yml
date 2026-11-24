@@ -8,6 +8,7 @@ on:
       - scripts/validate_catalog.py
       - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
+      - scripts/verify_maven_tools.py
       - .github/workflows/catalog-check.yml
   pull_request:
     paths:
@@ -17,6 +18,7 @@ on:
       - scripts/validate_catalog.py
       - scripts/test_catalog_validator.py
       - scripts/verify_release_assets.py
+      - scripts/verify_maven_tools.py
       - .github/workflows/catalog-check.yml
   workflow_dispatch:
 
@@ -35,16 +37,16 @@ jobs:
       - name: Validate eight tool IDs, all dependencies and managed install policies
         run: python scripts/validate_catalog.py
       - name: Check rejection of fake downloads, duplicate IDs, unsupported versions
-        run: python scripts/test_catalog_validator.py
-      - name: Official R8 from Google Maven really exists and runs (D8 + R8 --version)
-        run: |
-          set -euo pipefail
-          V=$(python3 -c "import json;print(next(t['version'] for t in json.load(open('tools.json'))['tools'] if t.get('install',{}).get('plugin_id')=='com.android.tools:r8'))")
-          curl -fsSL -o r8.jar "https://dl.google.com/dl/android/maven2/com/android/tools/r8/$V/r8-$V.jar"
-          ls -l r8.jar
-          java -cp r8.jar com.android.tools.r8.D8 --version | tee d8.txt
-          java -cp r8.jar com.android.tools.r8.R8 --version | tee r8.txt
-          grep -q "$V" d8.txt && grep -q "$V" r8.txt
+        run: PYTHONPATH=scripts python scripts/test_catalog_validator.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Load + Test every Maven JAR tool exactly like the IDE (same build.gradle, same probes)
+        run: python scripts/verify_maven_tools.py
       - name: Verify uploaded Release sizes and SHA-256 digests
         env:
           GITHUB_TOKEN: ${{ github.token }}
