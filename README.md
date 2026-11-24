@@ -10,7 +10,7 @@ Public catalog and real downloadable tool archives for **Python Eye IDE (Android
 https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/tools.json
 ```
 
-The JSON root contains exactly **eight unique `tools` IDs**. The `published` field means *archive is uploaded*; it **does not** mean *installed* or *verified working on your Android phone*. The catalog keeps `schema_version: 1` for compatibility, but the Kotlin parser has been inspected and its eight-tool catalog schema is supported in the patched app source; Android phone runtime testing is still required.
+The JSON root now contains **nine unique `tools` IDs**: the original eight plus a separate `r8-8.11.18` official Maven tool. The `published` field means *archive is uploaded*; it **does not** mean *installed* or *verified working on your Android phone*. The catalog keeps `schema_version: 1` for compatibility, but the Kotlin parser has been inspected and its eight-tool catalog schema is supported in the patched app source; Android phone runtime testing is still required.
 
 ## Tool status — 18 November 2026
 
@@ -151,3 +151,13 @@ python3 toolchains/r8_release_check.py --project /path/to/extracted/ARINA-gradle
 This verifies the `release` Gradle block has minification enabled and does not explicitly set debug signing/debuggable. It prints structured JSON and never downloads tools, edits source, accesses a keystore, or falsely reports successful APK builds. **Static checks are not a substitute for Gradle `assembleRelease`**, `mapping.txt` inspection, signature verification, or an on-device regression test. The APK must be signed with the developer's **own private release key**; R8 does not turn a debug-signed APK into a release-signed one.
 
 **Python Eye sync limitation:** The public GitHub toolchain repo is a catalog/scripts distribution, not the Android IDE's Kotlin app source. Sync only refreshes the manifest that the installed IDE already supports. To create a new visible `R8 Checker` Load/Test button inside Python Eye requires IDE UI/parser integration; uploading this script to GitHub does not by itself wire that button. The existing `r8-d8` route is preserved and no tool is marked ready without phone validation.
+
+
+## Independent R8 tool via GitHub Sync (25 November 2026)
+
+A ninth entry, `r8-8.11.18`, is in the existing [`tools.json`](tools.json) Sync feed. The previously installed **eight tools retain their IDs, versions, URLs, and installation methods**. A safe rollback snapshot of that eight-tool catalog is saved as [`tools-legacy-8-backup-2026-11-25.json`](tools-legacy-8-backup-2026-11-25.json).
+
+The real Python Eye IDE **v1.6.7** source already supports `maven_artifact_resolution` for the `com.android.tools:r8` Maven coordinate. The tool's **Load** action resolves `r8.jar` from Google's Maven repository via Gradle; **Test** invokes BOTH `com.android.tools.r8.D8 --version` and `com.android.tools.r8.R8 --version`. These are not simulated statuses. A failure remains a failure and requires device diagnosis. JDK17 and Gradle must be loaded first.
+
+R8 is also integrated into Android Gradle Plugin for release minification. Installing this **independent** R8 tool alone does not enable R8 for an APK, switch a debug signing certificate to a release certificate, or produce a signed release build. For ARINA use its Android Gradle `release` build type with minification enabled, your **own private signing key**, and actual on-device functional regression tests. **No APK source code and no signing keys are published here.**
+
