@@ -8,14 +8,15 @@ from urllib.parse import urlparse
 
 EXPECTED = {
     "openjdk-17", "gradle", "android-sdk-36", "aapt2-zipalign",
-    "d8-apksigner", "kotlin-compiler", "android-gradle-plugin", "chaquopy-build"
+    "d8-apksigner", "kotlin-compiler", "android-gradle-plugin", "chaquopy-build",
+    "r8-8.11.18"
 }
 MANAGED = {"android-sdk-36", "android-gradle-plugin", "chaquopy-build"}
 RELEASE_PREFIX = (
     "https://github.com/magic616star666-bot/python-eye-toolchain/"
     "releases/download/toolchain-v1/"
 )
-INSTALL_KINDS = {"archive", "sdkmanager", "gradle_plugin_resolution"}
+INSTALL_KINDS = {"archive", "sdkmanager", "gradle_plugin_resolution", "maven_artifact_resolution"}
 
 def check(path: Path):
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -26,8 +27,8 @@ def check(path: Path):
         raise ValueError("Expected backwards-compatible schema_version 1")
     if data.get("architecture") != "arm64-v8a":
         raise ValueError("Catalog must target Android arm64-v8a")
-    if len(tools) != 8:
-        raise ValueError(f"Expected exactly 8 tools, got {len(tools)}")
+    if len(tools) != 9:
+        raise ValueError(f"Expected exactly 9 tools, got {len(tools)}")
     by_id = {}
     for item in tools:
         if not isinstance(item, dict):
@@ -61,6 +62,17 @@ def check(path: Path):
                 raise ValueError(f"{tool_id}: cannot pretend a managed dependency is an uploaded archive")
             if item.get("catalog_state") != "managed_via_official_tool_not_integrated":
                 raise ValueError(f"{tool_id}: invalid managed state")
+        elif tool_id == "r8-8.11.18":
+            if kind != "maven_artifact_resolution" or item.get("published") is not False:
+                raise ValueError("R8 must use official managed Maven resolution, not a fake archive")
+            if item.get("url") or item.get("sha256"):
+                raise ValueError("R8 Maven tool must not advertise a fake archive URL/checksum")
+            if item.get("version") != "8.11.18" or install.get("plugin_id") != "com.android.tools:r8":
+                raise ValueError("R8 version/coordinate mismatch")
+            if item.get("catalog_state") != "maven_resolution_not_device_verified":
+                raise ValueError("R8 cannot be marked device ready before actual Test")
+            if install.get("required_paths") != ["lib/r8.jar"]:
+                raise ValueError("R8 JAR required path missing")
         else:
             if kind != "archive" or item.get("published") is not True:
                 raise ValueError(f"{tool_id}: expected downloadable archive")
@@ -128,7 +140,7 @@ def check(path: Path):
     for key, expected_key in version_keys.items():
         if routes["build_version_recommendation"][key] != profile[expected_key]:
             raise ValueError(f"Build profile mismatch: {key}")
-    print("PASS: 8 unique tool IDs; 5 real release archives, 3 managed installs;")
+    print("PASS: 9 unique tool IDs; 5 real release archives, 3 existing managed tools, 1 R8 Maven tool;")
     print("      SHA-256 metadata, stable schema, ARM64 profile, dependencies all consistent.")
     print("      NOTE: Device installation and APK building inside Python Eye IDE NOT verified.")
     return 0
