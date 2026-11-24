@@ -4,7 +4,7 @@
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
   "updated": "2026-11-25",
-  "notes": "Five verified downloads and three official managed tools. JDK17 upgraded to independently audited Android Bionic 17.0.11; old runtime retained for fallback. Native Gradle and Jansi Android compatibility remains device-test required. Existing d8-apksigner tool now advertises R8 via AGP and read-only preflight; no duplicate tool ID.",
+  "notes": "Nine unique Sync tools: original eight unchanged in id/version/install fields, plus official Maven R8 8.11.18 with real Android-side dual D8/R8 test. Installed/working only after phone checks.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -308,6 +308,42 @@
       },
       "device_build_verified": false,
       "note": "Gradle plugin via Maven Central for Python 3.10+, AGP 7.3-9.5, Android API >=24. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
+    },
+    {
+      "id": "r8-8.11.18",
+      "name": "R8 Optimizer + D8 (Official Maven)",
+      "version": "8.11.18",
+      "size_mb_estimate": 0,
+      "requires": [
+        "openjdk-17",
+        "gradle"
+      ],
+      "description": "Independent R8/D8 Java shrinker, obfuscator and dexer resolved from Google's Maven repository. Load downloads official R8 jar, Test runs both D8 and R8 --version on phone. APK release signing remains separate.",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "managed_maven_resolution_requires_device_test",
+      "url": "",
+      "sha256": "",
+      "archive_format": "jar",
+      "required_probes": [
+        "com.android.tools.r8.D8 --version",
+        "com.android.tools.r8.R8 --version"
+      ],
+      "install": {
+        "method": "maven_artifact_resolution",
+        "plugin_id": "com.android.tools:r8",
+        "required_paths": [
+          "lib/r8.jar"
+        ],
+        "device_verified": false,
+        "maven_repository": "google()",
+        "offline_only": false
+      },
+      "catalog_state": "maven_resolution_not_device_verified",
+      "device_build_verified": false,
+      "test": "",
+      "expect": "8.11.18",
+      "note": "Python Eye v1.6.7 Kotlin ManagedToolResolver provides this Maven Load and dual-class Test route. Successful CLI Test does not sign or obfuscate ARINA; AGP release minification must run during assembleRelease. No fake download URL."
     }
   ],
   "last_archive_audit": "archive_audit.json",
