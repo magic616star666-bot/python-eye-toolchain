@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-toolchain",
+  "catalog_name": "Python Eye IDE – Verified Tool Catalog",
+  "architecture": "arm64-v8a",
+  "updated": "2026-11-25",
+  "notes": "Five verified downloads and three official managed tools. JDK17 upgraded to independently audited Android Bionic 17.0.11; old runtime retained for fallback. Native Gradle and Jansi Android compatibility remains device-test required. Existing d8-apksigner tool now advertises R8 via AGP and read-only preflight; no duplicate tool ID.",
+  "tools": [
+    {
+      "id": "openjdk-17",
+      "name": "OpenJDK 17",
+      "version": "17.0.11 (Android ARM64 Bionic)",
+      "size_mb_estimate": 228.5,
+      "requires": [],
+      "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
+      "platform": "android-arm64",
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-android-bionic-17.0.11.tar.gz",
+      "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
+      "source_url": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/MobileStudio-JDK17-Android-ARM64/jdk17-android.tar.gz",
+      "verified_upstream_digest": true,
+      "archive_format": "tar.gz",
+      "required_probes": [
+        "java -version",
+        "javac -version"
+      ],
+      "file_size_bytes": 228548390,
+      "install": {
+        "method": "archive",
+        "archive_root": "jdk",
+        "required_paths": [
+          "bin/java",
+          "bin/javac"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Android Bionic-targeted OpenJDK 17.0.11, verified AArch64 ELF and SHA256. Improves over 2021 17-internal build; device Gradle/Jansi compatibility is NOT yet proven. Old JDK asset retained for rollback. The Android Bionic archive currently reports openjdk 17.0.21-internal on device although upstream asset label says 17.0.11. Validate supported Java MAJOR 17 and exit status 0, not the upstream filename patch version.",
+      "test": "./bin/java -version",
+      "expect": "17"
+    },
+    {
+      "id": "gradle",
+      "name": "Gradle",
+      "version": "8.14.3",
+      "size_mb_estimate": 137.4,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Gradle distribution; pin final version after AGP and Chaquopy compatibility testing",
+      "platform": "java-cross-platform",
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/gradle-8.14.3-bin.zip",
+      "sha256": "bd71102213493060956ec229d946beee57158dbd89d0e62b91bca0fa2c5f3531",
+      "source_url": "https://services.gradle.org/distributions/gradle-8.14.3-bin.zip",
+      "verified_upstream_digest": true,
+      "archive_format": "zip",
+      "required_probes": [
+        "gradle --version"
+      ],
+      "file_size_bytes": 137393837,
+      "install": {
+        "method": "archive",
+        "archive_root": "gradle-8.14.3",
+        "required_paths": [
+          "bin/gradle"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Pure Java Gradle launcher still requires Android-compatible Java and launch integration. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "test": "\"$JAVA_HOME/bin/java\" -Dorg.gradle.native=false -Dorg.gradle.vfs.watch=false -Dorg.gradle.daemon=false -cp ./lib/gradle-launcher-8.14.3.jar org.gradle.launcher.GradleMain --version",
+      "expect": "Gradle 8.14.3"
+    },
+    {
+      "id": "android-sdk-36",
+      "name": "Android SDK Platform 36",
+      "version": "36",
+      "size_mb_estimate": 65.9,
+      "requires": [],
+      "description": "Android platform APIs including android.jar; not the full Android SDK",
+      "platform": "platform-independent",
+      "published": false,
+      "status": "official_google_sdk_install_requires_consent",
+      "url": "",
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "sdkmanager",
+        "package": "platforms;android-36",
+        "required_paths": [
+          "platforms/android-36/android.jar",
+          "platforms/android-36/source.properties"
+        ],
+        "license_acceptance_required": true,
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "sdk",
+        "preflight": "Check JDK 17, sdkmanager, platform SDK license; install platforms;android-36 and build-tools;35.0.0",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752",
+        "download_url": "https://dl.google.com/android/repository/platform-36_r02.zip",
+        "download_sha256": "37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e",
+        "archive_format": "zip"
+      },
+      "device_build_verified": false,
+      "note": "Google SDK license acceptance required. Install from sdkmanager, not a mirrored Release archive. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified.",
+      "test": "test -s platforms/android-36/android.jar && echo SDK36_OK",
+      "expect": "SDK36_OK",
+      "file_size_bytes": 65878410
+    },
+    {
+      "id": "aapt2-zipalign",
+      "name": "AAPT2 + Zipalign",
+      "version": "35.0.2 (upstream Android ARM64 static tools)",
+      "size_mb_estimate": 14.4,
+      "requires": [],
+      "description": "Must use tested Android ARM64 executables, not Linux x86_64 builds",
+      "platform": "android-arm64",
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/android-sdk-tools-static-aarch64.zip",
+      "sha256": "db1cea2c4454d5f9c5a802646b2d1cf560b4ee7badbe23e51ab8e1881bb50fc2",
+      "source_url": "https://github.com/lzhiyong/android-sdk-tools/releases/download/35.0.2/android-sdk-tools-static-aarch64.zip",
+      "verified_upstream_digest": false,
+      "archive_format": "zip",
+      "required_probes": [
+        "aapt2 version",
+        "zipalign -h"
+      ],
+      "warning": "This 35.0.2 archive has AAPT2 + Zipalign but no D8, apksigner, jars or source.properties. It is not a full SDK Build Tools installation.",
+      "file_size_bytes": 14401170,
+      "install": {
+        "method": "archive",
+        "archive_root": "build-tools",
+        "required_paths": [
+          "aapt2",
+          "zipalign"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Verified archive contains AArch64 ELF binaries (AAPT2 and Zipalign 35.0.2). Android Bionic/runtime execution not yet proven. Installer strips build-tools/ from the ZIP; test uses ./aapt2, not ./build-tools/aapt2.",
+      "test": "./aapt2 version",
+      "expect": ""
+    },
+    {
+      "id": "d8-apksigner",
+      "name": "D8 + R8 + APK Signer",
+      "version": "34.0.4 (Android ARM64)",
+      "size_mb_estimate": 41.7,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Android bytecode tools: D8 dexer, R8 shrinker/obfuscator through AGP Release minifyEnabled, and APK signing. R8 is included in AGP, no separate Android executable is required.",
+      "platform": "java-cross-platform",
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/build-tools-34.0.4-aarch64.tar.xz",
+      "sha256": "4bbbdeee608ff8d3a2c1534d0a5270305a02b1f200403a536c75ac84c41e52fa",
+      "source_url": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/v34.0.4/build-tools-34.0.4-aarch64.tar.xz",
+      "verified_upstream_digest": false,
+      "archive_format": "tar.xz",
+      "required_probes": [
+        "d8 --version",
+        "apksigner --version"
+      ],
+      "warning": "Older 34.0.4 archive contains both Java launch scripts and jar files; mixing with SDK Build Tools 35.0.0 requires an app-level installer plan.",
+      "file_size_bytes": 41666832,
+      "install": {
+        "method": "archive",
+        "archive_root": "build-tools/34.0.4",
+        "required_paths": [
+          "d8",
+          "lib/d8.jar",
+          "apksigner",
+          "lib/apksigner.jar"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending. R8 Release Checker is now exposed in this existing catalog tool record. A Sync only refreshes fields the installed Python Eye IDE parser actually supports.",
+      "test": "\"$JAVA_HOME/bin/java\" -cp ./lib/d8.jar com.android.tools.r8.D8 --version",
+      "expect": "",
+      "r8": {
+        "supported": true,
+        "via": "android-gradle-plugin",
+        "install_separately": false,
+        "release_gradle_option": "isMinifyEnabled = true",
+        "checker_script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/toolchains/r8_release_check.py",
+        "checker_command": "python3 toolchains/r8_release_check.py --project /path/to/extracted-project",
+        "device_verified": false,
+        "note": "Checker inspects configuration only; release APK must be built and independently signed with a private keystore."
+      },
+      "r8_checker_script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/toolchains/r8_release_check.py",
+      "r8_available_via_agp": true
+    },
+    {
+      "id": "kotlin-compiler",
+      "name": "Kotlin Compiler",
+      "version": "2.1.20",
+      "size_mb_estimate": 86.9,
+      "requires": [
+        "openjdk-17"
+      ],
+      "description": "Kotlin compilation; final version to match the tested Android Gradle Plugin",
+      "platform": "java-cross-platform",
+      "published": true,
+      "status": "published_unverified_on_device",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/kotlin-compiler-2.1.20.zip",
+      "sha256": "a118197b0de55ffab2bc8d5cd03a5e39033cfb53383d6931bc761dec0784891a",
+      "source_url": "https://github.com/JetBrains/kotlin/releases/download/v2.1.20/kotlin-compiler-2.1.20.zip",
+      "verified_upstream_digest": true,
+      "archive_format": "zip",
+      "required_probes": [
+        "kotlinc -version"
+      ],
+      "warning": "Version 2.1.20 is the published tool; remove any duplicate built-in Kotlin 2.3.21 entry on the Android app side.",
+      "file_size_bytes": 86919262,
+      "install": {
+        "method": "archive",
+        "archive_root": "kotlinc",
+        "required_paths": [
+          "bin/kotlinc"
+        ],
+        "device_verified": false
+      },
+      "catalog_state": "downloadable_not_device_verified",
+      "device_build_verified": false,
+      "note": "Kotlin JVM compiler archive; Gradle plugin must still resolve correctly for Android builds. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "test": "\"$JAVA_HOME/bin/java\" -Dkotlin.home=\"$PWD\" -cp \"./lib/*\" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -version",
+      "expect": "2.1.20"
+    },
+    {
+      "id": "android-gradle-plugin",
+      "name": "Android Gradle Plugin",
+      "version": "8.11.0",
+      "size_mb_estimate": null,
+      "requires": [
+        "openjdk-17",
+        "gradle"
+      ],
+      "description": "Android app build plugin, sourced through Maven dependency resolution · Maven plugin resolution needs JDK and Gradle; standalone D8 is for separate CLI tasks, not a plugin prerequisite.",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "gradle_maven_resolution_requires_device_test",
+      "url": "",
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "gradle_plugin_resolution",
+        "plugin_id": "com.android.application",
+        "repositories": [
+          "google()",
+          "mavenCentral()",
+          "gradlePluginPortal()"
+        ],
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "plugins",
+        "preflight": "Compile :app:assembleDebug using com.android.application:8.11.0 via Gradle 8.14.3",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
+      },
+      "device_build_verified": false,
+      "note": "Plugin and transitives must resolve through Gradle. Requires Gradle >=8.13, JDK17 and SDK Build Tools 35.0.0. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
+    },
+    {
+      "id": "chaquopy-build",
+      "name": "Chaquopy Build Plugin",
+      "version": "17.2.0",
+      "size_mb_estimate": null,
+      "requires": [
+        "openjdk-17",
+        "gradle",
+        "android-gradle-plugin"
+      ],
+      "description": "Packages Python into Android APK; requires compatible AGP and Python version",
+      "platform": "java-cross-platform",
+      "published": false,
+      "status": "gradle_maven_resolution_requires_device_test",
+      "url": "",
+      "sha256": "",
+      "catalog_state": "managed_via_official_tool_not_integrated",
+      "install": {
+        "method": "gradle_plugin_resolution",
+        "plugin_id": "com.chaquo.python",
+        "repositories": [
+          "google()",
+          "mavenCentral()",
+          "gradlePluginPortal()"
+        ],
+        "device_verified": false,
+        "script_path": "installer/managed_installer.py",
+        "script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/installer/managed_installer.py",
+        "cli_action": "plugins",
+        "preflight": "Compile Python 3.10 ARM64 :app:assembleDebug using com.chaquo.python:17.2.0",
+        "requires_ide_integration": true,
+        "gradle_build_test_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/44159445752"
+      },
+      "device_build_verified": false,
+      "note": "Gradle plugin via Maven Central for Python 3.10+, AGP 7.3-9.5, Android API >=24. Runnable managed installer script is now included in repo, but Kotlin IDE UI is not wired to invoke it; status remains not_published until on-device verified."
+    }
+  ],
+  "last_archive_audit": "archive_audit.json",
+  "reported_android_ui_issue": "Built-in unpublished entries and downloaded catalog entries are displayed together, producing duplicate AAPT2 and Kotlin cards. Requires fixing Kotlin catalog loader; remote JSON cannot remove bundled entries.",
+  "compatible_build_profile": {
+    "java": "17",
+    "gradle": "8.14.3",
+    "android_gradle_plugin": "8.11.0",
+    "compile_sdk": 36,
+    "android_sdk_build_tools": "35.0.0",
+    "kotlin": "2.1.20",
+    "chaquopy": "17.2.0",
+    "python": "3.10",
+    "target_arch": "arm64-v8a"
+  }
+}
