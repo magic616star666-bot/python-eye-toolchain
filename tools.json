@@ -3,8 +3,8 @@
   "catalog_id": "python-eye-toolchain",
   "catalog_name": "Python Eye IDE – Verified Tool Catalog",
   "architecture": "arm64-v8a",
-  "updated": "2026-11-18",
-  "notes": "Five verified downloads and three official managed tools. JDK17 upgraded to independently audited Android Bionic 17.0.11; old runtime retained for fallback. Native Gradle and Jansi Android compatibility remains device-test required.",
+  "updated": "2026-11-25",
+  "notes": "Five verified downloads and three official managed tools. JDK17 upgraded to independently audited Android Bionic 17.0.11; old runtime retained for fallback. Native Gradle and Jansi Android compatibility remains device-test required. Existing d8-apksigner tool now advertises R8 via AGP and read-only preflight; no duplicate tool ID.",
   "tools": [
     {
       "id": "openjdk-17",
@@ -152,13 +152,13 @@
     },
     {
       "id": "d8-apksigner",
-      "name": "D8 + APK Signer",
+      "name": "D8 + R8 + APK Signer",
       "version": "34.0.4 (Android ARM64)",
       "size_mb_estimate": 41.7,
       "requires": [
         "openjdk-17"
       ],
-      "description": "Dex compilation and APK signing; pair with Android Build Tools",
+      "description": "Android bytecode tools: D8 dexer, R8 shrinker/obfuscator through AGP Release minifyEnabled, and APK signing. R8 is included in AGP, no separate Android executable is required.",
       "platform": "java-cross-platform",
       "published": true,
       "status": "published_unverified_on_device",
@@ -186,9 +186,21 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending.",
+      "note": "Legacy 34.0.4 D8/APKSigner Java JARs, not a replacement for AGP 8.11's mandatory Android SDK Build Tools >= 35. Android runs JVM CLI directly to avoid missing Unix/bash launchers; tested compile-side, device verification pending. R8 Release Checker is now exposed in this existing catalog tool record. A Sync only refreshes fields the installed Python Eye IDE parser actually supports.",
       "test": "\"$JAVA_HOME/bin/java\" -cp ./lib/d8.jar com.android.tools.r8.D8 --version",
-      "expect": ""
+      "expect": "",
+      "r8": {
+        "supported": true,
+        "via": "android-gradle-plugin",
+        "install_separately": false,
+        "release_gradle_option": "isMinifyEnabled = true",
+        "checker_script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/toolchains/r8_release_check.py",
+        "checker_command": "python3 toolchains/r8_release_check.py --project /path/to/extracted-project",
+        "device_verified": false,
+        "note": "Checker inspects configuration only; release APK must be built and independently signed with a private keystore."
+      },
+      "r8_checker_script_url": "https://raw.githubusercontent.com/magic616star666-bot/python-eye-toolchain/main/toolchains/r8_release_check.py",
+      "r8_available_via_agp": true
     },
     {
       "id": "kotlin-compiler",
