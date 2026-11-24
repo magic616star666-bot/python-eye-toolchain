@@ -131,8 +131,12 @@
       "from": "extended",
       "availability": "android_core_or_jvm_dependency",
       "device_ready": false,
-      "install_action": "device_probe_or_managed_project_resolution",
-      "verification": "Android device probe/build required"
+      "install_action": "use_existing_gradle_plugin_and_run_release_preflight",
+      "verification": "Preflight is static only; signed assembleRelease + phone regression needed",
+      "r8_included_with_agp": true,
+      "r8_read_only_check_script": "toolchains/r8_release_check.py",
+      "r8_release_enablement": "Release Gradle minifyEnabled/isMinifyEnabled true; use existing AGP R8",
+      "r8_download_needed": false
     },
     {
       "id": "apk-signing",
