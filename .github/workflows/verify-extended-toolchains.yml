@@ -44,6 +44,6 @@ jobs:
               assert t["device_build_verified"] is False
               assert t["published_as_archive"] is False
               assert t["android_arm64_host_status"]
-          assert len(json.loads(Path("tools.json").read_text())["tools"]) == 8
+          assert len(json.loads(Path("tools.json").read_text())["tools"]) == 9
           print("PASS: 20 non-breaking extended routes; existing 8 preserved")
           PY

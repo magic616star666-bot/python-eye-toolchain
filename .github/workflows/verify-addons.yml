@@ -43,7 +43,7 @@ jobs:
           ids=[x["id"] for x in a]
           assert len(ids) == len(set(ids)) == 25, len(ids)
           assert all(x["installed"] is False and x["android_phone_verified"] is False for x in a)
-          assert len(json.load(open("tools.json"))["tools"]) == 8
+          assert len(json.load(open("tools.json"))["tools"]) == 9
           print("PASS: 25 new optional addon routes, 8 legacy unchanged, no fake Android ready status")
           PY
 
