@@ -16,6 +16,7 @@ import gzip
 import hashlib
 import json
 import lzma
+import os
 import re
 import shutil
 import subprocess
@@ -159,6 +160,72 @@ def main() -> None:
     print("AWT libs:", awt)
     if "libawt.so" not in awt or "libawt_headless.so" not in awt:
         raise SystemExit("Termux openjdk-17 has no libawt.so + libawt_headless.so - cannot fix lint")
+
+    # 1b) De-absolutize symlinks. The on-device extractor forbids absolute/empty
+    #     symlink targets for safety (e.g. Termux's lib/security/cacerts points
+    #     at an absolute Termux/Android path). Replace each such link with the
+    #     real file it resolves to; safe relative links inside jdk are kept.
+    prefix_abs = "/" + PREFIX.as_posix()
+    pkg_roots = [root / PREFIX for root in extracted.values() if (root / PREFIX).is_dir()]
+
+    def _resolve_abs(abs_target):
+        if not abs_target.startswith(prefix_abs + "/"):
+            return None
+        rel = abs_target[len(prefix_abs) + 1:]
+        for base in pkg_roots:
+            cand, hops = base / rel, 0
+            while cand.is_symlink() and hops < 8:
+                t = os.readlink(cand); hops += 1
+                if os.path.isabs(t):
+                    if not t.startswith(prefix_abs + "/"):
+                        break
+                    cand = base / t[len(prefix_abs) + 1:]
+                else:
+                    cand = cand.parent / t
+            if cand.exists() and not cand.is_symlink():
+                return cand
+        return None
+
+    def _find_by_name(name):
+        for base in pkg_roots:
+            for p in base.rglob(name):
+                if p.is_file() and not p.is_symlink():
+                    return p
+        return None
+
+    normalized, emptied = [], []
+    for link in sorted(jdk.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+        if not link.is_symlink():
+            continue
+        target = os.readlink(link)
+        if target and not os.path.isabs(target):
+            real = (link.parent / target).resolve()
+            try:
+                real.relative_to(jdk.resolve())
+                continue  # safe relative symlink inside jdk -> keep
+            except ValueError:
+                pass  # escapes jdk -> treat as forbidden
+        src = _resolve_abs(target) if os.path.isabs(target) else None
+        if src is None:
+            src = _find_by_name(os.path.basename(target) or link.name)
+        link.unlink()
+        if src is not None and src.is_dir():
+            shutil.copytree(src, link, symlinks=False)
+            normalized.append(f"{link.relative_to(jdk)} <= {src} (dir)")
+        elif src is not None:
+            shutil.copy2(src.resolve(), link)
+            normalized.append(f"{link.relative_to(jdk)} <= {src}")
+        else:
+            link.write_bytes(b"")  # unresolvable; local build does no JVM TLS
+            emptied.append(f"{link.relative_to(jdk)} (was -> {target or '<empty>'})")
+    if normalized:
+        print("de-absolutized symlinks:\n  " + "\n  ".join(normalized))
+    if emptied:
+        print("WARNING: emptied unresolvable symlinks (no local-build TLS impact):\n  " + "\n  ".join(emptied))
+    remaining = [str(p.relative_to(jdk)) for p in jdk.rglob("*")
+                 if p.is_symlink() and (os.readlink(p) == "" or os.path.isabs(os.readlink(p)))]
+    if remaining:
+        raise SystemExit("Absolute/empty symlinks still present:\n  " + "\n  ".join(remaining))
 
     # 2) soname -> file from every extracted package (regular files and symlinks)
     provided = {}
