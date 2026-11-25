@@ -34,10 +34,9 @@ def check_maven_tool(tool_id, item, install):
     if item.get("catalog_state") != "maven_resolution_not_device_verified":
         raise ValueError(f"{tool_id}: Maven tool cannot be marked device ready before actual Test")
 MANAGED = {"android-sdk-36", "android-gradle-plugin", "chaquopy-build"}
-RELEASE_PREFIX = (
-    "https://github.com/magic616star666-bot/python-eye-toolchain/"
-    "releases/download/toolchain-v1/"
-)
+RELEASE_BASE = "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/"
+# Fixed allow-list of our own immutable release tags (no arbitrary tags or hosts)
+RELEASE_TAGS = ("toolchain-v1", "jdk-awt-v1")
 INSTALL_KINDS = {"archive", "sdkmanager", "gradle_plugin_resolution", "maven_artifact_resolution"}
 
 def check(path: Path):
@@ -90,9 +89,11 @@ def check(path: Path):
             if kind != "archive" or item.get("published") is not True:
                 raise ValueError(f"{tool_id}: expected downloadable archive")
             url = item.get("url", "")
-            if not isinstance(url, str) or not url.startswith(RELEASE_PREFIX):
+            prefix = next((RELEASE_BASE + t + "/" for t in RELEASE_TAGS
+                           if isinstance(url, str) and url.startswith(RELEASE_BASE + t + "/")), None)
+            if prefix is None:
                 raise ValueError(f"{tool_id}: only published release asset URL allowed")
-            filename = url[len(RELEASE_PREFIX):]
+            filename = url[len(prefix):]
             if "/" in filename or not filename or urlparse(url).query:
                 raise ValueError(f"{tool_id}: invalid release asset filename")
             if not filename.endswith((".zip", ".tar.xz", ".tar.gz")):
