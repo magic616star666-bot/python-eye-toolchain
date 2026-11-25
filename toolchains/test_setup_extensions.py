@@ -14,10 +14,10 @@ import apk_tooling as apk
 
 
 class SetupTests(unittest.TestCase):
-    def test_catalogs_merge_to_53_without_duplicates(self):
+    def test_catalogs_merge_to_54_without_duplicates(self):
         m = setup.manifest()
-        self.assertEqual(m["count"], 53)
-        self.assertEqual(len({x["id"] for x in m["tools"]}), 53)
+        self.assertEqual(m["count"], 54)
+        self.assertEqual(len({x["id"] for x in m["tools"]}), 54)
         self.assertFalse(m["android_phone_apk_build_verified"])
         self.assertTrue(all(not x["ready"] for x in m["tools"]))
 
