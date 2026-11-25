@@ -31,10 +31,14 @@ public class AwtLintProbe {
         // 4) every native library must come from this JDK or Android itself, never Termux
         List<String> bad = new ArrayList<>();
         String jdk = new File(System.getProperty("java.home")).getCanonicalPath();
+        // termux-docker maps Android's /system onto usr/opt/aosp; on a phone this is just /system
+        String sys = new File("/system").getCanonicalPath() + "/";
+        System.out.println("system.canonical=" + sys);
         for (String line : Files.readAllLines(Path.of("/proc/self/maps"))) {
             int i = line.indexOf('/');
             if (i < 0 || !line.endsWith(".so")) continue;
             String lib = line.substring(i);
+            if (lib.startsWith(sys) || lib.startsWith(jdk)) continue;
             if (lib.contains("/com.termux/files/usr/")) bad.add(lib);
             else if (lib.contains("/lib") && (lib.startsWith(jdk) || lib.startsWith("/system/") || lib.startsWith("/apex/") || lib.startsWith("/vendor/")))
                 continue;
