@@ -1,0 +1,96 @@
+name: JDK 17 with headless AWT (Android ARM64 Bionic)
+
+# Builds a relocatable JDK 17 that HAS libawt/libawt_headless (Android Lint needs them),
+# proves it on real Android Bionic (termux-docker on an ARM64 runner) from a path OUTSIDE
+# the Termux prefix, and only then publishes it (content-addressed, never replaced).
+on:
+  push:
+    branches: [main, jdk-awt]
+    paths:
+      - toolchains/jdk/**
+      - .github/workflows/jdk-awt.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jdk-awt
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build JDK bundle from official Termux packages (SHA-256 checked)
+        run: python3 toolchains/jdk/build_jdk_awt.py --out dist
+      - name: Reproducible (second build must be byte-identical)
+        run: |
+          python3 toolchains/jdk/build_jdk_awt.py --out dist2 > /dev/null
+          test "$(jq -r .sha256 dist/jdk-bundle.json)" = "$(jq -r .sha256 dist2/jdk-bundle.json)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jdk-dist
+          path: |
+            dist/*.tar.gz
+            dist/jdk-bundle.json
+
+  verify:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: jdk-dist
+          path: dist
+      - name: Run on Android Bionic (termux-docker), outside the Termux prefix
+        run: |
+          mkdir -p results && chmod 777 results dist
+          docker run --rm --privileged -v "$PWD:/work" termux/termux-docker:aarch64 \
+            bash /work/toolchains/jdk/termux_verify_jdk.sh /work/dist /work/results
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## JDK + AWT on Android Bionic"
+            echo '```'
+            cat results/summary.txt 2>/dev/null
+            for f in java-version awt-lint-probe javac keytool jarsigner; do echo "--- $f"; tail -n 12 "results/$f.txt" 2>/dev/null; done
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jdk-verify-results
+          path: results
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: jdk-dist
+          path: dist
+      - name: Upload to release jdk-awt-v1 (never replaces an existing asset)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ASSET=$(jq -r .asset_name dist/jdk-bundle.json); SHA=$(jq -r .sha256 dist/jdk-bundle.json)
+          gh release view jdk-awt-v1 >/dev/null 2>&1 || gh release create jdk-awt-v1 --title "JDK 17 + headless AWT (Android ARM64 Bionic)" --notes "Built from Termux openjdk-17; verified on Android Bionic by .github/workflows/jdk-awt.yml"
+          EXISTING=$(gh api "repos/$GH_REPO/releases/tags/jdk-awt-v1" --jq ".assets[] | select(.name==\"$ASSET\") | (.digest // \"present\")")
+          if [ -n "$EXISTING" ]; then
+            echo "$ASSET already published ($EXISTING)"
+            [ "$EXISTING" = "present" ] || [ "$EXISTING" = "sha256:$SHA" ] || { echo "::error::digest mismatch"; exit 1; }
+          else
+            gh release upload jdk-awt-v1 "dist/$ASSET"
+          fi
+          {
+            echo "## Published"
+            echo "- asset: \`$ASSET\`"; echo "- sha256: \`$SHA\`"; echo "- size: $(jq -r .file_size_bytes dist/jdk-bundle.json)"
+            echo "- version: $(jq -r .version dist/jdk-bundle.json)"
+          } >> "$GITHUB_STEP_SUMMARY"
