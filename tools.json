@@ -9,23 +9,24 @@
     {
       "id": "openjdk-17",
       "name": "OpenJDK 17",
-      "version": "17.0.11 (Android ARM64 Bionic)",
-      "size_mb_estimate": 228.5,
+      "version": "17.0.21 (Android ARM64 Bionic, headless AWT)",
+      "size_mb_estimate": 120.6,
       "requires": [],
       "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
       "platform": "android-arm64",
       "published": true,
       "status": "published_unverified_on_device",
-      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-android-bionic-17.0.11.tar.gz",
-      "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
-      "source_url": "https://github.com/MobileStudio-AndroidIDE/MobileStudio_AndroidIDE/releases/download/MobileStudio-JDK17-Android-ARM64/jdk17-android.tar.gz",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/jdk-awt-v1/jdk17-android-bionic-awt-17.0.21.1-aad7b057b946.tar.gz",
+      "sha256": "aad7b057b94668c29fd27aad502b21723900d2ec0d73bd09fb115df1ca7a9eb5",
+      "source_url": "https://packages.termux.dev/apt/termux-main (openjdk-17 + dependency closure, SHA-256 checked)",
       "verified_upstream_digest": true,
       "archive_format": "tar.gz",
       "required_probes": [
         "java -version",
-        "javac -version"
+        "javac -version",
+        "AWT headless (Lint)"
       ],
-      "file_size_bytes": 228548390,
+      "file_size_bytes": 120607211,
       "install": {
         "method": "archive",
         "archive_root": "jdk",
@@ -37,9 +38,10 @@
       },
       "catalog_state": "downloadable_not_device_verified",
       "device_build_verified": false,
-      "note": "Android Bionic-targeted OpenJDK 17.0.11, verified AArch64 ELF and SHA256. Improves over 2021 17-internal build; device Gradle/Jansi compatibility is NOT yet proven. Old JDK asset retained for rollback. The Android Bionic archive currently reports openjdk 17.0.21-internal on device although upstream asset label says 17.0.11. Validate supported Java MAJOR 17 and exit status 0, not the upstream filename patch version.",
+      "note": "Termux Bionic OpenJDK 17.0.21 with libawt/libawt_headless and all NEEDED libs bundled in jdk/lib. CI termux-docker verify outside the Termux prefix: Swing EDT (HeadlessToolkit), PNG/JPEG ImageIO, LCMS, javac, keytool, jarsigner PASS; no library loaded from the Termux prefix. Fixes Lint 'no awt in system library path'. Previous toolchain-v1 JDK asset kept for rollback.",
       "test": "./bin/java -version",
-      "expect": "17"
+      "expect": "17",
+      "build_workflow_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45553477322"
     },
     {
       "id": "gradle",
