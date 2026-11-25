@@ -9,15 +9,15 @@
     {
       "id": "openjdk-17",
       "name": "OpenJDK 17",
-      "version": "17.0.21 (Android ARM64 Bionic, headless AWT)",
-      "size_mb_estimate": 120.7,
+      "version": "17.0.11 (Android ARM64 Bionic)",
+      "size_mb_estimate": 228.5,
       "requires": [],
       "description": "Java runtime/compiler for Gradle, D8, apksigner and Kotlin",
       "platform": "android-arm64",
       "published": true,
       "status": "published_unverified_on_device",
-      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/jdk-awt-v1/jdk17-android-bionic-awt-17.0.21.1-b363f7849b5b.tar.gz",
-      "sha256": "b363f7849b5b57221a072596f7dff2e9ab7bb22c9bcf57bd07a02600daca7e48",
+      "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/toolchain-v1/jdk17-android-bionic-17.0.11.tar.gz",
+      "sha256": "81a99a2d2dad588e618cd1851e6b96cd3c044c236a1cd06956b19bd2530d54e5",
       "source_url": "https://packages.termux.dev/apt/termux-main (openjdk-17 + dependency closure, SHA-256 checked)",
       "verified_upstream_digest": true,
       "archive_format": "tar.gz",
@@ -26,7 +26,7 @@
         "javac -version",
         "AWT headless (Lint)"
       ],
-      "file_size_bytes": 120706694,
+      "file_size_bytes": 228548390,
       "install": {
         "method": "archive",
         "archive_root": "jdk",
