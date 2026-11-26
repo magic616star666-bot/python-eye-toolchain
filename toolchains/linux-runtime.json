@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "catalog_id": "python-eye-linux-runtime",
+  "host_abi": "arm64-v8a",
+  "updated": "2026-11-23T11:25:45Z",
+  "purpose": "Ubuntu userland for Python Eye IDE via PRoot (no root). The IDE downloads both files, checks SHA-256 and size, unpacks them in app-private storage and boots Ubuntu with PRoot.",
+  "proot": {
+    "version": "5.1.107.102",
+    "talloc_version": "2.5.0",
+    "provider": "magic616star666-bot/python-eye-toolchain",
+    "asset_name": "proot-android-arm64-5.1.107.102-1552dbb29c13.tar.gz",
+    "url": "https://github.com/magic616star666-bot/python-eye-toolchain/releases/download/linux-runtime-v1/proot-android-arm64-5.1.107.102-1552dbb29c13.tar.gz",
+    "sha256": "1552dbb29c139fbf47d19b06acc6967f84ba8e1e8685b1b4e619964a13c6c9a9",
+    "file_size_bytes": 138630,
+    "top_dir": "proot",
+    "loaders": [
+      "loader",
+      "loader32"
+    ],
+    "sources": [
+      {
+        "package": "proot",
+        "version": "5.1.107.102",
+        "deb": "proot_5.1.107.102_aarch64.deb",
+        "deb_url": "https://packages-cf.termux.dev/apt/termux-main/pool/main/p/proot/proot_5.1.107.102_aarch64.deb",
+        "deb_sha256": "10a394b585c2fc2b2c8502544f4e5f1be581dc8bfff79e8ba62f16207423e030",
+        "architecture": "aarch64",
+        "upstream": "https://github.com/termux/proot",
+        "build_recipe": "https://github.com/termux/termux-packages/tree/master/packages/proot",
+        "license": "GPL-2.0-or-later"
+      },
+      {
+        "package": "libtalloc",
+        "version": "2.5.0",
+        "deb": "libtalloc_2.5.0_aarch64.deb",
+        "deb_url": "https://packages-cf.termux.dev/apt/termux-main/pool/main/libt/libtalloc/libtalloc_2.5.0_aarch64.deb",
+        "deb_sha256": "556591f43bb773ad8777e1a29522640866a55f95dab71914418b94a8c58ad5a7",
+        "architecture": "aarch64",
+        "upstream": "https://www.samba.org/ftp/talloc/",
+        "build_recipe": "https://github.com/termux/termux-packages/tree/master/packages/libtalloc",
+        "license": "LGPL-3.0-or-later"
+      },
+      {
+        "package": "libandroid-shmem",
+        "version": "0.7",
+        "deb": "libandroid-shmem_0.7_aarch64.deb",
+        "deb_url": "https://packages-cf.termux.dev/apt/termux-main/pool/main/liba/libandroid-shmem/libandroid-shmem_0.7_aarch64.deb",
+        "deb_sha256": "0da3a24d558b93c92bcf8d611e0826a99ff96e396b148e6cdf33b47c47c57ff6",
+        "architecture": "aarch64",
+        "upstream": "https://github.com/termux/libandroid-shmem",
+        "build_recipe": "https://github.com/termux/termux-packages/tree/master/packages/libandroid-shmem",
+        "license": "BSD-3-Clause"
+      }
+    ]
+  },
+  "rootfs": [
+    {
+      "id": "ubuntu-noble",
+      "name": "Ubuntu 24.04 LTS (Noble Numbat)",
+      "pretty_name": "Ubuntu 24.04.1 LTS",
+      "provider": "termux/proot-distro",
+      "release_tag": "v4.18.0",
+      "asset_name": "ubuntu-noble-aarch64-pd-v4.18.0.tar.xz",
+      "url": "https://github.com/termux/proot-distro/releases/download/v4.18.0/ubuntu-noble-aarch64-pd-v4.18.0.tar.xz",
+      "sha256": "91acaa786b8e2fbba56a9fd0f8a1188cee482b5c7baeed707b29ddaa9a294daa",
+      "file_size_bytes": 64133552,
+      "format": "tar.xz",
+      "strip_components": 1,
+      "upstream_digest_checked": false
+    }
+  ],
+  "ci_proof": {
+    "run_url": "https://github.com/magic616star666-bot/python-eye-toolchain/actions/runs/45164022956",
+    "tested_at": "2026-11-23T11:25:45Z",
+    "environment": "GitHub ubuntu-24.04-arm runner + termux/termux-docker:aarch64 (Android Bionic userland, privileged); bundle installed outside the Termux prefix",
+    "extracted_by": "IDE RootfsExtractor (LinuxCore.kt) via Harness.kt",
+    "boot": "ok",
+    "guest_arch": "aarch64",
+    "project_bind": "ok",
+    "packages_ok": 32,
+    "packages_total": 32,
+    "not_proven": "A real phone adds SELinux and app-sandbox limits that Docker does not have. The IDE marks a tool Ready only after the same probe passes on the phone."
+  }
+}

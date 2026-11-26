@@ -1,0 +1,176 @@
+name: Linux runtime (PRoot + Ubuntu) for Python Eye
+
+on:
+  push:
+    branches: [python-eye-linux-runtime]
+    paths:
+      - 'toolchains/linux/**'
+      - 'toolchains/linux-packages.json'
+      - '.github/workflows/linux-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: linux-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Runtime folder used inside the Android-Bionic test container (outside the Termux prefix).
+  DEVICE_BASE: /data/data/com.termux/files/home/python-eye-linux
+  KOTLIN_VERSION: 2.1.20
+
+jobs:
+  bundle:
+    name: Build PRoot bundle + unpack Ubuntu with the IDE's extractor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Validate Linux package catalog
+        run: python3 toolchains/linux/recipes.py validate
+      - name: Build relocatable PRoot bundle (Termux aarch64 proot + libtalloc, SHA-256 checked)
+        run: python3 toolchains/linux/build_proot_bundle.py --out dist
+      - name: Pin Ubuntu ARM64 rootfs (termux/proot-distro release, SHA-256 checked)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 toolchains/linux/find_rootfs.py --out dist
+      - name: Compile the IDE's LinuxCore.kt with the CI harness
+        run: |
+          set -euo pipefail
+          curl -fsSL -o kotlin.zip "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"
+          unzip -q kotlin.zip
+          ./kotlinc/bin/kotlinc toolchains/linux/kotlin/LinuxCore.kt toolchains/linux/kotlin/Harness.kt -include-runtime -d dist/harness.jar
+      - name: Extractor safety self-test (no writes outside rootfs)
+        run: python3 toolchains/linux/selftest_extractor.py dist/harness.jar
+      - name: Reproducible bundle (a second build must be byte-identical)
+        run: |
+          set -euo pipefail
+          python3 toolchains/linux/build_proot_bundle.py --out dist-again > /dev/null
+          A=$(jq -r .sha256 dist/proot-bundle.json); B=$(jq -r .sha256 dist-again/proot-bundle.json)
+          echo "build 1: $A"; echo "build 2: $B"
+          test "$A" = "$B"
+          rm -rf dist-again
+      - name: Unpack the PRoot bundle with the IDE's extractor (must equal tar's result)
+        run: |
+          set -euo pipefail
+          mkdir -p work/bundle-tar work/bundle-ide
+          tar -xzf dist/proot-android-arm64-*.tar.gz -C work/bundle-tar
+          gzip -dc dist/proot-android-arm64-*.tar.gz | java -jar dist/harness.jar extract - work/bundle-ide 0
+          diff -r work/bundle-tar work/bundle-ide
+          (cd work/bundle-tar && find . -type f -perm -u+x | sort) > work/x-tar.txt
+          (cd work/bundle-ide && find . -type f -perm -u+x | sort) > work/x-ide.txt
+          diff work/x-tar.txt work/x-ide.txt
+          test -x work/bundle-ide/proot/bin/proot
+          echo "IDE extractor == tar; executables:"; cat work/x-ide.txt
+      - name: Unpack + configure Ubuntu exactly like the IDE
+        run: |
+          set -euo pipefail
+          ROOTFS=$(jq -r .asset_name dist/rootfs.json)
+          STRIP=$(jq -r .strip_components dist/rootfs.json)
+          mkdir -p work
+          xz -dc "dist/$ROOTFS" | java -jar dist/harness.jar extract - work/ubuntu "$STRIP"
+          java -jar dist/harness.jar configure work/ubuntu dist/proc-fake
+          java -jar dist/harness.jar command "$DEVICE_BASE" /root "$DEVICE_BASE/projects-host" dist/proot-args.txt dist/proot-env.txt
+          tar -C work/ubuntu -cpf dist/rootfs-prepared.tar .
+          python3 toolchains/linux/recipes.py tsv dist/recipes.tsv
+          ls -la dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-runtime-dist
+          path: dist/
+          retention-days: 14
+
+  verify:
+    name: Boot Ubuntu via PRoot on ARM64 Android-Bionic + install & probe every tool
+    needs: bundle
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-runtime-dist
+          path: dist
+      - name: Run inside termux/termux-docker:aarch64
+        run: |
+          mkdir -p results
+          chmod -R a+rwX dist results toolchains
+          docker run --rm --privileged \
+            -v "$PWD/dist:/work/dist" -v "$PWD/results:/work/results" -v "$PWD/toolchains:/work/toolchains:ro" \
+            termux/termux-docker:aarch64 \
+            bash /work/toolchains/linux/termux_verify.sh /work/dist /work/results
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Python Eye Linux runtime — package results" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f results/results.tsv ]; then
+            echo '| Package | Result | Seconds |' >> "$GITHUB_STEP_SUMMARY"
+            echo '|---|---|---|' >> "$GITHUB_STEP_SUMMARY"
+            awk -F'\t' '{print "| " $1 " | " $2 " | " $3 " |"}' results/results.tsv >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-runtime-results
+          path: results/
+          retention-days: 30
+
+  publish:
+    name: Publish PRoot bundle + write catalogs
+    needs: [bundle, verify]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-runtime-dist
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-runtime-results
+          path: results
+      - name: Upload proot bundle to Release linux-runtime-v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ASSET=$(jq -r .asset_name dist/proot-bundle.json)
+          gh release view linux-runtime-v1 >/dev/null 2>&1 || gh release create linux-runtime-v1 \
+            --title "Python Eye Linux runtime (PRoot + Ubuntu)" \
+            --notes "Relocatable PRoot bundle for Python Eye IDE (Android ARM64). Built and tested by .github/workflows/linux-runtime.yml. Upstream sources, versions and licences are inside the archive (SOURCES.json, LICENSES/)."
+          # Assets are content-addressed (SHA-256 prefix in the name) and never replaced:
+          # catalogs already published, and copies bundled inside IDE builds, stay valid.
+          SHA=$(jq -r .sha256 dist/proot-bundle.json)
+          EXISTING=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/linux-runtime-v1" --jq ".assets[] | select(.name==\"$ASSET\") | (.digest // \"present\")")
+          if [ -n "$EXISTING" ]; then
+            echo "$ASSET is already published ($EXISTING) - keeping it"
+            if [ "$EXISTING" != "present" ] && [ "$EXISTING" != "sha256:$SHA" ]; then
+              echo "::error::published $ASSET has $EXISTING, this build is sha256:$SHA"; exit 1
+            fi
+          else
+            gh release upload linux-runtime-v1 "dist/$ASSET"
+          fi
+          DIGEST=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/linux-runtime-v1" --jq ".assets[] | select(.name==\"$ASSET\") | .digest // \"\"")
+          echo "uploaded digest: $DIGEST"
+          echo "DIGEST=$DIGEST" >> "$GITHUB_ENV"
+      - name: Write linux-runtime.json + linux-ci-results.json
+        run: |
+          python3 toolchains/linux/publish_catalog.py --dist dist --results results \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --uploaded-digest "${DIGEST:-}"
+      - name: Commit catalogs to this branch
+        run: |
+          git config user.name "python-eye-ci"
+          git config user.email "python-eye-ci@users.noreply.github.com"
+          git add toolchains/linux-runtime.json toolchains/linux-ci-results.json
+          if git diff --cached --quiet; then echo "No catalog change"; exit 0; fi
+          git commit -m "Linux runtime: pin PRoot bundle + Ubuntu rootfs, CI package results (run ${{ github.run_id }})"
+          git push origin "HEAD:${{ github.ref_name }}"
