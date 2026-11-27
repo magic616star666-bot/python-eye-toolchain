@@ -161,3 +161,14 @@ The real Python Eye IDE **v1.6.7** source already supports `maven_artifact_resol
 
 R8 is also integrated into Android Gradle Plugin for release minification. Installing this **independent** R8 tool alone does not enable R8 for an APK, switch a debug signing certificate to a release certificate, or produce a signed release build. For ARINA use its Android Gradle `release` build type with minification enabled, your **own private signing key**, and actual on-device functional regression tests. **No APK source code and no signing keys are published here.**
 
+
+## CMake 3.22.1 repair and Cactus SDK 4.0.0 (Android ARM64)
+
+[Native preflight source](toolchains/native-preflight/NativeSdkPreflight.java) is wired into `toolchains/android_setup.py native-preflight`. It repairs the exact missing `IBMCPP-CXX-DetermineVersionInternal.cmake` module from Kitware CMake v3.22.1 (Git blob verified; [license](toolchains/native-preflight/CMake-Copyright.txt)). It installs Cactus SDK into a reusable cache and copies the verified static library and API-checked header into the project's existing `app/src/main/cpp/vendor` directory. The SDK is fetched over Java HTTPS from the pinned Cactus 4.0.0 Hugging Face revision. CMake's download support is not required. Existing valid files and SDK licenses are preserved.
+
+Example (in an Android IDE process that owns these directories; supply your actual paths):
+```sh
+python toolchains/android_setup.py native-preflight --root "$TOOLS" --project "$PROJECT" --cmake-root "$CMAKE_ROOT" --java "$JDK/bin/java" --approve-download
+```
+
+The helper can also be invoked directly from Gradle before native configuration. Without `--approve-download` the CLI only uses existing local SDK files. The legacy Sync manifest and existing 37 mobile native assets are unchanged: no fabricated archive or new Load button is advertised. A visible new Extensions card requires an IDE-side caller; actual ARM64 linking and APK execution remain to be tested on the device. The Cactus static library uses a pinned SHA-256; its header uses the pinned upstream revision and API-content validation.
