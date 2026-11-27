@@ -10,6 +10,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
+import subprocess
 from pathlib import Path
 import sys
 import zipfile
@@ -132,10 +135,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Python Eye ANDROID-only ARM64/Bionic toolchain setup")
     parser.add_argument("action", choices=("catalog", "plan", "status", "probe", "install",
                                           "gradle-list", "gradle-resolve", "gradle-status",
-                                          "gradle-install", "gradle-probe"))
+                                          "gradle-install", "gradle-probe", "native-preflight"))
     parser.add_argument("--project", type=Path, help="Android project directory or ZIP for dependency plan")
     parser.add_argument("--asset", help="Exact Android native asset ID")
     parser.add_argument("--version", help="Exact official Gradle release number, e.g. 8.14.3")
+    parser.add_argument("--cmake-root", type=Path, help="Installed CMake package directory")
+    parser.add_argument("--cmake-version", default="3.22.1")
     parser.add_argument("--java", help="Path to working Android/Bionic JDK java binary")
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT,
                         help="IDE-private executable-writable tool directory")
@@ -145,7 +150,28 @@ def main() -> None:
     args = parser.parse_args()
     try:
         root = args.root.expanduser().resolve()
-        if args.action.startswith("gradle-"):
+        if args.action == "native-preflight":
+            if not args.project or not args.cmake_root:
+                parser.error("native-preflight requires --project and --cmake-root")
+            project = args.project.expanduser().resolve()
+            vendor = project / "app/src/main/cpp/vendor"
+            if not (vendor.parent / "CMakeLists.txt").is_file():
+                raise ValueError("Expected existing Android project with app/src/main/cpp/CMakeLists.txt")
+            java = args.java or shutil.which("java")
+            if not java:
+                raise InstallError("JDK 17 java executable required; pass --java")
+            source = HERE / "native-preflight/NativeSdkPreflight.java"
+            cache = root / "cactus-sdk-4.0.0/android-arm64"
+            cmd = [java, str(source), str(args.cmake_root.expanduser().resolve()),
+                   args.cmake_version, str(cache), str(vendor),
+                   str(not args.approve_download).lower()]
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+            if proc.returncode:
+                raise InstallError(proc.stderr.strip() or proc.stdout.strip() or "Native SDK preflight failed")
+            data = {"status": "native_preflight_completed", "cache": str(cache),
+                    "vendor": str(vendor), "output": proc.stdout.strip(),
+                    "android_apk_build_verified": False}
+        elif args.action.startswith("gradle-"):
             from android_gradle_versions import (
                 gradle_metadata, resolve_java,
                 install as gradle_install, status as gradle_status,
