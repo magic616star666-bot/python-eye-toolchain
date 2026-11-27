@@ -508,5 +508,16 @@
   "legacy_compatibility": "keep root tools.json unchanged with exactly 8 entries",
   "no_silent_downloads": true,
   "download_consent_required": true,
-  "untrusted_third_party_execution_requires_approval": true
+  "untrusted_third_party_execution_requires_approval": true,
+  "native_build_preflight": {
+    "id": "native-cmake-cactus-preflight",
+    "cli_action": "native-preflight",
+    "helper": "native-preflight/NativeSdkPreflight.java",
+    "cmake_repair_version": "3.22.1",
+    "cactus_sdk_version": "4.0.0",
+    "target_abi": "arm64-v8a",
+    "download_consent_required": true,
+    "device_ready": false,
+    "notes": "Pre-build integration, not a legacy archive card. Uses JDK 17 HTTPS and the existing Android tools directory; requires project or IDE caller. No SDK licenses changed."
+  }
 }
